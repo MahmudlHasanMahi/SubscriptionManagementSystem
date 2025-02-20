@@ -1,0 +1,85 @@
+.heading {
+  grid-column: span 5 / span 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Nunito", serif;
+  padding-inline-start: 3.3em;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: 3em;
+  cursor: default;
+  position: relative;
+}
+
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  text-wrap: nowrap;
+  margin-inline: 1em;
+}
+.userinfo > span:last-child {
+  color: #b8b8b8;
+}
+.profile > img:last-child {
+  cursor: pointer;
+}
+.dropdown {
+  position: absolute;
+  left: 0;
+  bottom: -7em;
+  z-index: 1;
+  padding: 0.8em;
+  background-color: #151515;
+  border-radius: 0 0 10px 10px;
+  text-align: center;
+}
+.language {
+  padding: 0.25em;
+  margin-bottom: 1em;
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.68);
+  border-radius: 6px;
+}
+
+.language > span {
+  display: inline-block;
+  padding: 0.4em 2em;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.625em;
+}
+.deactive {
+  color: black;
+}
+.active {
+  background-color: #252525;
+  color: white;
+}
+.dropdown > div:last-child {
+  padding: 0.4em 1.25em;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.625em;
+  background-color: rgba(186, 32, 32, 0.5);
+  transition: background 0.5s;
+}
+.dropdown > div:last-child:hover {
+  background-color: rgba(243, 148, 47, 0.5);
+}
+.titleContainer > span {
+  display: block;
+  text-wrap: nowrap;
+}
+.titleContainer > span:nth-child(2) {
+  font-size: 1.875em;
+  font-weight: 800;
+}
+.titleContainer > span:last-child {
+  font-size: 1em;
+  color: #adadad;
+}

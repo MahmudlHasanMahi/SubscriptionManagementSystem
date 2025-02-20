@@ -1,0 +1,28 @@
+.card {
+  width: 23.5%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1.25em;
+  font-family: nunito;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.4em 1.25em 0 1.25em;
+}
+.card > span:last-child {
+  background-color: rgba(255, 255, 255, 0.65);
+  height: 3.125em;
+  width: 3.125em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.NumericTextBox > span:first-child {
+  display: block;
+  font-size: 1.75em;
+  font-weight: 800;
+}
+.NumericTextBox > span:last-child {
+  display: block;
+  font-size: 1em;
+  margin-top: 0.2em;
+}

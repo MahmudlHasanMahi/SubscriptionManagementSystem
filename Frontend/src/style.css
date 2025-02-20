@@ -1,0 +1,16 @@
+:root {
+  --bg: #100e0e;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: nunito;
+}
+.toast-success-container {
+  background-color: #4d6dac40;
+}

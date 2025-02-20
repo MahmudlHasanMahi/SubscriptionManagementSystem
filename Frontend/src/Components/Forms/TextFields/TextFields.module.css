@@ -1,0 +1,51 @@
+.textField {
+  display: flex;
+  flex-direction: column;
+}
+.label {
+  color: white;
+  margin-bottom: 0.5em;
+}
+.inputField {
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid white;
+  border-radius: 10px;
+  outline: none;
+  padding-inline-end: 1em;
+  margin-bottom: 1.6em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.inputField::placeholder {
+  color: white;
+  font-size: 0.8em;
+}
+.inputField > input {
+  border: none;
+  outline: none;
+  padding: 1.4em 0em 1.4em 1em;
+  background-color: rgba(0, 0, 0, 0);
+  padding: auto;
+  color: white;
+  font-size: 0.8em;
+  width: 100%;
+}
+.inputField span {
+  display: flex;
+  cursor: pointer;
+  padding: 0.7em;
+  border-radius: 50%;
+  transition: 300ms;
+}
+.inputField span:hover {
+  background-color: rgba(0, 0, 0, 0.36);
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

@@ -1,0 +1,9 @@
+.body {
+  /* border: solid red; */
+  grid-column: span 5 / span 5;
+  grid-row: span 5 / span 5;
+  grid-column-start: 2;
+  grid-row-start: 2;
+  /* border: 1px solid rgb(169, 169, 169); */
+  padding-inline: 3.3em 1.25em;
+}

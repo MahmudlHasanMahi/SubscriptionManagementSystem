@@ -1,0 +1,42 @@
+.signInContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+}
+.logoContainer {
+  margin-bottom: 4em;
+  display: flex;
+  flex-direction: column;
+}
+.logoContainer > img {
+  width: 2.2em;
+  margin: 1em;
+}
+.logoContainer > span {
+  color: white;
+  width: 5em;
+  text-align: center;
+  font-size: 0.9em;
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+.title {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5em;
+}
+.title span:first-child {
+  font-size: 1em;
+  font-weight: 200;
+}
+.title span:last-child {
+  font-size: 1.86em;
+  font-weight: 800;
+}

@@ -1,0 +1,15 @@
+.checkBox {
+  padding: 0.4em 5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(34, 53, 80, 1);
+  border-radius: 0.625em;
+  justify-content: center;
+  margin-top: 1.7em;
+  cursor: pointer;
+}
+.title {
+  text-wrap: nowrap;
+  margin-inline-start: 2.5em;
+}

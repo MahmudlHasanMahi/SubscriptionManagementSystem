@@ -1,0 +1,64 @@
+.navigation {
+  grid-row: span 6 / span 6;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 2.5em 4em;
+}
+
+.logoContainer > img {
+  width: 3em;
+}
+
+.logoContainer > span {
+  text-align: center;
+  margin-top: 1em;
+  font-size: 0.8em;
+  padding-inline: 5em;
+  letter-spacing: 10%;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  padding: 0.625em 2em;
+  position: relative;
+  cursor: default;
+  user-select: none;
+  text-decoration: none;
+}
+.listItem > span {
+  margin-inline: 1em;
+  font-size: 1.2em;
+  color: white;
+}
+.active {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  background-color: rgba(141, 162, 255, 0.15);
+  z-index: -1;
+}
+.active > div {
+  width: 0.6em;
+  height: 100%;
+  background-color: #645e96;
+  border-radius: 0 10px 10px 0;
+}
+.navbar {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.copyright {
+  font-size: 0.8em;
+  text-align: center;
+  padding: 2em 4em;
+}

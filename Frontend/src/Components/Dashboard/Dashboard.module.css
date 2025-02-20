@@ -1,0 +1,15 @@
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.tables {
+  height: 20em;
+  margin-top: 1.56em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.tables > div{
+  width: 49%;
+}

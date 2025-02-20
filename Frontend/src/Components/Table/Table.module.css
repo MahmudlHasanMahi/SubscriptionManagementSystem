@@ -1,0 +1,117 @@
+.tableContainer {
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  /* border: solid red; */
+  background-color: rgba(22, 115, 161, 0.4);
+
+  padding: 1em 1em 1.4em 1.2em;
+  border-radius: 1.25em;
+  height: 100%;
+}
+.tableContainer > div {
+  height: inherit;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 1em;
+  scrollbar-color: rgb(20, 85, 101) rgba(0, 0, 0, 0);
+}
+
+.tableContainer > div::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tableContainer > div::-webkit-scrollbar-thumb {
+  background: rgb(41, 174, 209);
+  background: linear-gradient(
+    18deg,
+    rgba(41, 174, 209, 1) 13%,
+    rgba(237, 16, 237, 1) 100%
+  );
+  border-radius: 100%;
+}
+
+.tableContainer > div::-webkit-scrollbar-track {
+  background-color: #d0d0d0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* .tableContainer > div::-webkit-scrollbar {
+  width: 2px;
+}
+
+.tableContainer > div::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0);
+  position: relative;
+  left: 20px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.tableContainer > div::-webkit-scrollbar-thumb {
+  background: red;
+  border: 3px solid rgb(0, 217, 255);
+} */
+
+.title {
+  font-size: 1.25em;
+  font-weight: 800;
+}
+.table {
+  font-size: 0.875em;
+  width: 100%;
+  overflow: scroll;
+  margin-top: 2.5em;
+  border-collapse: collapse;
+}
+.table > div {
+  position: relative;
+}
+.table > thead {
+  position: sticky;
+  top: 0px;
+}
+
+.table > thead > tr > th {
+  text-align: start;
+  color: rgb(205, 237, 255);
+  font-weight: 800;
+  font-size: 1.1em;
+}
+
+.table > tbody > tr {
+  border-bottom: 0.5px solid hsl(0, 0%, 71%);
+}
+.table > tbody td {
+  font-weight: 400;
+  padding-block: 1.4em 1em;
+  gap: 0;
+}
+.action {
+  background: rgb(216, 158, 219);
+  background: linear-gradient(
+    76deg,
+    rgba(216, 158, 219, 1) 0%,
+    rgba(223, 223, 223, 1) 100%
+  );
+  color: transparent;
+  background-clip: text;
+  font-size: 1em;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: baseline;
+}
+.action::before {
+  content: "";
+  position: absolute;
+  width: 45%;
+  bottom: 25%;
+  transition: 600ms;
+  height: 2%;
+}
+.action:hover:before {
+  background-color: rgba(216, 158, 219, 1);
+}
