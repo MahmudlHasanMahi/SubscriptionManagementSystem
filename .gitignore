@@ -1,0 +1,5 @@
+venv
+.venv
+__pycache__
+/Frontend/static/Frontend
+db.sqlite3
