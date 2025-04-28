@@ -4,6 +4,7 @@ class StaffPagination(CursorPagination):
     page_size = 5
     ordering='pk'
     cursor_query_param = 'page'
+    
     @classmethod
     def set_page_size(cls,size):
         try:

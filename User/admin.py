@@ -1,9 +1,9 @@
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import UserCreationForm
+from .models import User,Admin,Manager,Employee
+from django.contrib.auth.models import Group
 from django.contrib import admin
 from django import forms
-from .models import User,Manager,Employee,Admin
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Group
 class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
@@ -23,14 +23,16 @@ class CustomUserCreationForm(UserCreationForm):
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
+        
         return user
+
 
 
 
 class UserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
 
-    list_display = ["name","email",'mobile', 'is_admin','is_active']
+    list_display = ["id","name","email",'mobile', 'groups','is_active']
     list_filter = ['admin',]
     fieldsets = [
         [None, {'fields': ["email","mobile","name","is_active","admin","staff", "password"]}],
@@ -54,30 +56,32 @@ class UserAdmin(BaseUserAdmin):
         
         return request.user.has_perm("can_view_user")
 
-class AdminAdmin(UserAdmin):
+  
+    
 
-    pass
+
+
+class AdminAdmin(UserAdmin):
+    def save_model(self, request, obj, form, change):
+        obj.groups = Group.objects.get(name="Admin")  
+        super().save_model(request, obj, form, change)
 
 class ManagerAdmin(UserAdmin):
-    pass
+    def save_model(self, request, obj, form, change):
+        obj.groups = Group.objects.get(name="Manager")    
+        super().save_model(request, obj, form, change)
 
 class EmployeeAdmin(UserAdmin):
-    
-    list_display = ["name","email",'mobile', 'is_admin','is_active','manager']
+    def save_model(self, request, obj, form, change):
+        obj.groups = Group.objects.get(name="Employee")    
+        super().save_model(request, obj, form, change)
 
-    add_fieldsets = [
-        [None, {
-            
-            'fields': ['email',"mobile",'password1', 'password2','manager'],
-        }],
-    ]
 
 admin.site.register(User,UserAdmin)
 admin.site.register(Manager,ManagerAdmin)
 admin.site.register(Employee,EmployeeAdmin)
 admin.site.register(Admin,AdminAdmin)
 
-# admin.site.register((Group,))
 
 
 

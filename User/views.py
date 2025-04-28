@@ -1,61 +1,101 @@
-from django.shortcuts import render
-from django.utils.decorators import method_decorator
+from .serializers import UserSerializer,GroupSerializer,ChangePasswordSerializer,CreateUserSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie,csrf_protect
-from rest_framework.response import Response 
-from rest_framework.decorators import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
-from rest_framework import status
-from .models import User,Admin,Manager,Employee
+from django.utils.decorators import method_decorator
 from django.contrib.auth import login,authenticate
-from .serializers import UserSerializer,GroupSerializer
-from django.contrib.auth import logout
-from itertools import chain
-from .Pagination import StaffPagination
+from ManagementSystem.models import *
 from rest_framework.generics import ListAPIView 
+from .models import User,Admin,Manager,Employee
+from rest_framework.decorators import APIView
 from django.contrib.auth.models import Group
-from django.db.models import Q
-
+from rest_framework.response import Response 
+from .Pagination import StaffPagination
+from django.contrib.auth import logout
+from rest_framework import status
 import time
+
+
+
+
+def groupPerm_Queries(user):
+    group = user.groups;
+
+    if getattr(group,"name",None) == "Admin":
+        return Group.objects.exclude(name="Admin")
+    
+    elif getattr(group,"name",None) == "Manager":
+        return Group.objects.filter(name="Employee")
+
+    return User.objects.none()
+
+    
+def staffPerm_Queries(user,count=False):
+    group = user.groups;
+
+
+    if getattr(group,"name",None) == "Admin":
+        return User.objects.filter(groups=group)
+    
+    elif getattr(group,"name",None) == "Manager":
+        return Employee.objects.all()
+
+    elif getattr(group,"name",None) =="Employee":
+        return User.objects.none()
+        
+    return User.objects.none()
+
+
+
+
 class ResetPassword(APIView):
     permission_classes = (AllowAny,)
 
     @method_decorator(csrf_protect)
     def post(self,request):
+
         data = request.data
-        id = data.get("id")
-        old_password = data.get("old_password")
-        password = data.get("password")
-        re_password = data.get("re_password")
+        userId = data.get("id")
+        
+        credential = {
+            "old_password":data.get("old_password"),
+            "password":data.get("password"),
+            "re_password":data.get("re_password"),
+        }
         try:
-            user = User.objects.get(pk=id)
+            user = User.objects.get(pk=userId)
+            
         except:
             return Response({"msg":"something went wrong"})
+
         else:
-            if(user.check_password(old_password) and password == re_password ):
-                
-                user.set_password(password)
-                user.save()
-                login(request,user)
-                return Response({"success":"password changed"})
-            return Response({"failed":"password don't match"},status = status.HTTP_401_UNAUTHORIZED)
-
+            serializer = ChangePasswordSerializer(instance=user,data=credential,partial=True,context={"user":user})
         
+            if serializer.is_valid():
+                serializer.save()
 
+                login(request,user)
+                return Response(serializer.data)
+
+            return Response(serializer.errors)
 
 
     
 class CheckAuthentication(APIView):
     permission_classes = (AllowAny,)
+
+
     def get(self,request):
         user = request.user
         try:
             if user.is_authenticated:
                 serializer = UserSerializer(user)
-                
 
                 return Response(serializer.data,status=status.HTTP_200_OK)
+
             return Response(status = status.HTTP_401_UNAUTHORIZED)
+
         except:
+
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -71,14 +111,18 @@ class SignUp(APIView):
         password = data.get("password")
         try:
             user = authenticate(email=email,password=password)
-            if user is not None:
+
+            if user:
                 if(user.last_login):
+
                     login(request,user)
+
                 serialized = UserSerializer(user)
                 return Response(serialized.data)
-            return Response({"err":"Invalid password or email"},status = status.HTTP_401_UNAUTHORIZED)
+
+            return Response({"error":"Invalid password or email"},status = status.HTTP_401_UNAUTHORIZED)
         except:
-            return Response({"err":"Something went wrong"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error":"Something went wrong"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class Signout(APIView):
@@ -105,19 +149,7 @@ class StaffList(ListAPIView):
 
     def get_queryset(self):
         request = self.request
- 
-        if hasattr(request.user,"Admin"):
-            Admin = Group.objects.get(name="Admin")
-            obj = User.objects.exclude(groups=Admin)
-    
-            return obj
-        elif hasattr(request.user,"Manager"):
-            employee = Employee.objects.all()
-            return employee
-        elif hasattr(request.user,"Employee"):
-            return Employee.objects.none()
-        else:
-            return Employee.objects.none()
+        return staffPerm_Queries(request.user)
 
     def paginate_queryset(self, *args, **kwargs):
         request = self.request
@@ -136,21 +168,10 @@ class StaffList(ListAPIView):
 class GroupsView(APIView):
     permission_classes=(IsAuthenticated,)
     def get(self,request):
-        if hasattr(request.user,"Admin"):
-            group = Group.objects.exclude(name="Admin")
-            serializer = GroupSerializer(group,many=True)
-            return Response(serializer.data)
+        query = groupPerm_Queries(request.user)
+        serializer = GroupSerializer(query,many=True)
+        return Response(serializer.data)
 
-        elif hasattr(request.user,"Manager"):
-
-            group = Group.objects.filter(name="Employee")
-            serializer = GroupSerializer(group,many=True)
-            return Response(serializer.data)
-            
-        elif hasattr(request.user,"Employee"):
-            return Response({})
-        else:
-            return Response({})      
 class StaffView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
@@ -158,19 +179,23 @@ class StaffView(APIView):
         try:
             user = User.objects.get(pk=id)
             serializer = self.serializer_class(user)
+            time.sleep(0.5)
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"err":"User does not exists"},status=status.HTTP_404_NOT_FOUND)
 
 
     def post(self,request,id):
-        print(id)
-        time.sleep(5)
-        return Response({})
+        user = User.objects.get(pk=id)
+        serializer = CreateUserSerializer(instance=user,data=request.data,partial=True)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({},status=status.HTTP_200_OK)
 
-
-
-
+        return Response({"err":"User credientail error"},status=status.HTTP_409_CONFLICT)
+            
+        
 
 class CreateStaffView(APIView):
     permission_classes=(IsAuthenticated,)
@@ -179,29 +204,18 @@ class CreateStaffView(APIView):
         data = request.data
         email = data.get("email")
         mobile = data.get("mobile")
-        if User.objects.filter(Q(email=email)|Q(mobile=mobile)).exists():
-            return Response({"error":"User with same email or mobile number exists"},status=status.HTTP_409_CONFLICT)
         
-        group_name = Group.objects.get(pk=data.get("group"))
-        password = data.get("password")
-        name = data.get("name")
-        is_active = data.get("active")
-        if group_name.name == "Admin":
-            Admin.objects.create_admin(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
+        serializer = CreateUserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(status=status.HTTP_200_OK)
+        return Response({"error":"User with same email or mobile number exists"},status=status.HTTP_409_CONFLICT)
 
-        elif group_name.name == "Manager":
-            Manager.objects.create_manager(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
-            return Response(status=status.HTTP_200_OK)
-        elif group_name.name == "Employee":
-            manager = request.user.Manager
-            Employee.objects.create_employee(manager=manager,email=email,mobile=mobile,password=password,name=name,is_active=is_active)
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response({"error":"Invalid User Group"},status=status.HTTP_400_BAD_REQUEST)
 
 class test(APIView):
     permission_classes=(AllowAny,)
     def get(self,request):
-        serializer = UserSerializer(User.objects.get(email="Manager2@manager.com"))
-        return Response(serializer.data)
+        # client = Client.objects.first().Subscription.prefetch_related("active_plans").explain()
+        group = Group.objects.filter(name="Manager")
+        print(group)
+        return Response()
