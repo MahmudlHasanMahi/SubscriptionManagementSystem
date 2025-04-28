@@ -8,4 +8,5 @@ export const INVALID_GROUP = "Invalid User Group";
 export const SOMETHING_WENT_WRONG =
   "Oops! Something went wrong. Please try again later.";
 export const USER_EXIST = "User with same email or mobile number exists";
-export const USER_DOESNOT_EXISTS = "User doesnot exists";
+export const USER_DOESNOT_EXISTS = "User does not exists";
+export const USER_UPDATED = "User credentials have been updated successfully";
