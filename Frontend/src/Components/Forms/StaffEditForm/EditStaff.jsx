@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 import FormContainer from "../FormContainer/FormContainer";
 import TextFields from "../TextFields/TextFields";
 import Body from "../../Body/Body";
@@ -10,47 +10,52 @@ import {
   staffState as staff,
   editStaff,
 } from "../../../Features/staff";
+import { useNavigate } from "react-router-dom";
 import CSRFProtect from "../../../Utils/CSRFProtect";
-import Loading from "../../Loading/Loading";
 import Button from "../Buttons/Button";
 import CheckBox from "../CheckBox/CheckBox";
-
 const EditStaff = () => {
   const { staffId } = useParams();
   const { isLoading, staffState } = useSelector(staff);
   const dispatch = useDispatch();
+  const [hasChanged, setHasChanged] = useState({});
+  const [disable, setDisable] = useState(true);
+
+  const navigate = useNavigate();
   useEffect(() => {
-    dispatch(
-      updateHeaderState({
-        title1: `Update Staffs id ${staffId}`,
-        title2: "Update account of staff",
-        logo: null,
-      })
-    );
-    dispatch(getStaff(staffId));
+    dispatch(getStaff(staffId)).then((data) => {
+      return dispatch(
+        updateHeaderState({
+          title1: `Update Staff ${data.payload.name}`,
+          title2: "Update account of staff",
+          logo: null,
+        })
+      );
+    });
   }, []);
   const onSubmit = (e) => {
     e.preventDefault();
-
-    const body = {};
-    for (let fields of e.target) {
-      const { type, name, value } = fields;
-      if (type == "checkbox") {
-        if (
-          staffState.hasOwnProperty(name) &&
-          fields.checked != staffState[name]
-        )
-          body[name] = fields.checked;
-      } else {
-        if (staffState.hasOwnProperty(name) && staffState[name] != value)
-          body[name] = value;
-      }
+    const body = hasChanged;
+    if (Object.keys(body).length !== 0) {
+      dispatch(editStaff({ staffId, body }));
     }
-    dispatch(editStaff({ staffId, body }));
+    return navigate("/staff");
+  };
+
+  const changed = (e) => {
+    const { type, name, value } = e.target;
+    setHasChanged((prev) => {
+      prev[name] = type == "checkbox" ? e.target.checked : value;
+      if (prev[name] == staffState[name]) {
+        delete prev[name];
+      }
+      setDisable(Object.keys(prev).length === 0);
+      return prev;
+    });
   };
   return (
     <Body>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} onChange={changed}>
         <FormContainer isLoading={isLoading} title={"Update staff"}>
           <CSRFProtect />
           <TextFields
@@ -79,11 +84,17 @@ const EditStaff = () => {
             label={"Group"}
             value={staffState?.group}
           />
-        
           <CheckBox defaultChecked={staffState?.is_active} name="is_active" />
-
-          <div style={{ width: "100%", marginBlock: "2em" }}>
-            <Button title={"Create Staff"} />
+          <div
+            style={{
+              width: "100%",
+              marginBlock: "2em",
+              display: "flex",
+              gap: "10%",
+            }}
+          >
+            <Button disable={disable} title={"Save"} />
+            <Button title={"Cancel"} style={{ background: "#ffffff3b" }} />
           </div>
         </FormContainer>
       </form>
