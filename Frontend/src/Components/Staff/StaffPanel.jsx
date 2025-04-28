@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Staff.module.css";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
 import Button from "../Forms/Buttons/Button";
 import Select from "./Filter/Select";
 import SelectOption from "./Filter/SelectOption";
-
+import { useSelector } from "react-redux";
+import { staffState } from "../../Features/staff";
 const StaffPanel = () => {
+  const staff = useSelector(staffState);
   return (
     <div className={styles["staffPanel"]}>
-      <NumericTextBox title1={250} title2={"Total number of staff"} />
+      <NumericTextBox
+        title1={staff.staffState?.count}
+        title2={"Total number of staff"}
+      />
       <TextFields
         type={"text"}
         placeholder="Enter search word"
