@@ -26,6 +26,7 @@ export const SignIn = createAsyncThunk(
         body: JSON.stringify(signInCredentials),
       });
       const data = await res.json();
+      console.log(data);
       if (!res.ok) {
         notifyError(INVALID_CREDENTIAL);
         return null;
@@ -90,6 +91,8 @@ export const ChangePassword = createAsyncThunk(
         headers,
         body: JSON.stringify(body),
       });
+      const data = res.json();
+      console.log(data);
       if (res.ok) {
         notifySuccess(PASSWORD_CHANGED);
         notifySuccess(LOGIN_SUCCESSFULL);
