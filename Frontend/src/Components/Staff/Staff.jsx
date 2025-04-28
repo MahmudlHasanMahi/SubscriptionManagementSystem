@@ -8,10 +8,13 @@ import styles from "./Staff.module.css";
 import { user } from "../../Features/UserAuth/UserAuth";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { fetchStaff } from "../../Features/staff";
 const Staff = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(fetchStaff({ count: true }));
+
     dispatch(
       updateHeaderState({
         title1: `All Staff`,
