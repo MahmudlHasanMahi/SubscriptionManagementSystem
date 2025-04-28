@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
-from .models import Client,Representative,Service,ServicesCategory,SubscriptionType,SubscriptionPlan,Subscription,Feature,Recipt
+from .models import *
 from django.contrib.sessions.models import Session 
 
 
@@ -12,29 +12,41 @@ class ClientAdmin(admin.ModelAdmin):
 
     filter_horizontal = ("representative",)
 
-class SubscriptionTypeAdmin(admin.ModelAdmin):
-    model = SubscriptionType
-    list_display=["type","__period__"]
+class PeriodAdmin(admin.ModelAdmin):
+    model = Period
+    list_display=["name","days"]
+
+class PriceListAdmin(admin.ModelAdmin):
+    
+    model = PriceList
+    list_display=["__str__","Days","price"]
+    def Days(self,args):
+        return args.period.days * args.unit_period
+    
 
 class SubscriptionAdmin(admin.ModelAdmin):
     model = Subscription
-    readonly_fields = ["created"]
+    filter_horizontal=["active_plans","deactive_plans"]
+    list_display=["id","begin","end"]
+    # readonly_fields = ["start"]
 
 class SubscriptionPlanAdmin(admin.ModelAdmin):
     model = SubscriptionPlan
-    list_display = ["__str__","price"]
-    filter_horizontal = ["feature"]
+    list_display = ["__str__"]
+    # filter_horizontal = ["feature"]
+    
+class InvoiceAdmin(admin.ModelAdmin):
+    model = Invoice
+    list_display = ["client","status","created","due_date"]
+    
 
-class FeatureAdmin(admin.ModelAdmin):
-    model = Feature
-    list_display = ["name","servicesCategory"]
 
-
-admin.site.register(SubscriptionType,SubscriptionTypeAdmin)
+admin.site.register(PriceList,PriceListAdmin)
 admin.site.register(SubscriptionPlan,SubscriptionPlanAdmin)
 admin.site.register(Subscription,SubscriptionAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(Representative,RepresentativeAdmin)
-admin.site.register(Feature,FeatureAdmin,)
-admin.site.register((ServicesCategory,Service,Recipt,Session))
+admin.site.register(Period,PeriodAdmin)
+admin.site.register(Invoice,InvoiceAdmin)
+admin.site.register((ServicesCategory,Service,Session))
 
