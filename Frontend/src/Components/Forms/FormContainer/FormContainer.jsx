@@ -1,5 +1,4 @@
 import styles from "./FormContainer.module.css";
-import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 const FormContainer = ({ children, title, isLoading }) => {
   return (
@@ -9,8 +8,10 @@ const FormContainer = ({ children, title, isLoading }) => {
           <LinearProgress color="secondary" />
         </div>
       )}
-      <span>{title}</span>
-      <div>{children}</div>
+      <div className={`${styles["form"]} ${isLoading && styles["loading"]}`}>
+        <span>{title}</span>
+        <div>{children}</div>
+      </div>
     </div>
   );
 };
