@@ -1,10 +1,17 @@
 import styles from "./Button.module.css";
 import { Link } from "react-router-dom";
-function Button({ title, onSubmit, style, link = undefined, value = null }) {
+function Button({
+  title,
+  onSubmit,
+  style,
+  link = undefined,
+  value = null,
+  disable = false,
+}) {
   return (
     <button
-      type="submit"
-      className={styles["button"]}
+      type={!disable ? "submit" : "button"}
+      className={`${styles["button"]} ${disable && styles["disable"]}`}
       style={style}
       onSubmit={onSubmit}
     >
