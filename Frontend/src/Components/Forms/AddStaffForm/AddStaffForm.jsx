@@ -50,10 +50,10 @@ const AddStaffForm = () => {
       email: e.target.email.value,
       mobile: e.target.mobile.value,
       password: e.target.password.value,
-      active: isChecked.activateAccount,
+      active: e.target.activateAccount.checked,
       group: groups[property.selected].id,
     };
-
+    console.log(obj);
     createStaff(obj, navigate);
   };
 
@@ -106,7 +106,7 @@ const AddStaffForm = () => {
             icon={<ContentCopyOutlinedIcon />}
             required={true}
           />
-          <CheckBox value="activateAccount" setIsChecked={setIsChecked} />
+          <CheckBox name="activateAccount" />
           <div style={{ marginBlock: "2em 1em", width: "100%" }}>
             <Button title={"Create Staff"} />
           </div>
