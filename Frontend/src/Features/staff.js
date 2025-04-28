@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { USER_DOESNOT_EXISTS } from "../Utils/types";
+import { USER_DOESNOT_EXISTS, USER_UPDATED, USER_EXIST } from "../Utils/types";
 import getCookie from "../Utils/extractCSRFToken";
-import { notifyError } from "../Utils/nofify";
-import { create } from "@mui/material/styles/createTransitions";
+import { notifyError, notifySuccess } from "../Utils/nofify";
 const initialState = {
   staffState: null,
   isLoading: false,
@@ -25,19 +24,17 @@ export const fetchStaff = createAsyncThunk(
       const data = await res.json();
       return data;
     } catch (err) {
-      console.log(err);
+      
     }
   }
 );
 
-export const getGroups = createAsyncThunk("groups", async () => {
+export const getGroups = createAsyncThunk("groups/role", async () => {
   try {
     const res = await fetch("http://127.0.0.1:8000/user/groups", headers);
     const data = await res.json();
     return data;
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 });
 
 export const getStaff = createAsyncThunk("staff/get-staff", async (id) => {
@@ -61,7 +58,8 @@ export const editStaff = createAsyncThunk(
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (res.ok) return data;
+      if (res.ok) return notifySuccess(USER_UPDATED);
+      else return notifyError(USER_EXIST);
     } catch (err) {
       notifyError(err);
     }
