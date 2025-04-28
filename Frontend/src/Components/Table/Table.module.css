@@ -104,10 +104,11 @@
   align-items: center;
   justify-content: baseline;
 }
+
 .action::before {
   content: "";
   position: absolute;
-  width: 45%;
+  width: 40%;
   bottom: 25%;
   transition: 600ms;
   height: 2%;
