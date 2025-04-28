@@ -2,23 +2,29 @@
   height: fit-content;
   background-color: rgba(53, 71, 158, 0.4);
   border-radius: 1.25em;
-  padding: 1.4em 1.875em;
+
   position: relative;
   overflow: hidden;
 }
-.staffFromContainer > span {
+.loading {
+  opacity: 0.4;
+}
+.form {
+  padding: 1.4em 1.875em;
+}
+.form > span {
   display: block;
   font-size: 1.25em;
   font-weight: 800;
   margin-bottom: 2em;
 }
-.staffFromContainer > div {
+.form > div {
   display: flex;
   align-content: flex-start;
   flex-wrap: wrap;
   justify-content: space-between;
 }
-.staffFromContainer > div > div {
+.form > div > div {
   width: 46%;
   height: fit-content;
 }
