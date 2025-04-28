@@ -4,27 +4,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useDispatch } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
-import { useNavigate } from "react-router-dom";
+import ActionButton from "./ActionButton";
 const Table = ({ header, title, key_pair, page_size = 10, action }) => {
   const { ref, inView } = useInView();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const actionClick = (args) => {
-    navigate(`edit-staff/${args.id}`);
-  };
-  const ActionButton = (args) => {
-    return (
-      <td
-        className={styles["action"]}
-        onClick={() => {
-          actionClick(args);
-        }}
-      >
-        Edit
-      </td>
-    );
-  };
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["stafflist"],
@@ -68,7 +52,7 @@ const Table = ({ header, title, key_pair, page_size = 10, action }) => {
                         {key_pair.map((keys, idx) => {
                           return <td key={idx}>{staff[keys]}</td>;
                         })}
-                        {action && ActionButton(staff)}
+                        {action && <ActionButton title={"Edit"} json={staff}/>}
                       </tr>
                     </>
                   );
@@ -79,7 +63,7 @@ const Table = ({ header, title, key_pair, page_size = 10, action }) => {
                     {key_pair.map((keys, idx) => {
                       return <td key={idx}>{staff[keys]}</td>;
                     })}
-                    {action && ActionButton(staff)}
+                    {action && <ActionButton title={"Edit"} json={staff}/>}
                   </tr>
                 );
               });
