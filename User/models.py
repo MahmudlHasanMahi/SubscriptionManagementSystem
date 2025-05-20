@@ -1,8 +1,28 @@
 from django.db import models
 
-from django.contrib.auth.models import Group,AbstractBaseUser,PermissionsMixin
-from .managers import UserManager,AdminManager,ManagerManager,EmployeeManager
+from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
+from .managers import *
+
+
+
+class Profile(models.Model):
+    user = models.OneToOneField("User", null=True,on_delete=models.CASCADE)
+    class Meta:
+        abstract = True
         
+    def __str__(self):
+        return f'{self.user}'
+
+
+class AdminProfile(Profile):
+    pass
+
+class ManagerProfile(Profile):
+    pass
+
+class EmployeeProfile(Profile):
+    pass
+
 
 class User(AbstractBaseUser,PermissionsMixin):
 
@@ -10,12 +30,12 @@ class User(AbstractBaseUser,PermissionsMixin):
     name        =   models.CharField(max_length=64,blank=False,null=False)
     mobile      =   models.IntegerField(blank=True,null=True,unique=True)
     joined      =   models.DateField(auto_now_add=True)
-    groups      =   models.ForeignKey(Group,blank=True,null=True,on_delete=models.PROTECT)
+    groups      =   models.ForeignKey(Groups,blank=True,null=True,on_delete=models.PROTECT,related_name="User")
 
-    
+
     objects     =   UserManager()
 
-
+    
     is_active   =   models.BooleanField(verbose_name="Active",default=False)
     admin       =   models.BooleanField(default=False)
     staff       =   models.BooleanField(default=False)
@@ -27,25 +47,35 @@ class User(AbstractBaseUser,PermissionsMixin):
         pass
         permissions = []
         
-    def save(self,*args, **kwargs):
-        # print(self.model)
-        if self.name:
-            self.name = self.name.capitalize()
-        super().save(*args, **kwargs)
-        
+    
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
         # Simplest possible answer: Yes, always
 
-        return super().has_perm(perm,obj)
         # return True
-
+        return super().has_perm(perm,obj)
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+    def save(self,*args, **kwargs):
+        is_new = self._state.adding
+        if self.name:
+            self.name = self.name.capitalize()
+        print(args)
+        super().save(*args, **kwargs)
+        if not is_new or not self.groups :
+            return 
+        
+        if self.groups.name == "Manager":
+            ManagerProfile.objects.create(user=self)
+        elif self.groups.name == "Employee":
+            EmployeeProfile.objects.create(user=self)
+        else:
+            return 
+        
 
     @property
     def is_staff(self):
@@ -63,17 +93,23 @@ class Admin(User):
     class Meta:
         proxy = True
 
-
-
-
-    
 class Manager(User):
     objects = ManagerManager()
     class Meta:
         proxy = True
-
     
 class Employee(User):
     objects = EmployeeManager()
     class Meta:
         proxy = True
+
+
+
+
+
+    
+    
+    
+    
+    
+    

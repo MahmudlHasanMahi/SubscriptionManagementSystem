@@ -1,5 +1,4 @@
 import Body from "../../Body/Body";
-import styles from "./AddStaffForm.module.css";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../../Features/headerState";
 import { useEffect, useState, useMemo } from "react";
@@ -17,17 +16,19 @@ import { useNavigate } from "react-router-dom";
 import FormContainer from "../FormContainer/FormContainer";
 import CSRFProtect from "../../../Utils/CSRFProtect";
 const AddStaffForm = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [property, setProperty] = useState({
     show: false,
     selected: null,
   });
-  const [isChecked, setIsChecked] = useState({ activateAccount: false });
+
   const [groups, setGroups] = useState([]);
   const randomString = useMemo(() => {
     return GenerateString(10);
   }, []);
-  const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(
       updateHeaderState({
@@ -53,14 +54,12 @@ const AddStaffForm = () => {
       active: e.target.activateAccount.checked,
       group: groups[property.selected].id,
     };
-    console.log(obj);
     createStaff(obj, navigate);
   };
-
   return (
     <Body>
       <form onSubmit={onSubmit}>
-        <FormContainer title={"Add a new staff"}>
+        <FormContainer title={"Add a new staff"} >
           <CSRFProtect />
           <TextFields
             type={"text"}

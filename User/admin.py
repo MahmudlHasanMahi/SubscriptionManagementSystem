@@ -1,6 +1,6 @@
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserCreationForm
-from .models import User,Admin,Manager,Employee
+from .models import User,AdminProfile,ManagerProfile,EmployeeProfile,Employee,Admin,Manager,Groups
 from django.contrib.auth.models import Group
 from django.contrib import admin
 from django import forms
@@ -17,7 +17,7 @@ class CustomUserCreationForm(UserCreationForm):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
         return password2
-
+    
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
@@ -25,11 +25,13 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         
         return user
-
-
+    
+class Profileinline(admin.StackedInline):
+    model = ManagerProfile
 
 
 class UserAdmin(BaseUserAdmin):
+    inlines = [Profileinline]
     add_form = CustomUserCreationForm
 
     list_display = ["id","name","email",'mobile', 'groups','is_active']
@@ -56,31 +58,35 @@ class UserAdmin(BaseUserAdmin):
         
         return request.user.has_perm("can_view_user")
 
-  
-    
-
-
-
 class AdminAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
-        obj.groups = Group.objects.get(name="Admin")  
+        obj.groups = Groups.objects.get(name="Admin")  
         super().save_model(request, obj, form, change)
 
 class ManagerAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
-        obj.groups = Group.objects.get(name="Manager")    
+        print(obj.groups)
+        obj.groups = Groups.objects.get(name="Manager")    
         super().save_model(request, obj, form, change)
 
 class EmployeeAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
-        obj.groups = Group.objects.get(name="Employee")    
+        obj.groups = Groups.objects.get(name="Employee")    
         super().save_model(request, obj, form, change)
 
+class CustomGroupAdmin(admin.ModelAdmin):
+    filter_horizontal = ["permission"]
+    list_display = ['name','level']
 
+admin.site.unregister(Group)
 admin.site.register(User,UserAdmin)
+admin.site.register(AdminProfile)
+admin.site.register(ManagerProfile)
+admin.site.register(EmployeeProfile)
 admin.site.register(Manager,ManagerAdmin)
 admin.site.register(Employee,EmployeeAdmin)
 admin.site.register(Admin,AdminAdmin)
+admin.site.register(Groups,CustomGroupAdmin)
 
 
 

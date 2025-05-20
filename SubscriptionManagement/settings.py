@@ -128,8 +128,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
 CSRF_TRUSTED_ORIGINS = [
     "http://192.168.2.1:8080"
 ]

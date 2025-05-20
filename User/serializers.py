@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 from rest_framework import serializers
-from .models import User,Employee
+from .models import User, Employee,Manager,Admin
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
 class GroupSerializer(serializers.ModelSerializer):

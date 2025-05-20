@@ -5,9 +5,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth import login,authenticate
 from ManagementSystem.models import *
 from rest_framework.generics import ListAPIView 
-from .models import User,Admin,Manager,Employee
+from .models import User,Employee
 from rest_framework.decorators import APIView
-from django.contrib.auth.models import Group
+from .CustomGroup import Groups
 from rest_framework.response import Response 
 from .Pagination import StaffPagination
 from django.contrib.auth import logout
@@ -15,23 +15,24 @@ from rest_framework import status
 import time
 
 
-
+def staffQuery(user):
+    user_level = user.groups.level
+    return User.objects.filter(groups__level__gt=user_level)
 
 def groupPerm_Queries(user):
     group = user.groups;
 
     if getattr(group,"name",None) == "Admin":
-        return Group.objects.exclude(name="Admin")
+        return Groups.objects.exclude(name="Admin")
     
     elif getattr(group,"name",None) == "Manager":
-        return Group.objects.filter(name="Employee")
+        return Groups.objects.filter(name="Employee")
 
     return User.objects.none()
 
     
 def staffPerm_Queries(user,count=False):
     group = user.groups;
-
 
     if getattr(group,"name",None) == "Admin":
         return User.objects.filter(groups=group)
@@ -43,9 +44,6 @@ def staffPerm_Queries(user,count=False):
         return User.objects.none()
         
     return User.objects.none()
-
-
-
 
 class ResetPassword(APIView):
     permission_classes = (AllowAny,)
@@ -87,6 +85,7 @@ class CheckAuthentication(APIView):
     def get(self,request):
         user = request.user
         try:
+            
             if user.is_authenticated:
                 serializer = UserSerializer(user)
 
@@ -116,7 +115,6 @@ class SignUp(APIView):
                 if(user.last_login):
 
                     login(request,user)
-
                 serialized = UserSerializer(user)
                 return Response(serialized.data)
 
@@ -149,7 +147,7 @@ class StaffList(ListAPIView):
 
     def get_queryset(self):
         request = self.request
-        return staffPerm_Queries(request.user)
+        return staffQuery(request.user)
 
     def paginate_queryset(self, *args, **kwargs):
         request = self.request
@@ -209,6 +207,7 @@ class CreateStaffView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK)
+        time.sleep(1)
         return Response({"error":"User with same email or mobile number exists"},status=status.HTTP_409_CONFLICT)
 
 
@@ -216,6 +215,6 @@ class test(APIView):
     permission_classes=(AllowAny,)
     def get(self,request):
         # client = Client.objects.first().Subscription.prefetch_related("active_plans").explain()
-        group = Group.objects.filter(name="Manager")
+        group = Groups.objects.filter(name="Manager")
         print(group)
         return Response()

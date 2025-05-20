@@ -1,19 +1,20 @@
-from django.contrib.auth.models import BaseUserManager,Group  
+from django.contrib.auth.models import BaseUserManager  
+from .CustomGroup import Groups
 
 class UserManager(BaseUserManager):
 
-    def create_user(self,email,mobile,password=None,is_active=True):
+    def create_user(self,email,mobile,password=None, *args, **kwargs):
         if not email:
             raise ValueError("User must have an email address")
-        user = self.model(email = self.normalize_email(email),mobile=mobile)
+        user = self.model(email = self.normalize_email(email),mobile=mobile,*args, **kwargs)
         user.staff = True
-        user.is_active = is_active
+        user.is_active = kwargs.get("is_active",False)
         user.set_password(password)
         user.save(using=self._db)
         return user
+
     def create_superuser(self,email,mobile,password):
-        user = self.create_user(email,mobile,password)
-        user.is_superuser = True
+        user = self.create_user(email,mobile,password,is_superuser=True,is_active=True)
         user.save(using=self._db)
         return user
 
@@ -27,7 +28,9 @@ class UserManager(BaseUserManager):
         user.admin = True
         user.is_active = is_active
         user.set_password(password)
+
         user.save(using=self._db)
+
         return user
 
     def create_manager(self,email,mobile,password,name,is_active=False):
@@ -43,14 +46,16 @@ class UserManager(BaseUserManager):
         return user
 
     def change_group(self,group):
-        self.group = Group.objects.get(name=group) 
+        self.group = Groups.objects.get(name=group) 
 
+    def promote_user(to=None):
+        pass
 
     @classmethod
     def assignGroup(self,user,group_name):
         try:
-            group = Group.objects.get(name=group_name)
-        except Group.DoesNotExist:
+            group = Groups.objects.get(name=group_name)
+        except Groups.DoesNotExist:
             pass
         else:
             user.groups = group
@@ -58,16 +63,17 @@ class UserManager(BaseUserManager):
 
 
 class _StaffManager(UserManager):
-        def get_queryset(self,group_name,*args,**kwargs):
-            try:
-                query = super().get_queryset(*args, **kwargs)
-                group = Group.objects.get(name=group_name)
-            except Group.DoesNotExist:
-                return query.none()
-            else:
-                return query.filter(groups=group)
-    
+    def get_queryset(self,group_name,*args,**kwargs):
+        try:
+            query = super().get_queryset(*args, **kwargs)
+            group = Groups.objects.get(name=group_name)
+        except Groups.DoesNotExist:
+            return query.none()
+        else:
+            return query.filter(groups=group)
+
 class ManagerManager(_StaffManager):
+    
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset("Manager", *args, **kwargs)
 
