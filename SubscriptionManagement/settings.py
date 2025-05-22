@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'ManagementSystem',
 ]
 
+
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',

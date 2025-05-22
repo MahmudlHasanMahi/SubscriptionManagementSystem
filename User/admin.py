@@ -26,15 +26,17 @@ class CustomUserCreationForm(UserCreationForm):
         
         return user
     
-class Profileinline(admin.StackedInline):
+class AdminProfileInline(admin.StackedInline):
+    model = AdminProfile
+class ManagerProfileInline(admin.StackedInline):
     model = ManagerProfile
-
-
+class EmployeeProfileInline(admin.StackedInline):
+    model = EmployeeProfile
 class UserAdmin(BaseUserAdmin):
-    inlines = [Profileinline]
+  
     add_form = CustomUserCreationForm
 
-    list_display = ["id","name","email",'mobile', 'groups','is_active']
+    list_display = ["id","name","email",'mobile', 'is_active']
     list_filter = ['admin',]
     fieldsets = [
         [None, {'fields': ["email","mobile","name","is_active","admin","staff", "password"]}],
@@ -59,20 +61,28 @@ class UserAdmin(BaseUserAdmin):
         return request.user.has_perm("can_view_user")
 
 class AdminAdmin(UserAdmin):
+    inlines = [AdminProfileInline]
     def save_model(self, request, obj, form, change):
-        obj.groups = Groups.objects.get(name="Admin")  
+        obj._type = "Admin"
         super().save_model(request, obj, form, change)
+
 
 class ManagerAdmin(UserAdmin):
+    inlines = [ManagerProfileInline]
     def save_model(self, request, obj, form, change):
-        print(obj.groups)
-        obj.groups = Groups.objects.get(name="Manager")    
+        obj._type = "Manager"
         super().save_model(request, obj, form, change)
 
+
+
+
 class EmployeeAdmin(UserAdmin):
+    inlines = [EmployeeProfileInline]
     def save_model(self, request, obj, form, change):
-        obj.groups = Groups.objects.get(name="Employee")    
+        obj._type= "Employee"
         super().save_model(request, obj, form, change)
+
+
 
 class CustomGroupAdmin(admin.ModelAdmin):
     filter_horizontal = ["permission"]
