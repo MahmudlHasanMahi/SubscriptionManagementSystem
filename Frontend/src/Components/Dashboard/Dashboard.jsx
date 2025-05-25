@@ -57,7 +57,7 @@ const Dashboard = () => {
           />
         </div>
         <div className={styles["tables"]}>
-          <Table
+          {/* <Table
             header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
             key_pair={["name", "email", "group"]}
@@ -66,7 +66,7 @@ const Dashboard = () => {
             header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
             key_pair={["name", "email", "group"]}
-          />
+          /> */}
         </div>
       </div>
     </Body>

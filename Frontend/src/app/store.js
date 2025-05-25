@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import {setupListeners} from "@reduxjs/toolkit/query"
 import authSlice from "../Features/UserAuth/UserAuth";
 import navbarReducer from "../Features/Navbar";
 import headerReducer from "../Features/headerState";

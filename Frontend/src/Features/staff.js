@@ -6,6 +6,13 @@ const initialState = {
   staffState: null,
   isLoading: false,
 };
+// const initialState = {
+// staffState:{
+// statffList:[],
+
+//staffcount:0;
+// }
+// }
 
 const headers = {
   Accept: "application/json",
@@ -23,9 +30,7 @@ export const fetchStaff = createAsyncThunk(
       const res = await fetch(url, { headers });
       const data = await res.json();
       return data;
-    } catch (err) {
-      
-    }
+    } catch (err) {}
   }
 );
 
@@ -57,7 +62,7 @@ export const editStaff = createAsyncThunk(
         headers,
         body: JSON.stringify(body),
       });
-      const data = await res.json();
+
       if (res.ok) return notifySuccess(USER_UPDATED);
       else return notifyError(USER_EXIST);
     } catch (err) {

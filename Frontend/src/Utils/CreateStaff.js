@@ -7,7 +7,7 @@ import {
   INVALID_GROUP,
 } from "./types";
 
-const createStaff = async (body, navigate) => {
+const createStaff = async (body) => {
   try {
     const headers = {
       Accept: "application/json",
@@ -20,7 +20,7 @@ const createStaff = async (body, navigate) => {
       body: JSON.stringify(body),
     });
     if (res.ok) {
-      navigate("/staff");
+  
       return notifySuccess(USER_CREATED);
     } else if (res.status == 409) {
       return notifyError(USER_EXIST);

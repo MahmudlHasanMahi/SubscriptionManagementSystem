@@ -14,13 +14,14 @@ import { useNavigate } from "react-router-dom";
 import CSRFProtect from "../../../Utils/CSRFProtect";
 import Button from "../Buttons/Button";
 import CheckBox from "../CheckBox/CheckBox";
+import { useQueryClient } from "@tanstack/react-query";
 const EditStaff = () => {
+  const [hasChanged, setHasChanged] = useState({});
+  const [disable, setDisable] = useState(true);
   const { staffId } = useParams();
   const { isLoading, staffState } = useSelector(staff);
   const dispatch = useDispatch();
-  const [hasChanged, setHasChanged] = useState({});
-  const [disable, setDisable] = useState(true);
-
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(getStaff(staffId)).then((data) => {
@@ -37,9 +38,14 @@ const EditStaff = () => {
     e.preventDefault();
     const body = hasChanged;
     if (Object.keys(body).length !== 0) {
-      dispatch(editStaff({ staffId, body }));
+      dispatch(editStaff({ staffId, body })).then(() => {
+        queryClient.resetQueries({
+          queryKey: ["staff/fetchStaff"],
+          exact: true,
+        });
+        return navigate("/staff");
+      });
     }
-    return navigate("/staff");
   };
 
   const changed = (e) => {

@@ -6,7 +6,10 @@ const Select = ({ children, placeholder, title, property, setProperty }) => {
   return (
     <div className={styles["selectContainer"]}>
       <span className={styles["title"]}>{title}</span>
-      <div className={styles["select"]}>
+      <div
+        style={{ background: "#43526A", border: "0.5px solid rgb(78, 100, 134)" }}
+        className={styles["select"]}
+      >
         <SelectBtn
           setProperty={setProperty}
           current={children[property?.selected]}

@@ -9,12 +9,26 @@ import { user } from "../../Features/UserAuth/UserAuth";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { fetchStaff as fetchstaffutil } from "../../Utils/GetStaff";
 const Staff = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
+  
+  const queryObject = useInfiniteQuery({
+    queryKey: ["staff/fetchStaff"],
+    queryFn: fetchstaffutil,
+    initialPageParam: `http://127.0.0.1:8000/user/staff-list?page=${btoa(
+      null
+    )}&page_size=${10}`,
+    getNextPageParam: (props) => {
+      return props.next;
+    },
+    staleTime: 20 * 1000,
+  });
+
   useEffect(() => {
     dispatch(fetchStaff({ count: true }));
-
     dispatch(
       updateHeaderState({
         title1: `All Staff`,
@@ -39,6 +53,7 @@ const Staff = () => {
               // limit={{}}
               // url={{}}
               action={true}
+              queryObject={queryObject}
             />
           </div>
         </>

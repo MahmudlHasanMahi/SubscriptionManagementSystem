@@ -16,7 +16,7 @@ import time
 
 
 def staffQuery(user):
-    user_level = user.groups.level
+    user_level = user.groups.first().level
     return User.objects.filter(groups__level__gt=user_level)
 
 def groupPerm_Queries(user):
@@ -113,9 +113,9 @@ class SignUp(APIView):
 
             if user:
                 if(user.last_login):
-
                     login(request,user)
                 serialized = UserSerializer(user)
+                print(serialized.data)
                 return Response(serialized.data)
 
             return Response({"error":"Invalid password or email"},status = status.HTTP_401_UNAUTHORIZED)
@@ -166,8 +166,9 @@ class StaffList(ListAPIView):
 class GroupsView(APIView):
     permission_classes=(IsAuthenticated,)
     def get(self,request):
-        query = groupPerm_Queries(request.user)
-        serializer = GroupSerializer(query,many=True)
+        level = request.user.groups.first().level
+        queryset = Groups.objects.filter(level__gt=level)
+        serializer = GroupSerializer(queryset,many=True)
         return Response(serializer.data)
 
 class StaffView(APIView):

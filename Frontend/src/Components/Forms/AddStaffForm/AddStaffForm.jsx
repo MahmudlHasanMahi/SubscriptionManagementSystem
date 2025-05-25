@@ -15,9 +15,12 @@ import { notifyError } from "../../../Utils/nofify";
 import { useNavigate } from "react-router-dom";
 import FormContainer from "../FormContainer/FormContainer";
 import CSRFProtect from "../../../Utils/CSRFProtect";
+import { useQueryClient } from "@tanstack/react-query";
+
 const AddStaffForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [property, setProperty] = useState({
     show: false,
@@ -54,12 +57,15 @@ const AddStaffForm = () => {
       active: e.target.activateAccount.checked,
       group: groups[property.selected].id,
     };
-    createStaff(obj, navigate);
+    createStaff(obj).then(() => {
+      queryClient.resetQueries({ queryKey: ["staff/fetchStaff"], exact: true });
+      navigate("/staff");
+    });
   };
   return (
     <Body>
       <form onSubmit={onSubmit}>
-        <FormContainer title={"Add a new staff"} >
+        <FormContainer title={"Add a new staff"}>
           <CSRFProtect />
           <TextFields
             type={"text"}

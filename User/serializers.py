@@ -1,12 +1,14 @@
-from django.contrib.auth.models import Group
+# from django.contrib.auth.models import Group
+from .CustomGroup import Groups
 from rest_framework import serializers
 from .models import User, Employee,Manager,Admin
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
+        model = Groups
         fields = ["id","name"]
+
 
 
 
@@ -25,15 +27,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def get_group(self,obj):
-        group = obj.groups
+        group = obj.groups.first()
 
         if group:
             return group.name
         return None
 
     def get_group_pk(self,obj):
-        group = obj.groups
-
+        group = obj.groups.first()
         if group:
             return group.pk
         return None 
@@ -59,15 +60,13 @@ class CreateUserSerializer(serializers.ModelSerializer):
         mobile = validated_data.get("mobile")
         is_active = validated_data.get("active")
 
-        group = Group.objects.get(pk=group_id)
-        print(is_active)
-        print(getattr(group,"name",None))
+        group = Groups.objects.get(pk=group_id)
         if getattr(group,"name",None) == "Admin":
             return User.objects.create_admin(email,mobile,password,name,is_active)
         elif getattr(group,"name",None) == "Manager":
             return User.objects.create_manager(email,mobile,password,name,is_active)
         elif getattr(group,"name",None) =="Employee":
-            return User.objects.create_employee(email,mobile,password,name,is_active)
+            return User.objects.create_employee(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
 
 
 
