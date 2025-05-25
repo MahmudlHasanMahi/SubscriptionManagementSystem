@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Staff.module.css";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
@@ -9,6 +9,10 @@ import { useSelector } from "react-redux";
 import { staffState } from "../../Features/staff";
 const StaffPanel = () => {
   const staff = useSelector(staffState);
+  const [property, setProperty] = useState({
+    show: false,
+    selected: null,
+  });
   return (
     <div className={styles["staffPanel"]}>
       <NumericTextBox
@@ -22,7 +26,12 @@ const StaffPanel = () => {
         style={{ margin: 0, width: "20em" }}
       />
       <div style={{ width: "15em" }}>
-        <Select placeholder={"Select type"} title={"Filter By"}>
+        <Select
+          placeholder={"Select type"}
+          title={"Filter By"}
+          property={property}
+          setProperty={setProperty}
+        >
           <SelectOption title={"title-1"} />
           <SelectOption title={"title-2"} />
           <SelectOption title={"title-3"} />
