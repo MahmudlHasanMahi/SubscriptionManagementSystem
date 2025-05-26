@@ -1,21 +1,10 @@
 import { useEffect } from "react";
 import styles from "./Table.module.css";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { useDispatch } from "react-redux";
-// import { fetchStaff } from "../../Features/staff";
 import ActionButton from "./ActionButton";
-import fetchStaff from "../../Utils/GetStaff";
-const Table = ({
-  header,
-  title,
-  key_pair,
-  page_size = 10,
-  action,
-  queryObject,
-}) => {
+import LinearProgress from "@mui/material/LinearProgress";
+const Table = ({ header, title, key_pair, action, queryObject }) => {
   const { ref, inView } = useInView();
-  const dispatch = useDispatch();
   const data = queryObject.data;
   useEffect(() => {
     queryObject.fetchNextPage();
@@ -23,6 +12,9 @@ const Table = ({
 
   return (
     <div className={styles["tableContainer"]}>
+      <div className={styles["progressContainer"]}>
+        {queryObject.isLoading && <LinearProgress color="secondary" />}
+      </div>
       <div>
         <span className={styles["title"]}>{title}</span>
         <table className={styles["table"]}>
@@ -38,15 +30,14 @@ const Table = ({
               return item.results.map((staff, idx) => {
                 if (item.results.length == idx + 1) {
                   return (
-                    <>
-                      <tr ref={ref} key={idx}>
-                        <td>{idx + 1}</td>
-                        {key_pair.map((keys, idx) => {
-                          return <td key={idx}>{staff[keys]}</td>;
-                        })}
-                        {action && <ActionButton title={"Edit"} json={staff} />}
-                      </tr>
-                    </>
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      {key_pair.map((keys, idx) => {
+                        return <td key={idx}>{staff[keys]}</td>;
+                      })}
+                      {action && <ActionButton title={"Edit"} json={staff} />}
+                      <td ref={ref}></td>
+                    </tr>
                   );
                 }
                 return (
