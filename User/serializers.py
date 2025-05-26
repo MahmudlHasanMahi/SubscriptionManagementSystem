@@ -14,26 +14,26 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    group = serializers.SerializerMethodField(read_only=True)
-    group_pk = serializers.SerializerMethodField(read_only=True)
+    groups = serializers.SerializerMethodField(read_only=True)
+    groups_pk = serializers.SerializerMethodField(read_only=True)
     staff = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = User
-        fields =  ["id","email","name","mobile","last_login","group","group_pk","is_active","staff"]
+        fields =  ["id","email","name","mobile","last_login","groups","groups_pk","is_active","staff"]
        
       
     def get_staff(self,obj):
         return Employee.objects.count()
 
 
-    def get_group(self,obj):
+    def get_groups(self,obj):
         group = obj.groups.first()
 
         if group:
             return group.name
         return None
 
-    def get_group_pk(self,obj):
+    def get_groups_pk(self,obj):
         group = obj.groups.first()
         if group:
             return group.pk
