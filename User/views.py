@@ -147,13 +147,18 @@ class StaffList(ListAPIView):
 
     def get_queryset(self):
         request = self.request
+        filterby = request.GET.get("filterby")
+        if filterby:
+            data = request.GET.get("data")
+            filterby = {f"{filterby}__icontains":data}
+            print(filterby)
+            return staffQuery(request.user).filter(**filterby)
         return staffQuery(request.user)
 
     def paginate_queryset(self, *args, **kwargs):
         request = self.request
         page_size = request.GET.get("page_size")
         self.pagination_class.set_page_size(page_size)
-      
         return super().paginate_queryset(*args,**kwargs)
 
     def list(self, request, *args, **kwargs):
