@@ -1,15 +1,16 @@
 import styles from "./Select.module.css";
 
-const OptionWrapper = ({ setProperty, active, idx, option }) => {
+const OptionWrapper = ({ setProperty, setShow, active, idx, option }) => {
   return (
     <div
       className={`${styles["optionContainer"]} ${active && styles["active"]}`}
       onClick={() => {
+        setShow(false);
         setProperty(() => {
           if (active) {
-            return { show: false, selected: null };
+            return { selected: null };
           }
-          return { show: false, selected: idx };
+          return { selected: idx };
         });
       }}
       key={idx}

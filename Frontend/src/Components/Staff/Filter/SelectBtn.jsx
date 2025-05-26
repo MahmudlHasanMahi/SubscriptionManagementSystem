@@ -1,15 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./Select.module.css";
 import Arrow from "../../../svg/Arrow";
 import { motion } from "motion/react";
-const SelectBtn = ({ current, placeholder, property, setProperty }) => {
+const SelectBtn = ({ current, placeholder, property, setShow }) => {
   return (
     <motion.div
       className={styles["selectBtn"]}
       onClick={() => {
-        setProperty((prev) => {
-          return { ...prev, show: !prev.show };
-        });
+        setShow((prev) => !prev);
       }}
     >
       {current != null ? (

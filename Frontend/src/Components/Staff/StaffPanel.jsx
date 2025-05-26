@@ -7,36 +7,35 @@ import Select from "./Filter/Select";
 import SelectOption from "./Filter/SelectOption";
 import { useSelector } from "react-redux";
 import { staffState } from "../../Features/staff";
-const StaffPanel = () => {
+const StaffPanel = ({ filter, setfilter, setinput, fieldnames }) => {
   const staff = useSelector(staffState);
-  const [property, setProperty] = useState({
-    show: false,
-    selected: null,
-  });
   return (
     <div className={styles["staffPanel"]}>
       <NumericTextBox
         title1={staff.staffState?.count}
         title2={"Total number of staff"}
       />
+
       <TextFields
         type={"text"}
-        placeholder="Enter search word"
+        placeholder={
+          filter.selected == null ? "Please select filter" : "Enter search word"
+        }
         label={"Quick search a staff"}
         style={{ margin: 0, width: "20em" }}
+        setinput={setinput}
+        disabled={filter.selected == null}
       />
       <div style={{ width: "15em" }}>
         <Select
           placeholder={"Select type"}
           title={"Filter By"}
-          property={property}
-          setProperty={setProperty}
+          property={filter}
+          setProperty={setfilter}
         >
-          <SelectOption title={"title-1"} />
-          <SelectOption title={"title-2"} />
-          <SelectOption title={"title-3"} />
-          <SelectOption title={"title-4"} />
-          <SelectOption title={"title-5"} />
+          {fieldnames.map((data, idx) => (
+            <SelectOption key={idx} title={data} />
+          ))}
         </Select>
       </div>
       <Button

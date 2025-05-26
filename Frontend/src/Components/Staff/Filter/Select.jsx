@@ -2,22 +2,26 @@ import styles from "./Select.module.css";
 import SelectBtn from "./SelectBtn";
 import OptionWrapper from "./OptionWrapper";
 import { motion, AnimatePresence } from "motion/react";
+import { useState } from "react";
 const Select = ({ children, placeholder, title, property, setProperty }) => {
+  const [show, setShow] = useState(false);
   return (
     <div className={styles["selectContainer"]}>
       <span className={styles["title"]}>{title}</span>
       <div
-        style={{ background: "#43526A", border: "0.5px solid rgb(78, 100, 134)" }}
+        style={{
+          background: "#43526A",
+          border: "0.5px solid rgb(78, 100, 134)",
+        }}
         className={styles["select"]}
       >
         <SelectBtn
-          setProperty={setProperty}
+          setShow={setShow}
           current={children[property?.selected]}
           placeholder={placeholder}
-          property={property}
         />
         <AnimatePresence>
-          {property?.show && (
+          {show && (
             <motion.div
               className={styles["optionsContainer"]}
               animate={{
@@ -33,6 +37,7 @@ const Select = ({ children, placeholder, title, property, setProperty }) => {
                   <OptionWrapper
                     active={property?.selected == idx}
                     setProperty={setProperty}
+                    setShow={setShow}
                     idx={idx}
                     key={idx}
                     option={option}

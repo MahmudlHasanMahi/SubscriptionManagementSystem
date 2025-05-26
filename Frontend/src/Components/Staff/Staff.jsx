@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Body from "../Body/Body";
 import { updateHeaderState } from "../../Features/headerState";
 import { useDispatch } from "react-redux";
@@ -9,24 +9,20 @@ import { user } from "../../Features/UserAuth/UserAuth";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchStaff as fetchstaffutil } from "../../Utils/GetStaff";
+import useStaffQuery from "../../Hooks/useStaffQuery";
 const Staff = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
-  
-  const queryObject = useInfiniteQuery({
-    queryKey: ["staff/fetchStaff"],
-    queryFn: fetchstaffutil,
-    initialPageParam: `http://127.0.0.1:8000/user/staff-list?page=${btoa(
-      null
-    )}&page_size=${10}`,
-    getNextPageParam: (props) => {
-      return props.next;
-    },
-    staleTime: 20 * 1000,
+  const [input, setInput] = useState("");
+  const [filter, setFilter] = useState({
+    selected: null,
   });
 
+  const fieldnames = ["name", "email", "groups", "mobile"];
+  const staffObject = useStaffQuery({
+    filterby: fieldnames[filter.selected],
+    data: input,
+  });
   useEffect(() => {
     dispatch(fetchStaff({ count: true }));
     dispatch(
@@ -43,17 +39,22 @@ const Staff = () => {
         <Navigate to="/dashboard" />
       ) : (
         <>
-          <StaffPanel />
-          <div className={styles["tableContainer"]}>
+          <StaffPanel
+            filter={filter}
+            setfilter={setFilter}
+            setinput={setInput}
+            fieldnames={fieldnames}
+          />
+          <div className={styles["tableContainer"]} setInput={setInput}>
             <Table
               header={["S/N", "name", "email", "group", "mobile"]}
-              key_pair={["name", "email", "group", "mobile"]}
+              key_pair={fieldnames}
               title={"Staff List"}
               endpont={{}}
               // limit={{}}
               // url={{}}
               action={true}
-              queryObject={queryObject}
+              queryObject={staffObject}
             />
           </div>
         </>
