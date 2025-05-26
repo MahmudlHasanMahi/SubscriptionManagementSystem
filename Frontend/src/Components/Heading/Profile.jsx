@@ -7,9 +7,8 @@ import Arrow from "../../svg/Arrow";
 import { useSelector } from "react-redux";
 import { user } from "../../Features/UserAuth/UserAuth";
 const Profile = () => {
-  const { name, group } = useSelector(user);
+  const { name, groups } = useSelector(user);
   const [isClicked, setIsClicked] = useState(false);
-
   return (
     <div
       className={styles["profile"]}
@@ -20,7 +19,7 @@ const Profile = () => {
       <img src={PIC} />
       <div className={styles["userinfo"]}>
         <span>{name}</span>
-        <span>{group}</span>
+        <span>{groups}</span>
       </div>
       <Arrow color={"white"} />
       <AnimatePresence>{isClicked && <Dropdown />}</AnimatePresence>
