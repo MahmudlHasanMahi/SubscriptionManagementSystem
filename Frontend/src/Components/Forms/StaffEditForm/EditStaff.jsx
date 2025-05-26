@@ -15,6 +15,7 @@ import CSRFProtect from "../../../Utils/CSRFProtect";
 import Button from "../Buttons/Button";
 import CheckBox from "../CheckBox/CheckBox";
 import { useQueryClient } from "@tanstack/react-query";
+
 const EditStaff = () => {
   const [hasChanged, setHasChanged] = useState({});
   const [disable, setDisable] = useState(true);
@@ -88,7 +89,7 @@ const EditStaff = () => {
             type={"text"}
             name={"group"}
             label={"Group"}
-            value={staffState?.group}
+            value={staffState?.groups}
           />
           <CheckBox defaultChecked={staffState?.is_active} name="is_active" />
           <div
@@ -100,7 +101,11 @@ const EditStaff = () => {
             }}
           >
             <Button disable={disable} title={"Save"} />
-            <Button title={"Cancel"} style={{ background: "#ffffff3b" }} />
+            <Button
+              title={"Cancel"}
+              style={{ background: "#ffffff3b" }}
+              link={"/staff"}
+            />
           </div>
         </FormContainer>
       </form>

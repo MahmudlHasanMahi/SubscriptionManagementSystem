@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./TextFields.module.css";
 import { notifyDefault } from "../../../Utils/nofify";
+import { useDebouncedCallback } from "use-debounce";
 const TextFields = ({
   type,
   label,
@@ -11,9 +12,14 @@ const TextFields = ({
   value,
   icon,
   editField = false,
+  setinput = null,
+  disabled = false,
 }) => {
   const [clipboard, setClipBoard] = useState(null);
   const [edit, setEdit] = useState(false);
+  const onchange = useDebouncedCallback((value) => {
+    setinput(value);
+  }, 500);
   return (
     <div className={styles["textField"]}>
       <label htmlFor={type} value={label} className={styles["label"]}>
@@ -26,15 +32,36 @@ const TextFields = ({
           if (editField) setEdit(true);
         }}
       >
-        <input
-          style={{ textAlign: !edit && editField && "center" }}
-          type={type}
-          name={name}
-          required={required}
-          placeholder={placeholder}
-          defaultValue={value}
-          readOnly={value && !edit ? true : false}
-        />
+        {setinput ? (
+          <input
+            disabled={disabled}
+            onChange={(e) => onchange(e.target.value)}
+            style={{
+              cursor: disabled && "not-allowed",
+              textAlign: !edit && editField && "center",
+            }}
+            type={type}
+            name={name}
+            required={required}
+            placeholder={placeholder}
+            defaultValue={value}
+            readOnly={value && !edit ? true : false}
+          />
+        ) : (
+          <input
+            disabled={disabled}
+            style={{
+              cursor: disabled && "not-allowed",
+              textAlign: !edit && editField && "center",
+            }}
+            type={type}
+            name={name}
+            required={required}
+            placeholder={placeholder}
+            defaultValue={value}
+            readOnly={value && !edit ? true : false}
+          />
+        )}
         {icon && (
           <span
             onClick={async () => {

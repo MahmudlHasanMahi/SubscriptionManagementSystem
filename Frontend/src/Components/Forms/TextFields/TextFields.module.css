@@ -24,12 +24,13 @@
 .inputField > input {
   border: none;
   outline: none;
-  padding: 1.4em 0em 1.4em 1em;
+  padding: 1em 0em 1em 1em;
   background-color: rgba(0, 0, 0, 0);
   padding: auto;
   color: white;
-  font-size: 0.8em;
+  font-size: 1em;
   width: 100%;
+
 }
 .inputField span {
   display: flex;

@@ -1,7 +1,10 @@
-import Body from "../../Body/Body";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../../Features/headerState";
 import { useEffect, useState, useMemo } from "react";
+import { notifyError } from "../../../Utils/nofify";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import Body from "../../Body/Body";
 import TextFields from "../TextFields/TextFields";
 import Select from "../../Staff/Filter/Select";
 import SelectOption from "../../Staff/Filter/SelectOption";
@@ -11,11 +14,8 @@ import GenerateString from "../../../Utils/randomString";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import createStaff from "../../../Utils/CreateStaff";
 import getGroups from "../../../Utils/GetGroups";
-import { notifyError } from "../../../Utils/nofify";
-import { useNavigate } from "react-router-dom";
 import FormContainer from "../FormContainer/FormContainer";
 import CSRFProtect from "../../../Utils/CSRFProtect";
-import { useQueryClient } from "@tanstack/react-query";
 
 const AddStaffForm = () => {
   const dispatch = useDispatch();
@@ -58,7 +58,9 @@ const AddStaffForm = () => {
       group: groups[property.selected].id,
     };
     createStaff(obj).then(() => {
-      queryClient.resetQueries({ queryKey: ["staff/fetchStaff"], exact: true });
+      queryClient.removeQueries({
+        queryKey: ["staff/fetchStaff"],
+      });
       navigate("/staff");
     });
   };
@@ -112,8 +114,20 @@ const AddStaffForm = () => {
             required={true}
           />
           <CheckBox name="activateAccount" />
-          <div style={{ marginBlock: "2em 1em", width: "100%" }}>
+          <div
+            style={{
+              marginBlock: "2em 1em",
+              width: "100%",
+              display: "flex",
+              gap: "1em",
+            }}
+          >
             <Button title={"Create Staff"} />
+            <Button
+              title={"Cancel"}
+              style={{ background: "#ffffff3b" }}
+              link={"/staff"}
+            />
           </div>
         </FormContainer>
       </form>
