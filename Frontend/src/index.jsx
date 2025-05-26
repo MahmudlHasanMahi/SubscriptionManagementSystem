@@ -13,14 +13,14 @@ const root = createRoot(rootElement);
 const queryClient = new QueryClient();
 
 root.render(
-  <StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename="yasier/">
-          <ToastContainer autoClose={3000} closeOnClick={true} theme="dark" />
-          <App />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </Provider>
-  </StrictMode>
+  // <StrictMode>
+  <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter basename="yasier/">
+        <ToastContainer autoClose={3000} closeOnClick={true} theme="dark" />
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </Provider>
+  // </StrictMode>
 );
