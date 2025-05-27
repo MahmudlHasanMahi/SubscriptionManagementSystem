@@ -17,33 +17,11 @@ import time
 
 def staffQuery(user):
     user_level = user.groups.first().level
-    return User.objects.filter(groups__level__gt=user_level)
+    return User.objects.filter(groups__level__gte=user_level)
 
-def groupPerm_Queries(user):
-    group = user.groups;
 
-    if getattr(group,"name",None) == "Admin":
-        return Groups.objects.exclude(name="Admin")
-    
-    elif getattr(group,"name",None) == "Manager":
-        return Groups.objects.filter(name="Employee")
 
-    return User.objects.none()
 
-    
-def staffPerm_Queries(user,count=False):
-    group = user.groups;
-
-    if getattr(group,"name",None) == "Admin":
-        return User.objects.filter(groups=group)
-    
-    elif getattr(group,"name",None) == "Manager":
-        return Employee.objects.all()
-
-    elif getattr(group,"name",None) =="Employee":
-        return User.objects.none()
-        
-    return User.objects.none()
 
 class ResetPassword(APIView):
     permission_classes = (AllowAny,)
@@ -150,8 +128,11 @@ class StaffList(ListAPIView):
         filterby = request.GET.get("filterby")
         if filterby:
             data = request.GET.get("data")
-            filterby = {f"{filterby}__icontains":data}
-            print(filterby)
+            if filterby == "groups":
+                filterby = {f"{filterby}__name__icontains":data}
+            else:
+                filterby = {f"{filterby}__icontains":data}
+
             return staffQuery(request.user).filter(**filterby)
         return staffQuery(request.user)
 
@@ -172,7 +153,7 @@ class GroupsView(APIView):
     permission_classes=(IsAuthenticated,)
     def get(self,request):
         level = request.user.groups.first().level
-        queryset = Groups.objects.filter(level__gt=level)
+        queryset = Groups.objects.filter(level__gte=level)
         serializer = GroupSerializer(queryset,many=True)
         return Response(serializer.data)
 
@@ -181,6 +162,7 @@ class StaffView(APIView):
     serializer_class = UserSerializer
     def get(self,request,id):
         try:
+
             user = User.objects.get(pk=id)
             serializer = self.serializer_class(user)
             time.sleep(0.5)
@@ -189,32 +171,25 @@ class StaffView(APIView):
             return Response({"err":"User does not exists"},status=status.HTTP_404_NOT_FOUND)
 
 
-    def post(self,request,id):
-        user = User.objects.get(pk=id)
-        serializer = CreateUserSerializer(instance=user,data=request.data,partial=True)
-        print(serializer)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({},status=status.HTTP_200_OK)
-
-        return Response({"err":"User credientail error"},status=status.HTTP_409_CONFLICT)
-            
-        
-
-class CreateStaffView(APIView):
-    permission_classes=(IsAuthenticated,)
-
     def post(self,request):
         data = request.data
-        email = data.get("email")
-        mobile = data.get("mobile")
-        
+        print(data)
         serializer = CreateUserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK)
         time.sleep(1)
         return Response({"error":"User with same email or mobile number exists"},status=status.HTTP_409_CONFLICT)
+
+    def patch(self,request,id):
+        serializer = self.serializer_class(User.objects.get(id=id),data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_409_CONFLICT)
+
+
 
 
 class test(APIView):
