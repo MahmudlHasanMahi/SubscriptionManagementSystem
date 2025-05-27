@@ -9,10 +9,6 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Groups
         fields = ["id","level","name"]
 
-
-
-
-
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SerializerMethodField(read_only=True)
     groups_pk = serializers.SerializerMethodField(read_only=True)
