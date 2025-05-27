@@ -7,7 +7,7 @@ from django.core.validators import validate_email
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Groups
-        fields = ["id","name"]
+        fields = ["id","level","name"]
 
 
 
@@ -38,29 +38,50 @@ class UserSerializer(serializers.ModelSerializer):
         if group:
             return group.pk
         return None 
-    
 
-
-
-class CreateUserSerializer(serializers.ModelSerializer): 
-    group = serializers.CharField()
-    active = serializers.BooleanField()
-
-    class Meta:
-        model = User
-        fields =  ["email","name","mobile","group","password","is_active","active"]
-
-       
-
-    def create(self,validated_data):
+    def create(self, validated_data):
         group_id = validated_data.get("group")
         name = validated_data.get("name")
         email = validated_data.get("email")
         password = validated_data.get("password")
         mobile = validated_data.get("mobile")
         is_active = validated_data.get("active")
+        print(validated_data)
 
         group = Groups.objects.get(pk=group_id)
+        if getattr(group,"name",None) == "Admin":
+            return User.objects.create_admin(email,mobile,password,name,is_active)
+        elif getattr(group,"name",None) == "Manager":
+            return User.objects.create_manager(email,mobile,password,name,is_active)
+        elif getattr(group,"name",None) =="Employee":
+            return User.objects.create_employee(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
+
+    def update(self, instance, validated_data):
+        print(instance,validated_data)
+
+        return super().update(instance, validated_data)
+
+
+
+class CreateUserSerializer(serializers.ModelSerializer): 
+    groups_level = serializers.CharField()
+    active = serializers.BooleanField()
+
+    class Meta:
+        model = User
+        fields =  ["email","name","mobile","groups_level","password","is_active","active"]
+
+       
+
+    def create(self,validated_data):
+        groups_level = validated_data.get("groups_level")
+        name = validated_data.get("name")
+        email = validated_data.get("email")
+        password = validated_data.get("password")
+        mobile = validated_data.get("mobile")
+        is_active = validated_data.get("active")
+
+        group = Groups.objects.get(level=groups_level)
         if getattr(group,"name",None) == "Admin":
             return User.objects.create_admin(email,mobile,password,name,is_active)
         elif getattr(group,"name",None) == "Manager":
