@@ -13,7 +13,9 @@ const Table = ({ header, title, key_pair, action, queryObject }) => {
   return (
     <div className={styles["tableContainer"]}>
       <div className={styles["progressContainer"]}>
-        {queryObject.isLoading && <LinearProgress color="secondary" />}
+        {(queryObject.isLoading || queryObject.isFetching) && (
+          <LinearProgress color="secondary" />
+        )}
       </div>
       <div>
         <span className={styles["title"]}>{title}</span>

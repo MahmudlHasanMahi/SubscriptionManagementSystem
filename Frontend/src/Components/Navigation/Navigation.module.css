@@ -1,9 +1,12 @@
 .navigation {
-  grid-row: span 6 / span 6;
   font-family: "Nunito", serif;
   font-optical-sizing: auto;
   display: flex;
   flex-direction: column;
+  box-shadow: 15px 0px 30px -10px rgba(89, 89, 89, 0.44);
+  -webkit-box-shadow: 15px 0px 30px -10px rgba(89, 89, 89, 0.44);
+  -moz-box-shadow: 15px 0px 30px -10px rgba(89, 89, 89, 0.44);
+  /* display: none; */
 }
 .logoContainer {
   display: flex;

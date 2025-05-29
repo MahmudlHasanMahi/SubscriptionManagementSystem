@@ -13,7 +13,6 @@
   width: 100%;
   left: 0;
   top: 0;
-
 }
 
 .tableContainer > div:last-child {
@@ -85,6 +84,7 @@
   color: rgb(205, 237, 255);
   font-weight: 800;
   font-size: 1.1em;
+  padding-left: 0.1em;
 }
 
 .table > tbody > tr {
@@ -93,7 +93,8 @@
 .table > tbody td {
   font-weight: 400;
   padding-block: 1.4em 1em;
-  gap: 0;
+  padding-right: 10%;
+  /* border: solid red; */
 }
 .action {
   background: rgb(216, 158, 219);

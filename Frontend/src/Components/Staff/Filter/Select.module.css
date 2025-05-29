@@ -26,18 +26,12 @@
   position: absolute;
   border-radius: 5px;
   width: 100%;
-  /* border: 1px solid #d0d0d0; */
   overflow-y: scroll;
   top: 4em;
   background-color: rgba(29, 29, 29, 0.738);
   z-index: 2;
-  scrollbar-width: none;
-}
-
-.optionsContainer::-webkit-scrollbar-track {
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
-  background-clip: padding-box;
+  scrollbar-color: rgb(53, 68, 71) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
 }
 
 .option,
