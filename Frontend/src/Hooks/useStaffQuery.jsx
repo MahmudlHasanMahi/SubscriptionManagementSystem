@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import fetchStaff from "../Utils/GetStaff";
 const useStaffQuery = ({ filterby, data }) => {
@@ -6,7 +5,6 @@ const useStaffQuery = ({ filterby, data }) => {
   const pagination = `?page=${btoa(null)}&page_size=${10}`;
   const filterParams = filterby ? `&filterby=${filterby}&data=${data}` : "";
   const url = baseurl + pagination + filterParams;
-
   const staffObject = useInfiniteQuery({
     queryKey: ["staff/fetchStaff", data],
     queryFn: fetchStaff,

@@ -1,7 +1,19 @@
 .home {
   color: white;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+
+  display: flex;
   height: 100vh;
+  overflow: hidden;
+}
+.content {
+  overflow-y: scroll;
+  width: 100%;
+  
+}
+.content:last-child::-webkit-scrollbar {
+  width: 4px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  /* background: rgb(41, 174, 209); */
 }

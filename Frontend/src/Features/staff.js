@@ -58,7 +58,7 @@ export const editStaff = createAsyncThunk(
   async ({ staffId, body }) => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/user/staff/${staffId}`, {
-        method: "POST",
+        method: "PATCH",
         headers,
         body: JSON.stringify(body),
       });

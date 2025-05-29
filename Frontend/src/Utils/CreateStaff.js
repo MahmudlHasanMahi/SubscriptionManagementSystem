@@ -14,13 +14,12 @@ const createStaff = async (body) => {
       "Content-Type": "application/json",
       "X-CSRFToken": getCookie("csrftoken"),
     };
-    const res = await fetch("http://127.0.0.1:8000/user/create-staff", {
+    const res = await fetch("http://127.0.0.1:8000/user/staff", {
       headers,
       method: "POST",
       body: JSON.stringify(body),
     });
     if (res.ok) {
-  
       return notifySuccess(USER_CREATED);
     } else if (res.status == 409) {
       return notifyError(USER_EXIST);
