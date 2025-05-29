@@ -26,7 +26,7 @@ const AddStaffForm = () => {
     show: false,
     selected: null,
   });
-
+  console.log(property);
   const [groups, setGroups] = useState([]);
   const randomString = useMemo(() => {
     return GenerateString(10);
@@ -55,8 +55,9 @@ const AddStaffForm = () => {
       mobile: e.target.mobile.value,
       password: e.target.password.value,
       active: e.target.activateAccount.checked,
-      group: groups[property.selected].id,
+      groups_level: groups[property.selected].level,
     };
+    console.log(obj);
     createStaff(obj).then(() => {
       queryClient.removeQueries({
         queryKey: ["staff/fetchStaff"],
