@@ -1,10 +1,12 @@
 .heading {
-  grid-column: span 5 / span 5;
+  /* grid-column: span 5 / span 5; */
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-family: "Nunito", serif;
   padding-inline-start: 3.3em;
+  height: 8em;
+  margin-bottom: 2em;
 }
 
 .profile {
@@ -35,6 +37,7 @@
   z-index: 1;
   padding: 0.8em;
   background-color: #151515;
+
   border-radius: 0 0 10px 10px;
   text-align: center;
 }
