@@ -10,6 +10,17 @@
   flex-direction: row;
   justify-content: space-between;
 }
-.tables > div{
+.tables > div {
   width: 49%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .tables {
+    flex-direction: column;
+    height: 50em;
+    gap: 2em;
+  }
+  .tables > div {
+    width: 100%;
+  }
 }

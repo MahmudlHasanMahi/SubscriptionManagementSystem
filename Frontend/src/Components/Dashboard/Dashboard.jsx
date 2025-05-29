@@ -10,12 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStaff, staffState } from "../../Features/staff";
 import { user } from "../../Features/UserAuth/UserAuth";
 import { updateHeaderState } from "../../Features/headerState";
+import useStaffQuery from "../../Hooks/useStaffQuery";
 import Table from "../Table/Table";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const staff = useSelector(staffState);
   const { name } = useSelector(user);
-
+  const staffObject = useStaffQuery({});
   useEffect(() => {
     dispatch(fetchStaff({ count: true }));
 
@@ -57,16 +58,18 @@ const Dashboard = () => {
           />
         </div>
         <div className={styles["tables"]}>
-          {/* <Table
+          <Table
             header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
-            key_pair={["name", "email", "group"]}
+            key_pair={["name", "email", "groups"]}
+            queryObject={staffObject}
           />
           <Table
             header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
-            key_pair={["name", "email", "group"]}
-          /> */}
+            key_pair={["name", "email", "groups"]}
+            queryObject={staffObject}
+          />
         </div>
       </div>
     </Body>
