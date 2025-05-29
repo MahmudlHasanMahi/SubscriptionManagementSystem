@@ -51,31 +51,45 @@ class Service(models.Model):
     def __str__(self):
         return f'{self.services} | {self.name}'
 
-
-
-
-class SubscriptionPlan(models.Model):
+class Plan(models.Model):
     service        =   models.ForeignKey(Service,default=None,on_delete=models.PROTECT)
-    PriceList      =   models.ForeignKey(PriceList,null=True,on_delete=models.SET_NULL,related_name="SubscriptionPlan")
+    PriceList      =   models.ForeignKey(PriceList,null=True,on_delete=models.SET_NULL,related_name="Plan")
     
     def __str__(self):
         return f"{self.service} | {self.PriceList.period}"
 
+
+class SubscriptionPlan(models.Model):
+    STATUS = [
+        ("ACTIVE","Active"),
+        ("CANCELLED","Cancelled"),
+        ("DEACTIVE","Deactive"),
+        ("EXPIRED","Expired"),
+        ("ENDED","Ended"),
+    ]
+    plan            =   models.ForeignKey(Plan,null=False,blank=False,on_delete=models.PROTECT)
+    status          =   models.CharField(max_length=15,choices=STATUS,default="DRAFT")
+    subscription    =   models.ForeignKey("Subscription",null=False,blank=False,on_delete=models.PROTECT,related_name="SubscriptionPlans")
+
+
 class Subscription(models.Model):
     
-    client           =   models.ForeignKey(Client,null=True,on_delete=models.PROTECT,related_name="Subscription")
-    begin            =   models.DateTimeField(null=True,default=datetime.now,editable=True)
-    end              =   models.DateTimeField(null=True,blank=True,editable=True)
-    active_plans     =   models.ManyToManyField(SubscriptionPlan,blank=True,related_name="ActiveSubscriptionPlan")
-    deactive_plans   =   models.ManyToManyField(SubscriptionPlan,blank=True,related_name="DeactiveSubscriptionPlan")
+    STATUS = [
+        ("ACTIVE","Active"),
+        ("DRAFT","Draft"),
+        ("CANCELLED","Cancelled"),
+        ("DEACTIVE","Deactive"),
+        ("EXPIRED","Expired"),
+        ("ENDED","Ended"),
+    ]
     
-    def deactive_all_plan(self):
-        self.active_plans.set([])
+    client    =   models.ForeignKey(Client,null=True,on_delete=models.PROTECT,related_name="Subscription")
+    begin     =   models.DateTimeField(null=True,default=datetime.now,editable=True)
+    end       =   models.DateTimeField(null=True,blank=True,editable=True)
 
-    def deactive_plan(self,keys):
-        self.active_plans.remove(keys)
-        self.deactive_plans.add(keys)
-    
+
+
+
     def save(self,*args,**kwargs):
         """
         User django signals to modify the ending date depending on max plan
@@ -86,20 +100,17 @@ class Subscription(models.Model):
 
 class Invoice(models.Model):
     STATUS = [
-        ("None","None"),
         ("DRAFT","Draft"),
-        ("UNPAID","Unpaid"),
         ("PAID","Paid"),
-        ("ACTIVE","Active"),
-        ("PENDING","Pending"),
-        ("CANCELLED","Cancelled"),
-        ("RENEW","Renew"),
+        ("OVERDUE","Overdue"),
+        ("VOID","Void"),
+        ("UNCOLLECTABLE","Uncollectable"),
     ]
 
     client              =   models.ForeignKey(Client,default=None,blank=False,on_delete=models.CASCADE,related_name="Invoice")
     representative      =   models.ForeignKey(Representative,default=None,blank=False,on_delete=models.CASCADE,related_name="Invoice")
     subscription        =   models.ForeignKey(Subscription,blank=False,null=False,on_delete=models.PROTECT,related_name="Invoice")
-    status              =   models.CharField(max_length=15,choices=STATUS,default="NONE")
+    status              =   models.CharField(max_length=15,choices=STATUS,default="Draft")
     created             =   models.DateField(auto_now_add=True)
     due_date            =   models.DateField(editable=True,null=True,blank=True)
  
