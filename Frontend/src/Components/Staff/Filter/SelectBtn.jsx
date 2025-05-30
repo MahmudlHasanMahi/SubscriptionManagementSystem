@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import styles from "./Select.module.css";
 import Arrow from "../../../svg/Arrow";
 import { motion } from "motion/react";
-const SelectBtn = ({ current, placeholder, property, setShow }) => {
+const SelectBtn = ({ current, placeholder, property, setShow, show }) => {
   return (
     <motion.div
       className={styles["selectBtn"]}
@@ -18,7 +18,7 @@ const SelectBtn = ({ current, placeholder, property, setShow }) => {
       <motion.span
         initial={{ rotateZ: 0 }}
         animate={{
-          rotateZ: property?.show ? 180 : 0,
+          rotateZ: show ? 180 : 0,
           transition: { duration: 0.2 },
         }}
         style={{ display: "flex" }}
