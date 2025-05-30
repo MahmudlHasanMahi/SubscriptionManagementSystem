@@ -138,4 +138,5 @@ export const userAuthSlice = createSlice({
 });
 export const { resetState } = userAuthSlice.actions;
 export const user = (state) => state.auth.user;
+export const isLoading = (state) => state.auth.isLoading;
 export default userAuthSlice.reducer;
