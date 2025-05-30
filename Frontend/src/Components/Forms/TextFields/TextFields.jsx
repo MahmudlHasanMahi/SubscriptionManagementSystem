@@ -14,6 +14,7 @@ const TextFields = ({
   editField = false,
   setinput = null,
   disabled = false,
+  ref,
 }) => {
   const [clipboard, setClipBoard] = useState(null);
   const [edit, setEdit] = useState(false);
@@ -34,6 +35,7 @@ const TextFields = ({
       >
         {setinput ? (
           <input
+            ref={ref}
             disabled={disabled}
             onChange={(e) => onchange(e.target.value)}
             style={{
@@ -49,6 +51,7 @@ const TextFields = ({
           />
         ) : (
           <input
+            ref={ref}
             disabled={disabled}
             style={{
               cursor: disabled && "not-allowed",
