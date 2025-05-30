@@ -33,7 +33,7 @@
 .dropdown {
   position: absolute;
   left: 0;
-  bottom: -7em;
+  bottom: -9em;
   z-index: 1;
   padding: 0.8em;
   background-color: #151515;
@@ -63,6 +63,22 @@
   background-color: #252525;
   color: white;
 }
+.account {
+  font-weight: 700;
+  font-size: 0.625em;
+  border-radius: 4px;
+  padding: 0.4em 1.25em;
+  background-color: #5e5e5e90;
+  margin-bottom: 10px;
+  transition: background 0.5s;
+}
+.account:hover {
+  background-color: #5e5e5e;
+}
+.dropdown > div {
+  user-select: none;
+}
+
 .dropdown > div:last-child {
   padding: 0.4em 1.25em;
   border-radius: 4px;
@@ -78,7 +94,18 @@
   display: block;
   text-wrap: nowrap;
 }
-.titleContainer > span:nth-child(2) {
+.titleContainer > span:first-child {
+}
+
+.titleContainer > span:first-child > svg {
+  width: 1.5em;
+  height: 1.5em;
+}
+.titleContainer > span:first-child {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 0.5em;
   font-size: 1.875em;
   font-weight: 800;
 }
