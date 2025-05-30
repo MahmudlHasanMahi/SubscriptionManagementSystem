@@ -1,0 +1,39 @@
+.profilePhoto {
+  background-color: #6e6e6e60;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+  /* height: calc(100% + 32em); */
+}
+.profilePic {
+  border: 1px dashed white;
+  border-radius: 50%;
+  width: 10.2em;
+  height: 10.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profilePic > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000074;
+  width: 9.4em;
+  height: 9.4em;
+  background-color: #00000071;
+  border-radius: inherit;
+}
+.pictureFormatContainer > div:last-child {
+  margin-top: 1em;
+}
+.pictureFormatContainer > div > span {
+  display: block;
+  text-align: center;
+  font-size: 0.875em;
+}
+.pictureFormatContainer > div > span:last-child {
+  color: #bebebe;
+}
