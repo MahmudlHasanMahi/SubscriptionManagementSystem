@@ -17,6 +17,7 @@ const Select = ({ children, placeholder, title, property, setProperty }) => {
       >
         <SelectBtn
           setShow={setShow}
+          show={show}
           current={children[property?.selected]}
           placeholder={placeholder}
         />
