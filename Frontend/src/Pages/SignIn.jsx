@@ -14,9 +14,10 @@ const SignIn = () => {
   const { user } = useSelector((state) => state.auth);
   useEffect(() => {
     dispatch(updateNavbar(path.split("/")[1]));
-    dispatch(IsAuthenticated());
+    if (!user) {
+      dispatch(IsAuthenticated());
+    }
   }, []);
-
   return user ? <Navigate to={path} /> : <SignInForm />;
 };
 
