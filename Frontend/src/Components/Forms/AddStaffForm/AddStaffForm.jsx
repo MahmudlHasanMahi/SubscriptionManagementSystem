@@ -26,7 +26,6 @@ const AddStaffForm = () => {
     show: false,
     selected: null,
   });
-  console.log(property);
   const [groups, setGroups] = useState([]);
   const randomString = useMemo(() => {
     return GenerateString(10);
