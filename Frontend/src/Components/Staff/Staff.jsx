@@ -10,6 +10,7 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
 import useStaffQuery from "../../Hooks/useStaffQuery";
+import Staff2 from "../../svg/Staff2";
 const Staff = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const Staff = () => {
       updateHeaderState({
         title1: `All Staff`,
         title2: "Create account for a new staff",
-        logo: null,
+        logo: <Staff2 color={"#C759CF"} />,
       })
     );
   }, []);
