@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Staff.module.css";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
@@ -8,7 +8,11 @@ import SelectOption from "./Filter/SelectOption";
 import { useSelector } from "react-redux";
 import { staffState } from "../../Features/staff";
 const StaffPanel = ({ filter, setfilter, setinput, fieldnames }) => {
+  const inputRef = useRef();
   const staff = useSelector(staffState);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [filter]);
   return (
     <div className={styles["staffPanel"]}>
       <NumericTextBox
@@ -18,6 +22,7 @@ const StaffPanel = ({ filter, setfilter, setinput, fieldnames }) => {
 
       <TextFields
         type={"text"}
+        ref={inputRef}
         placeholder={
           filter.selected == null ? "Please select filter" : "Enter search word"
         }
