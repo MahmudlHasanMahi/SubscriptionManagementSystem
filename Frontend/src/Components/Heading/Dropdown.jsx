@@ -27,6 +27,9 @@ const Dropdown = () => {
       navigate("/Signin");
     });
   };
+  const profile = () => {
+    navigate("/profile");
+  };
   return (
     <motion.div
       initial={{ y: -30, opacity: 0.3 }}
@@ -53,6 +56,9 @@ const Dropdown = () => {
         >
           عربي
         </span>
+      </div>
+      <div className={styles["account"]} onClick={profile}>
+        Account
       </div>
       <div onClick={signOut}>Sign out</div>
     </motion.div>
