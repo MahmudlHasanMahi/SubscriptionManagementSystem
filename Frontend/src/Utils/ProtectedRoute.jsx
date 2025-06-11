@@ -1,16 +1,28 @@
 import { Outlet, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { user } from "../Features/UserAuth/UserAuth";
+import {
+  user,
+  IsAuthenticated,
+  isLoading,
+} from "../Features/UserAuth/UserAuth";
+import { useEffect } from "react";
+
 const ProtectedRoute = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const userState = useSelector(user);
-
-  return userState ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/Signin" state={{ prev: location.pathname }} />
-  );
+  const loading = useSelector(isLoading);
+  useEffect(() => {
+    if (!userState) {
+      dispatch(IsAuthenticated());
+    }
+  }, []);
+  if (userState) {
+    return <Outlet />;
+  } else {
+    return <Navigate to="/Signin" state={{ prev: location.pathname }} />;
+  }
 };
 
 export default ProtectedRoute;

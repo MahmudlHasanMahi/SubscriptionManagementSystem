@@ -1,8 +1,6 @@
-import getCookie from "../Utils/extractCSRFToken";
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",
-  "X-CSRFToken": getCookie("csrftoken"),
 };
 export const fetchStaff = async ({ pageParam, count }) => {
   try {
