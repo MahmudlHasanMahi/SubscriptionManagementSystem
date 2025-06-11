@@ -18,7 +18,6 @@ const Profile = () => {
         logo: null,
       })
     );
-    // console.log(userData);
   }, []);
   return (
     <Body>
