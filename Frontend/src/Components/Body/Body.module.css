@@ -1,11 +1,8 @@
 .body {
-  /* grid-column: span 5 / span 5;
-  grid-row: span 5 / span 5;
-  grid-column-start: 2;
-  grid-row-start: 2; */
+ 
   padding-inline: 3.3em 1.25em;
   overflow-y: scroll;
-  
+  padding-top: 1em;
 }
 .body:last-child::-webkit-scrollbar {
   width: 0px;
