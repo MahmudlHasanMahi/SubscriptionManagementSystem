@@ -25,20 +25,22 @@ const Navigation = () => {
     { title: "Client", Logo: <Client color={"white"} />, link: "client" },
   ];
   return (
-    <div className={styles["navigation"]}>
-      <div className={styles["logoContainer"]}>
-        <img src={LOGO} />
-        <span>Subscription Management System</span>
+    userState && (
+      <div className={styles["navigation"]}>
+        <div className={styles["logoContainer"]}>
+          <img src={LOGO} />
+          <span>Subscription Management System</span>
+        </div>
+        <Navbar
+          list={navlist.filter(
+            (val) => val.title != "Staff" || userState.group != "Employee"
+          )}
+        />
+        <div className={styles["copyright"]}>
+          Copyright © 2025 Yasier. All Rights Reserved
+        </div>
       </div>
-      <Navbar
-        list={navlist.filter(
-          (val) => val.title != "Staff" || userState.group != "Employee"
-        )}
-      />
-      <div className={styles["copyright"]}>
-        Copyright © 2025 Yasier. All Rights Reserved
-      </div>
-    </div>
+    )
   );
 };
 
