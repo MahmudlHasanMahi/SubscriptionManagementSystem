@@ -4,9 +4,10 @@
   background-color: rgba(22, 115, 161, 0.4);
   padding: 1em 1em 1.4em 1.2em;
   border-radius: 1.25em;
-  height: 100%;
+  display: flex;
   position: relative;
   overflow: hidden;
+  flex-grow: 1;
 }
 .progressContainer {
   position: absolute;
@@ -16,6 +17,7 @@
 }
 
 .tableContainer > div:last-child {
+  flex-grow: 1;
   height: inherit;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -111,7 +113,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: baseline;
+  justify-content: end;
 }
 
 .action::before {
