@@ -3,14 +3,21 @@ import SelectBtn from "./SelectBtn";
 import OptionWrapper from "./OptionWrapper";
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-const Select = ({ children, placeholder, title, property, setProperty }) => {
+const Select = ({
+  children,
+  placeholder,
+  title,
+  property,
+  setProperty,
+  background_color,
+}) => {
   const [show, setShow] = useState(false);
   return (
     <div className={styles["selectContainer"]}>
       <span className={styles["title"]}>{title}</span>
       <div
         style={{
-          background: "#43526A",
+          background: background_color,
           border: "0.5px solid rgb(78, 100, 134)",
         }}
         className={styles["select"]}
