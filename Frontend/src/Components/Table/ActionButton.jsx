@@ -1,11 +1,10 @@
 import React from "react";
 import styles from "./Table.module.css";
 import { useNavigate } from "react-router-dom";
-const ActionButton = ({ title, json }) => {
+const ActionButton = ({ title, pk }) => {
   const navigate = useNavigate();
   const actionClick = () => {
-    navigate(`edit-staff/${json.id}`);
-  
+    navigate(`edit-staff/${pk}`);
   };
 
   return (
