@@ -11,10 +11,14 @@ import Staff from "./Components/Staff/Staff";
 import AddStaffForm from "./Components/Forms/AddStaffForm/AddStaffForm";
 import EditStaff from "./Components/Forms/StaffEditForm/EditStaff";
 import Profile from "./Components/Forms/UserProfileForm/Profile";
+import Subscription from "./Components/Subscription/Subscription";
+import Products from "./Components/Subscription/Products";
+import Plans from "./Components/Subscription/Plans";
+import CreateProductForm from "./Components/Forms/CreateProduct/CreateProductForm";
 const App = () => {
   return (
     <Routes>
-      <Route path="" element={<Loading />}>
+      <Route element={<Loading />}>
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/ChangePassword" element={<ChangePassword />} />
         <Route element={<ProtectedRoute />}>
@@ -27,7 +31,14 @@ const App = () => {
               <Route path="add-staff" element={<AddStaffForm />} />
               <Route path="edit-staff/:staffId" element={<EditStaff />} />
             </Route>
-            <Route path="subscription" element={<Body />} />
+            <Route path="subscription">
+              <Route path="create-product" element={<CreateProductForm />} />
+              <Route element={<Subscription />}>
+                <Route path="" element={<h1>Subscription</h1>} />
+                <Route path="products" element={<Products />} />
+                <Route path="plans" element={<Plans />} />
+              </Route>
+            </Route>
             <Route path="client" element={<Body />} />
           </Route>
         </Route>
