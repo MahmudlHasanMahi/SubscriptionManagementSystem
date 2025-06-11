@@ -1,0 +1,12 @@
+.product {
+  padding-block: 1.56em;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.56em;
+}
+.product > div:last-child {
+  display: flex;
+  flex-direction: row;
+  gap: 1.56em;
+  max-height: 20em;
+}
