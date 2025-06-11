@@ -1,11 +1,16 @@
 .card {
   width: 23.5%;
-  aspect-ratio: 16 / 9;
+  padding: 1.4em 1.25em 2.55em 1.25em;
   border-radius: 1.25em;
   font-family: nunito;
   display: flex;
   justify-content: space-between;
-  padding: 1.4em 1.25em 0 1.25em;
+}
+.hover {
+  transition: opacity 0.4s;
+}
+.hover:hover {
+  opacity: 0.8;
 }
 .card > span:last-child {
   background-color: rgba(255, 255, 255, 0.65);
