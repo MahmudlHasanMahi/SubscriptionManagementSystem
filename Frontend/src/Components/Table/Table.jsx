@@ -3,7 +3,13 @@ import styles from "./Table.module.css";
 import { useInView } from "react-intersection-observer";
 import ActionButton from "./ActionButton";
 import LinearProgress from "@mui/material/LinearProgress";
-const Table = ({ header, title, key_pair, action, queryObject }) => {
+const Table = ({
+  title,
+  action = null,
+  queryObject,
+  fields,
+  serial = true,
+}) => {
   const { ref, inView } = useInView();
   const data = queryObject.data;
   useEffect(() => {
@@ -22,22 +28,30 @@ const Table = ({ header, title, key_pair, action, queryObject }) => {
         <table className={styles["table"]}>
           <thead>
             <tr>
-              {header.map((item, idx) => {
+              {serial && <th>S/N</th>}
+              {Object.keys(fields).map((item, idx) => {
                 return <th key={idx}>{item}</th>;
               })}
             </tr>
           </thead>
           <tbody>
             {data?.pages.map((item) => {
-              return item.results.map((staff, idx) => {
-                if (item.results.length == idx + 1) {
+              const obj = item.hasOwnProperty("results") ? item.results : item;
+              return obj.map((staff, idx) => {
+                if (obj.length == idx + 1) {
                   return (
                     <tr key={idx}>
                       <td>{idx + 1}</td>
-                      {key_pair.map((keys, idx) => {
-                        return <td key={idx}>{staff[keys]}</td>;
+                      {Object.keys(fields).map((item, idx) => {
+                        return <td key={idx}>{staff[fields[item]]}</td>;
                       })}
-                      {action && <ActionButton title={"Edit"} json={staff} />}
+
+                      {action && (
+                        <ActionButton
+                          title={action.title}
+                          pk={staff[action.pk]}
+                        />
+                      )}
                       <td ref={ref}></td>
                     </tr>
                   );
@@ -45,10 +59,15 @@ const Table = ({ header, title, key_pair, action, queryObject }) => {
                 return (
                   <tr key={idx}>
                     <td>{idx + 1}</td>
-                    {key_pair.map((keys, idx) => {
-                      return <td key={idx}>{staff[keys]}</td>;
+                    {Object.keys(fields).map((item, idx) => {
+                      return <td key={idx}>{staff[fields[item]]}</td>;
                     })}
-                    {action && <ActionButton title={"Edit"} json={staff} />}
+                    {action && (
+                      <ActionButton
+                        title={action.title}
+                        pk={staff[action.pk]}
+                      />
+                    )}
                   </tr>
                 );
               });
