@@ -17,25 +17,15 @@ class PeriodAdmin(admin.ModelAdmin):
 
 class PriceListAdmin(admin.ModelAdmin):
     model = PriceList
-    list_display=["__str__","Days","price"]
-    def Days(self,args):
-        return args.period.days * args.unit_period
+    list_display=["__str__","price"]
 
-class ServicesCategoryInline(admin.StackedInline):
-    extra = 0
-    model = Service
-
-
-class ServicesAdmin(admin.ModelAdmin):
-    inlines = [ServicesCategoryInline]
-
-class PlanAdmin(admin.ModelAdmin):
-    model = Plan
-    list_display = ["__str__"]
+# class PlanAdmin(admin.ModelAdmin):
+#     model = Plan
+#     list_display = ["__str__"]
 
 class SubscriptionPlanAdmin(admin.ModelAdmin):
     model = SubscriptionPlan
-    list_display = ["plan","status"]
+    list_display = ["status"]
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -47,16 +37,21 @@ class InvoiceAdmin(admin.ModelAdmin):
     model = Invoice
     list_display = ["client","status","created","due_date"]
     
+class ProductAdmin(admin.ModelAdmin):
+    model = Product
+    list_display=["name"]
+    filter_horizontal=("price_list",)
+
+    readonly_fields=["created_at"]
 
 
-# admin.site.register((Session))
-admin.site.register(Plan,PlanAdmin)
+admin.site.register(Product,ProductAdmin)
+# admin.site.register(Plan,PlanAdmin)
 admin.site.register(Period,PeriodAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(Invoice,InvoiceAdmin)
 admin.site.register(PriceList,PriceListAdmin)
 admin.site.register(Subscription,SubscriptionAdmin)
-admin.site.register(ServicesCategory,ServicesAdmin)
 admin.site.register(Representative,RepresentativeAdmin)
 admin.site.register(SubscriptionPlan,SubscriptionPlanAdmin)
 

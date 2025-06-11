@@ -19,10 +19,6 @@ def staffQuery(user):
     user_level = user.groups.first().level
     return User.objects.filter(groups__level__gte=user_level)
 
-
-
-
-
 class ResetPassword(APIView):
     permission_classes = (AllowAny,)
 
@@ -63,12 +59,9 @@ class CheckAuthentication(APIView):
     def get(self,request):
         user = request.user
         try:
-            
             if user.is_authenticated:
                 serializer = UserSerializer(user)
-
                 return Response(serializer.data,status=status.HTTP_200_OK)
-
             return Response(status = status.HTTP_401_UNAUTHORIZED)
 
         except:
