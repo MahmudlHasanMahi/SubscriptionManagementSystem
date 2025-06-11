@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
 import useStaffQuery from "../../Hooks/useStaffQuery";
 import Staff2 from "../../svg/Staff2";
+import ActionButton from "../Table/ActionButton";
 const Staff = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
@@ -19,9 +20,14 @@ const Staff = () => {
     selected: null,
   });
 
-  const fieldnames = ["name", "email", "groups", "mobile"];
+  const fields = {
+    name: "name",
+    email: "email",
+    groups: "groups",
+    mobile: "mobile",
+  };
   const staffObject = useStaffQuery({
-    filterby: fieldnames[filter.selected],
+    filterby: Object.values(fields)[filter.selected],
     data: input,
   });
   useEffect(() => {
@@ -44,17 +50,14 @@ const Staff = () => {
             filter={filter}
             setfilter={setFilter}
             setinput={setInput}
-            fieldnames={fieldnames}
+            fields={fields}
           />
           <div className={styles["tableContainer"]} setInput={setInput}>
             <Table
-              header={["S/N", "name", "email", "group", "mobile"]}
-              key_pair={fieldnames}
               title={"Staff List"}
               endpont={{}}
-              // limit={{}}
-              // url={{}}
-              action={true}
+              fields={fields}
+              action={{ title: "Edit", pk: "id" }}
               queryObject={staffObject}
             />
           </div>
