@@ -56,7 +56,6 @@ const AddStaffForm = () => {
       active: e.target.activateAccount.checked,
       groups_level: groups[property.selected].level,
     };
-    console.log(obj);
     createStaff(obj).then(() => {
       queryClient.removeQueries({
         queryKey: ["staff/fetchStaff"],
