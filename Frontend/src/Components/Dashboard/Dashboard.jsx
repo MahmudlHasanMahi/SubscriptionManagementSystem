@@ -28,6 +28,12 @@ const Dashboard = () => {
       })
     );
   }, []);
+  const fields = {
+    name: "name",
+    email: "email",
+    groups: "groups",
+    mobile: "mobile",
+  };
   return (
     <Body>
       <div className={styles["cardContainer"]}>
@@ -35,40 +41,38 @@ const Dashboard = () => {
           <Card
             title1={staff.staffState?.count}
             title2="Total number of staff"
+            style={{ background: "rgba(22, 115, 161, 0.4)" }}
             logo={<Staff2 color={"#67006E"} />}
-            bg={"rgba(22, 115, 161, 0.4)"}
           />
           <Card
             title1="200"
             title2="Total Subscription"
             logo={<Subscription2 color={"#352AAC"} />}
-            bg={"rgba(22, 115, 161, 0.4)"}
+            style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
           <Card
             title1="200"
             title2="Total Client"
             logo={<Client color={"#8C2D56"} />}
-            bg={"rgba(22, 115, 161, 0.4)"}
+            style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
           <Card
             title1="200"
             title2="Subscription Pending Approval"
             logo={<Recipt color={"#9C4C0B"} />}
-            bg={"rgba(22, 115, 161, 0.4)"}
+            style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
         </div>
         <div className={styles["tables"]}>
           <Table
-            header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
-            key_pair={["name", "email", "groups"]}
             queryObject={staffObject}
+            fields={fields}
           />
           <Table
-            header={["S/N", "name", "email", "group"]}
             title={"Staff List"}
-            key_pair={["name", "email", "groups"]}
             queryObject={staffObject}
+            fields={fields}
           />
         </div>
       </div>
