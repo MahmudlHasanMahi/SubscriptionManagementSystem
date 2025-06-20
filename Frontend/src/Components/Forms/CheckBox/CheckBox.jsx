@@ -17,7 +17,6 @@ const CheckBox = ({ name, defaultChecked = false }) => {
     <div className={styles["checkBox"]}>
       <Checkbox
         name={name}
-        // defaultChecked={defaultChecked}
         onClick={() => {
           isChecked((prev) => !prev);
         }}

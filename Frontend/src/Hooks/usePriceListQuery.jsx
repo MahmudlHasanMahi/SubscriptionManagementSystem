@@ -5,7 +5,7 @@ const usePriceListQuery = () => {
   const priceListObject = useInfiniteQuery({
     queryKey: ["/price-list"],
     queryFn: priceList,
-    initialPageParam: "http://127.0.0.1:8000/price-list",
+    initialPageParam: "http://127.0.0.1:8000/price-lists",
     getNextPageParam: (props) => {
       return props.next;
     },

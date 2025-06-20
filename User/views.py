@@ -54,8 +54,7 @@ class ResetPassword(APIView):
     
 class CheckAuthentication(APIView):
     permission_classes = (AllowAny,)
-
-
+    
     def get(self,request):
         user = request.user
         try:

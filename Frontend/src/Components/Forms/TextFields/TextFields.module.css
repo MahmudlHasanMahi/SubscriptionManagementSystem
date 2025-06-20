@@ -8,9 +8,8 @@
 }
 .inputField {
   background-color: rgba(255, 255, 255, 0);
-  border: 1px solid white;
   border-radius: 10px;
-  outline: none;
+  outline: 1px solid white;
   padding-inline-end: 1em;
   margin-bottom: 1.6em;
   display: flex;
@@ -30,7 +29,6 @@
   color: white;
   font-size: 1em;
   width: 100%;
-
 }
 .inputField span {
   display: flex;
@@ -49,4 +47,19 @@ input::-webkit-inner-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.textBoxContainer {
+  display: flex;
+  flex-direction: column;
+}
+.textBox {
+  margin-bottom: 2em;
+  padding: 1em;
+  resize: vertical;
+  outline: 1px solid white;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 1em;
 }

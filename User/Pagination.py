@@ -12,3 +12,4 @@ class StaffPagination(CursorPagination):
                 cls.page_size = int(size)
         except:
             return None
+            

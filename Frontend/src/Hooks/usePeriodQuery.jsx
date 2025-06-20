@@ -2,7 +2,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { periods } from "../Utils/Subscription";
 
 const usePeriodQuery = () => {
-  
   const periodObject = useInfiniteQuery({
     queryKey: ["/period"],
     queryFn: periods,

@@ -14,7 +14,9 @@ import Profile from "./Components/Forms/UserProfileForm/Profile";
 import Subscription from "./Components/Subscription/Subscription";
 import Products from "./Components/Subscription/Products";
 import Plans from "./Components/Subscription/Plans";
-import CreateProductForm from "./Components/Forms/CreateProduct/CreateProductForm";
+import CreateProductForm from "./Components/Forms/Product/CreateProductForm";
+import EditProduct from "./Components/Forms/Product/EditProduct";
+import Subscriptions from "./Components/Subscription/Subscriptions";
 const App = () => {
   return (
     <Routes>
@@ -33,8 +35,9 @@ const App = () => {
             </Route>
             <Route path="subscription">
               <Route path="create-product" element={<CreateProductForm />} />
+              <Route path="edit-product/:productId" element={<EditProduct />} />
               <Route element={<Subscription />}>
-                <Route path="" element={<h1>Subscription</h1>} />
+                <Route path="" element={<Subscriptions />} />
                 <Route path="products" element={<Products />} />
                 <Route path="plans" element={<Plans />} />
               </Route>

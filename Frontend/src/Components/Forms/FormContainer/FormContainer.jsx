@@ -8,7 +8,8 @@ const FormContainer = ({ children, title, isLoading }) => {
           <LinearProgress color="secondary" />
         </div>
       )}
-      <div className={`${styles["form"]} ${isLoading && styles["loading"]}`}>
+      <div className={styles["form"]}>
+        {isLoading && <div className={styles["loading"]}></div>}
         <span>{title}</span>
         <div>{children}</div>
       </div>

@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import styles from "./Table.module.css";
 import { useInView } from "react-intersection-observer";
-import ActionButton from "./ActionButton";
 import LinearProgress from "@mui/material/LinearProgress";
+import React from "react";
+import get from "lodash/get";
 const Table = ({
   title,
-  action = null,
+  actionButton = null,
   queryObject,
   fields,
   serial = true,
+  height,
 }) => {
   const { ref, inView } = useInView();
   const data = queryObject.data;
@@ -16,8 +18,15 @@ const Table = ({
     queryObject.fetchNextPage();
   }, [queryObject.fetchNextPage, inView]);
 
+  const getActionButton = (id) => {
+    return React.cloneElement(actionButton, {
+      key: id,
+      pk: id,
+    });
+  };
+
   return (
-    <div className={styles["tableContainer"]}>
+    <div style={{ height: height }} className={styles["tableContainer"]}>
       <div className={styles["progressContainer"]}>
         {(queryObject.isLoading || queryObject.isFetching) && (
           <LinearProgress color="secondary" />
@@ -43,15 +52,10 @@ const Table = ({
                     <tr key={idx}>
                       <td>{idx + 1}</td>
                       {Object.keys(fields).map((item, idx) => {
-                        return <td key={idx}>{staff[fields[item]]}</td>;
+                        return <td key={idx}>{get(staff, fields[item])}</td>;
                       })}
 
-                      {action && (
-                        <ActionButton
-                          title={action.title}
-                          pk={staff[action.pk]}
-                        />
-                      )}
+                      {actionButton && getActionButton(staff["id"])}
                       <td ref={ref}></td>
                     </tr>
                   );
@@ -60,14 +64,9 @@ const Table = ({
                   <tr key={idx}>
                     <td>{idx + 1}</td>
                     {Object.keys(fields).map((item, idx) => {
-                      return <td key={idx}>{staff[fields[item]]}</td>;
+                      return <td key={idx}>{get(staff, fields[item])}</td>;
                     })}
-                    {action && (
-                      <ActionButton
-                        title={action.title}
-                        pk={staff[action.pk]}
-                      />
-                    )}
+                    {actionButton && getActionButton(staff["id"])}
                   </tr>
                 );
               });

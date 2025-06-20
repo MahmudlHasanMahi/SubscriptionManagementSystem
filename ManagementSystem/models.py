@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime, timedelta
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.core.exceptions import ValidationError
 class Client(models.Model):
     client = models.CharField(max_length=64, blank=False)
     address = models.CharField(max_length=1024, blank=False)
@@ -65,22 +65,25 @@ class SubscriptionPlan(models.Model):
         ("CANCELLED", "Cancelled"),
         ("DEACTIVE", "Deactive"),
         ("EXPIRED", "Expired"),
-        ("ENDED", "Ended"),
     ]
-    Product = models.ForeignKey(Product,default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
-    status = models.CharField(max_length=15, choices=STATUS, default="DRAFT",primary_key=True)
+    product = models.ForeignKey(Product,default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
+    status = models.CharField(max_length=15, choices=STATUS, default="ACTIVE")
     subscription = models.ForeignKey(
-        "Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="SubscriptionPlans")
+        "Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="subscription_plans")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 class Subscription(models.Model):
 
     STATUS = [
+        ("SCHEDULED","Scheduled"),
+        ("PENDING","Pending"),
         ("ACTIVE", "Active"),
-        ("DRAFT", "Draft"),
-        ("CANCELLED", "Cancelled"),
         ("DEACTIVE", "Deactive"),
+        ("CANCELLED", "Cancelled"),
         ("EXPIRED", "Expired"),
-        ("ENDED", "Ended"),
+        ("REJECTED","Rejected")
     ]
 
     client = models.ForeignKey(
@@ -88,12 +91,30 @@ class Subscription(models.Model):
     begin = models.DateTimeField(
         null=True, default=datetime.now, editable=True)
     end = models.DateTimeField(null=True, blank=True, editable=True)
+    status = models.CharField(max_length=15, choices=STATUS, default="DEACTIVE")
 
     def save(self, *args, **kwargs):
-        """
-        User django signals to modify the ending date depending on max plan
-        """
+        not_allowed_status = ["EXPIRED","DEACTIVE","CANCELLED","REJECTED"]
+        if self._state.adding and self.status in not_allowed_status:
+            raise ValidationError(f"Cannot set {self.status} during creation of Subscription") 
+        
         super().save(*args, **kwargs)
+        update_subscription_status = ["DEACTIVE","CANCELLED","REJECTED"] 
+        if self.status in update_subscription_status:
+            subscription_plans = self.subscription_plans.all()
+            if subscription_plans:
+                subscription_plans.update(status=self.status) 
+    def activate_subscription(self):
+        if self.status == "ACTIVE":
+            raise ValidationError("Subscription is already active.")
+
+        if self.status in ["CANCELLED", "REJECTED", "EXPIRED"]:
+            raise ValidationError(f"Cannot activate plans because subscription is {self.status.lower()}.")
+        self.subscription_plans.update(status="ACTIVE")
+    
+                
+        
+        
 
 class Invoice(models.Model):
     STATUS = [

@@ -23,7 +23,7 @@ const Sub1 = () => {
           y2="21.4088"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#14ADD6" />
+          <stop stopColor="#14ADD6" />
           <stop offset="1" stop-color="#384295" />
         </linearGradient>
       </defs>

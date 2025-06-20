@@ -57,7 +57,7 @@ const Staff = () => {
               title={"Staff List"}
               endpont={{}}
               fields={fields}
-              action={{ title: "Edit", pk: "id" }}
+              actionButton={<ActionButton title={"Edit"} url={"edit-staff/"} />}
               queryObject={staffObject}
             />
           </div>

@@ -38,7 +38,6 @@
 .placeholder {
   padding: 1em;
 }
-
 .active {
   background-color: rgba(111, 111, 111, 0.533);
 }
@@ -47,6 +46,7 @@
   display: flex;
   align-items: center;
 }
-.optionContainer:hover {
+
+.highlight:hover {
   background-color: rgba(65, 65, 65, 0.533);
 }

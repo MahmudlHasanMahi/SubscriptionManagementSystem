@@ -8,6 +8,7 @@ import SelectOption from "./Filter/SelectOption";
 import { useSelector } from "react-redux";
 import { staffState } from "../../Features/staff";
 import Panel from "../Panel/Panel";
+import Menu from "../MultiSelect/Menu";
 const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
   const inputRef = useRef();
   const staff = useSelector(staffState);

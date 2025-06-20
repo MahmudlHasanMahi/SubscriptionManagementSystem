@@ -23,36 +23,38 @@ class PriceListAdmin(admin.ModelAdmin):
 #     model = Plan
 #     list_display = ["__str__"]
 
-class SubscriptionPlanAdmin(admin.ModelAdmin):
+
+class SubscriptionPlanAdmin(admin.StackedInline):
+    extra=0
     model = SubscriptionPlan
-    list_display = ["status"]
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
+    inlines = [SubscriptionPlanAdmin]
     model = Subscription
-    list_display=["client","begin","end"]
+    list_display=["id","client","begin","end","status"]
 
     
 class InvoiceAdmin(admin.ModelAdmin):
     model = Invoice
-    list_display = ["client","status","created","due_date"]
+    list_display = ["id","client","status","created","due_date"]
     
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display=["name"]
+    list_display=["id","name","default_price"]
     filter_horizontal=("price_list",)
 
     readonly_fields=["created_at"]
 
 
 admin.site.register(Product,ProductAdmin)
-# admin.site.register(Plan,PlanAdmin)
+admin.site.register(SubscriptionPlan)
 admin.site.register(Period,PeriodAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(Invoice,InvoiceAdmin)
 admin.site.register(PriceList,PriceListAdmin)
 admin.site.register(Subscription,SubscriptionAdmin)
 admin.site.register(Representative,RepresentativeAdmin)
-admin.site.register(SubscriptionPlan,SubscriptionPlanAdmin)
+# admin.site.register(SubscriptionPlan,SubscriptionPlanAdmin)
 
 

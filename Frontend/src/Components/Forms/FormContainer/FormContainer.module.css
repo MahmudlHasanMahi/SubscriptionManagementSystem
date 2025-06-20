@@ -1,15 +1,20 @@
 .staffFromContainer {
-  height: fit-content;
+  /* height: fit-content; */
   background-color: rgba(53, 71, 158, 0.4);
   border-radius: 1.25em;
-
   position: relative;
-  overflow: hidden;
 }
 .loading {
-  opacity: 0.4;
+  position: absolute;
+  background-color: rgba(4, 4, 4, 0.299);
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 1;
 }
 .form {
+  position: relative;
   padding: 1.4em 1.875em;
 }
 .form > span {
@@ -28,10 +33,12 @@
   width: 46%;
 }
 .progress {
-  top: 0;
+  top: 0.025em;
   width: 100%;
   left: 0;
   position: absolute;
+  z-index: 2;
+  padding-inline: 1em;
 }
 .progress > span {
   width: 100%;

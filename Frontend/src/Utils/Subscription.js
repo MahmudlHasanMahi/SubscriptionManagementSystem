@@ -4,7 +4,7 @@ const headers = {
 };
 const products = async () => {
   try {
-    const url = "http://127.0.0.1:8000/products-list";
+    const url = "http://127.0.0.1:8000/products";
     const res = await fetch(url, { headers });
     const data = await res.json();
     return data;
@@ -13,7 +13,7 @@ const products = async () => {
 
 const periods = async () => {
   try {
-    const url = "http://127.0.0.1:8000/period";
+    const url = "http://127.0.0.1:8000/periods";
     const res = await fetch(url, { headers });
     const data = await res.json();
     return data;
@@ -22,7 +22,7 @@ const periods = async () => {
 
 const priceList = async () => {
   try {
-    const url = "http://127.0.0.1:8000/price-list";
+    const url = "http://127.0.0.1:8000/price-lists";
     const res = await fetch(url, { headers });
     const data = await res.json();
     return data;

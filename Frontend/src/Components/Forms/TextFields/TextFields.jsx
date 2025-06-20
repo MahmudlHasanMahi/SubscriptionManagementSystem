@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./TextFields.module.css";
 import { notifyDefault } from "../../../Utils/nofify";
 import { useDebouncedCallback } from "use-debounce";
+import Label from "./Label";
 const TextFields = ({
   type,
   label,
@@ -23,11 +24,12 @@ const TextFields = ({
   }, 500);
   return (
     <div className={styles["textField"]}>
-      <label htmlFor={type} value={label} className={styles["label"]}>
-        {label}
-      </label>
+      <Label label={label} />
       <div
-        style={style}
+        style={{
+          ...style,
+          opacity: !edit && "0.7",
+        }}
         className={styles["inputField"]}
         onDoubleClick={() => {
           if (editField) setEdit(true);
@@ -56,6 +58,7 @@ const TextFields = ({
             style={{
               cursor: disabled && "not-allowed",
               textAlign: !edit && editField && "center",
+              cursor: !edit && "pointer",
             }}
             type={type}
             name={name}

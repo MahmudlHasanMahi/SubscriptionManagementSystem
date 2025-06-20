@@ -1,7 +1,6 @@
 .body {
- 
   padding-inline: 3.3em 1.25em;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   padding-top: 1em;
 }
 .body:last-child::-webkit-scrollbar {
