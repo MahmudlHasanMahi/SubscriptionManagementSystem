@@ -45,14 +45,19 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     class Meta:
         pass
-        permissions = []
-        
-    
+        permissions = [
+            ("can_create_subscription", "Can create subscription without approval"),
+            ("can_approve_subscription", "Can approve subscription"),
 
-    def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
-        return super().has_perm(perm,obj)
+            ]
+            
+        
+
+    # def has_perm(self, perm, obj=None):
+    #     "Does the user have a specific permission?"
+    #     print(perm,obj)
+    #     # Simplest possible answer: Yes, always
+    #     return super().has_perm(perm,obj)
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
