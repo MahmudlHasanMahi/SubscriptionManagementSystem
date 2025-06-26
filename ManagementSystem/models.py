@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from User.models import User
 class Client(models.Model):
     client = models.CharField(max_length=64, blank=False)
     address = models.CharField(max_length=1024, blank=False)
@@ -51,6 +52,7 @@ class Product(models.Model):
     price_list = models.ManyToManyField(PriceList,related_name="product_%(class)s_related")
     default_price = models.ForeignKey(PriceList,on_delete=models.PROTECT,blank=False,null=True)
 
+
             
     def __str__(self):
         return f"{self.name} - {self.default_price}"
@@ -67,10 +69,10 @@ class SubscriptionPlan(models.Model):
         ("EXPIRED", "Expired"),
     ]
     product = models.ForeignKey(Product,default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
-    status = models.CharField(max_length=15, choices=STATUS, default="ACTIVE")
+    status = models.CharField(max_length=15, choices=STATUS, default="DEACTIVE")
     subscription = models.ForeignKey(
         "Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="subscription_plans")
-
+    quantity = models.PositiveIntegerField(default=1)
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -92,29 +94,37 @@ class Subscription(models.Model):
         null=True, default=datetime.now, editable=True)
     end = models.DateTimeField(null=True, blank=True, editable=True)
     status = models.CharField(max_length=15, choices=STATUS, default="DEACTIVE")
+    approved = models.BooleanField(default=False,blank=False)
+    rejected_by = models.ForeignKey(User,blank=True,null=True,on_delete=models.PROTECT)
 
-    def save(self, *args, **kwargs):
+    def activate_subscription(self):
+        if self.approved and self.status == "ACTIVE":
+            raise ValidationError("Subscription is already active or have not been approved")
+        if self.status in ["CANCELLED", "REJECTED", "EXPIRED"]:
+            raise ValidationError(f"Cannot activate plans because subscription is {self.status.lower()}.")
+        self.status = "ACTIVE"
+        self.subscription_plans.update(status="ACTIVE")
+        self.save(update_fields=['status'])
+
+
+    def _validate_creation_status(self):
         not_allowed_status = ["EXPIRED","DEACTIVE","CANCELLED","REJECTED"]
-        if self._state.adding and self.status in not_allowed_status:
+        if self.status in not_allowed_status:
             raise ValidationError(f"Cannot set {self.status} during creation of Subscription") 
         
-        super().save(*args, **kwargs)
-        update_subscription_status = ["DEACTIVE","CANCELLED","REJECTED"] 
-        if self.status in update_subscription_status:
+
+    def _update_plans_status(self):
+
+        if self.approved and self.status == "ACTIVE":
             subscription_plans = self.subscription_plans.all()
             if subscription_plans:
                 subscription_plans.update(status=self.status) 
-    def activate_subscription(self):
-        if self.status == "ACTIVE":
-            raise ValidationError("Subscription is already active.")
 
-        if self.status in ["CANCELLED", "REJECTED", "EXPIRED"]:
-            raise ValidationError(f"Cannot activate plans because subscription is {self.status.lower()}.")
-        self.subscription_plans.update(status="ACTIVE")
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self._validate_creation_status()
+        super().save(*args, **kwargs)
     
-                
-        
-        
 
 class Invoice(models.Model):
     STATUS = [

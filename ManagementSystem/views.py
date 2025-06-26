@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
 from .serlializer import * 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from .Exception import NotFound,CannotCreateProduct 
@@ -95,7 +95,7 @@ class SubscriptionListView(Subscription,ListAPIView):
 
 class SubscriptionView(Subscription,APIView):
     def post(self,request):
-        serialized = self.serializer_class(data=request.data)
+        serialized = self.serializer_class(data=request.data,context={'user': request.user})
 
         if serialized.is_valid(raise_exception=True):
             serialized.save()

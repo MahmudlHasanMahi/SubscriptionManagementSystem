@@ -60,10 +60,22 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = ["id","begin","end","status","client","subscription_plans"]
     
+     
+    
+    def create_subscription_plans(self,status,products,subscription):
+
+        status = "ACTIVE" if status == "ACTIVE" else "DEACTIVE"
+        plans_object = [{"product":product.get("product").id,"status":status,"subscription":subscription.id} for product in products]
+        serializer = _InternalSubscriptionPlanSerializer(data=plans_object,many=True) 
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return serializer
+        
+
     def create(self,validated_data):
       
         subscription_plans = validated_data.get("subscription_plans")
-        status = validated_data.get("status")
+        status = validated_data.pop("status")
         days_inital = subscription_plans[0].get("product").default_price.period
 
         for plans in subscription_plans:
@@ -72,15 +84,20 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"detail":"All products must have the same duration."})
 
         products = validated_data.pop("subscription_plans")
-        subscription = Subscription.objects.create(**validated_data)
 
-        plans_object = [{"product":product.get("product").id,"status":"DEACTIVE","subscription":subscription.id} for product in products]
-        serializer = _InternalSubscriptionPlanSerializer(data=plans_object,many=True) 
-        
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        user = self.context["user"]
+        if user.has_perm("User.can_create_subscription"):
+            subscription = Subscription.objects.create(status=status,approved=True,**validated_data)
+        else:
+            status = "PENDING"
+            subscription = Subscription.objects.create(status=status,**validated_data)
+
+        self.create_subscription_plans(status,products,subscription)
 
         return subscription
+    def update(self, instance, validated_data):
+        
+        return super().update(instance, validated_data)
 
 
 
