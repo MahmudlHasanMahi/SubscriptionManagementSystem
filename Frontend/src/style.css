@@ -14,3 +14,19 @@ body {
 .toast-success-container {
   background-color: #4d6dac40;
 }
+
+.rs-calendar-table-cell,
+.rs-btn-close {
+  color: rgb(255, 255, 255);
+}
+
+.rs-input-group-inside {
+  padding: 0.5em 0em;
+}
+.rs-input-group.rs-input-group-inside,
+.rs-input {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+.rs-input-group.rs-input-group-inside {
+  border: none;
+}

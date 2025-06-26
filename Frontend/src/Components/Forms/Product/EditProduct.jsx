@@ -18,6 +18,8 @@ import { SOMETHING_WENT_WRONG } from "../../../Utils/types";
 import ErrorToString from "../../../Utils/ErrorToString";
 import ArrayDifference from "../../../Utils/ArrayDifference";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
+import { updateHeaderState } from "../../../Features/headerState";
 const EditProduct = () => {
   const { productId } = useParams();
   const queryClient = useQueryClient();
@@ -31,6 +33,17 @@ const EditProduct = () => {
   const [changedValue, setChangedValue] = useState({});
   const [disable, setDisable] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      updateHeaderState({
+        title1: `Edit products`,
+        title2: "Edit and delete Products",
+        logo: null,
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (patchDetails.isUninitialized || patchDetails.isLoading) return;
