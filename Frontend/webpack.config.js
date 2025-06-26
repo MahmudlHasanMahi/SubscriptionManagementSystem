@@ -10,7 +10,14 @@ module.exports = {
     filename: "[name].js",
   },
   resolve: {
-    extensions: [".js", ".jsx"],
+    alias: {
+      "@mui/material": path.resolve(__dirname, "node_modules/@mui/material"),
+      "@mui/styles": path.resolve(
+        __dirname,
+        "node_modules/@mui/material/styles"
+      ),
+    },
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
 
   module: {

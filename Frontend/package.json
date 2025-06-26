@@ -1,7 +1,6 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "webpack --mode development --watch",
@@ -14,19 +13,29 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.4",
-    "@mui/material": "^6.4.4",
+    "@heroui/date-picker": "^2.3.22",
+    "@heroui/system": "^2.4.18",
+    "@heroui/theme": "^2.4.17",
+    "@mui/icons-material": "^6.4.12",
+    "@mui/material": "^6.4.12",
+    "@mui/system": "^6.4.12",
+    "@mui/utils": "^6.4.9",
+    "@mui/x-date-pickers": "^8.5.3",
     "@reduxjs/toolkit": "^2.5.1",
     "@tanstack/react-query": "^5.66.0",
     "babel-loader": "^9.2.1",
+    "dayjs": "^1.11.13",
+    "framer-motion": "^12.19.1",
     "js-cookie": "^3.0.5",
     "motion": "^12.4.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-intersection-observer": "^9.15.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5",
     "react-toastify": "^11.0.3",
+    "rsuite": "^5.83.0",
+    "tailwindcss": "^3.4.0",
     "use-debounce": "^10.0.4",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
@@ -42,5 +51,6 @@
     "style-loader": "^4.0.0",
     "svg-url-loader": "^8.0.0",
     "webpack-dev-server": "^5.2.0"
-  }
+  },
+  "description": ""
 }
