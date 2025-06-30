@@ -5,7 +5,10 @@
   font-family: nunito;
   display: flex;
   justify-content: space-between;
+  color: white;
+  text-decoration: none;
 }
+
 .hover {
   transition: opacity 0.4s;
 }

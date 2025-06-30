@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Card.module.css";
 import NumericTextBox from "./NumericTextBox";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const Card = ({
   title1,
   title2,
@@ -12,18 +13,18 @@ const Card = ({
 }) => {
   const navigate = useNavigate();
   return (
-    <div
+    <Link
+      to={link}
       className={`${styles["card"]} ${link && !highlight && styles["hover"]}`}
-      style={{ ...style, outline: highlight ? "solid #FFFFFF" : "none" }}
-      onClick={() => {
-        if (link) {
-          return navigate(link);
-        }
+      style={{
+        ...style,
+        border: highlight ? "solid #FFFFFF" : "none",
+        cursor: link ? "pointer" : "default",
       }}
     >
       <NumericTextBox title1={title1} title2={title2} />
       <span>{logo}</span>
-    </div>
+    </Link>
   );
 };
 
