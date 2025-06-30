@@ -10,7 +10,7 @@ import {
   useGetProductQuery,
   usePatchProductMutation,
 } from "../../../Features/Services/productApi";
-import { useGetPriceListQuery } from "../../../Features/Services/priceListApi";
+import { useGetPriceListInfiniteQuery } from "../../../Features/Services/priceListApi";
 
 import Button from "../Buttons/Button";
 import { notifyError, notifySuccess } from "../../../Utils/nofify";
@@ -20,13 +20,17 @@ import ArrayDifference from "../../../Utils/ArrayDifference";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../../Features/headerState";
+import { useDebouncedCallback } from "use-debounce";
 const EditProduct = () => {
   const { productId } = useParams();
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useGetProductQuery(productId, {
     refetchOnMountOrArgChange: true,
   });
-  const price = useGetPriceListQuery();
+
+  const [priceFilter, setPriceFilter] = useState(null);
+  const price = useGetPriceListInfiniteQuery({ size: 3, filter: priceFilter });
+
   const [patchProduct, patchDetails] = usePatchProductMutation();
   const [selected, setSelected] = useState([]);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -71,15 +75,15 @@ const EditProduct = () => {
   useEffect(() => {
     if (selected?.length !== 0)
       setDisable((prev) => {
-        console.log(prev, ArrayDifference(data?.price_list, selected));
         return prev && !ArrayDifference(data?.price_list, selected);
       });
   }, [selected, defaultValue]);
+
   const onChange = (e) => {
     const { name, value } = e.target;
     setChangedValue((prev) => {
       prev[name] = value;
-      if (prev[name] === data[name] || prev[name] === data[name].id) {
+      if (prev[name] === data[name] || prev[name] === data[name]?.id) {
         delete prev[name];
       }
       setDisable(Object.keys(prev).length === 0);
@@ -92,7 +96,6 @@ const EditProduct = () => {
     const price_list = ArrayDifference(data.price_list, selected) && {
       price_list: selected.map((item) => item.id),
     };
-
     const object = {
       ...changedValue,
       ...price_list,
@@ -100,6 +103,11 @@ const EditProduct = () => {
 
     patchProduct({ id: productId, patchData: object });
   };
+
+  const onPriceListSearch = useDebouncedCallback((e, setSearch) => {
+    setSearch(e.target.value);
+  }, 500);
+
   return (
     <Body>
       <form onSubmit={onSubmit} onChange={onChange}>
@@ -125,12 +133,17 @@ const EditProduct = () => {
           <MultiSelect
             label={"Price"}
             name={"default_price"}
-            objects={price?.data}
+            objects={price}
             selected={selected}
             setSelected={setSelected}
             defaultValue={defaultValue}
             setDefaultValue={setDefaultValue}
             onChange={onChange}
+            search={{
+              search: priceFilter,
+              setSearch: setPriceFilter,
+              onChange: onPriceListSearch,
+            }}
           />
           <div
             style={{

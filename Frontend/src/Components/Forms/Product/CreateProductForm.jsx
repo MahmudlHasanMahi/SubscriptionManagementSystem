@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../../Features/headerState";
 import Services from "../../../svg/Services";
@@ -9,7 +9,7 @@ import Button from "../Buttons/Button";
 import Textbox from "../TextFields/Textbox";
 import MultiSelect from "../../MultiSelect/MultiSelect";
 import { useCreateProductMutation } from "../../../Features/Services/productApi";
-import { useGetPriceListQuery } from "../../../Features/Services/priceListApi";
+import { useGetPriceListInfiniteQuery } from "../../../Features/Services/priceListApi";
 import {
   notifyDefault,
   notifyError,
@@ -19,14 +19,27 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { SOMETHING_WENT_WRONG } from "../../../Utils/types";
 import ErrorToString from "../../../Utils/ErrorToString";
+import { useInView } from "react-intersection-observer";
+import { useDebouncedCallback } from "use-debounce";
+
 const CreateProductForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState([]);
+  const [priceFilter, setPriceFilter] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
-  const { data, error, isLoading } = useGetPriceListQuery();
+  const objects = useGetPriceListInfiniteQuery({
+    size: 3,
+    filter: priceFilter,
+  });
+
   const [createProduct, result] = useCreateProductMutation();
+  const { ref, inView } = useInView();
+  useEffect(() => {
+    objects.fetchNextPage();
+  }, [inView]);
+
   useEffect(() => {
     dispatch(
       updateHeaderState({
@@ -64,12 +77,16 @@ const CreateProductForm = () => {
     createProduct(newProduct);
   };
 
+  const onChange = useDebouncedCallback((e, setSearch) => {
+    setSearch(e.target.value);
+  }, 500);
+
   return (
     <Body>
       <form onSubmit={onSubmit}>
         <FormContainer
           title={"Create new products"}
-          isLoading={isLoading || result.isLoading}
+          isLoading={objects.isLoading || result.isLoading}
         >
           <TextFields
             type={"text"}
@@ -79,12 +96,19 @@ const CreateProductForm = () => {
           />
           <MultiSelect
             label={"Price"}
+            // type="single"
             name={"defaultValue"}
-            objects={data}
+            objects={objects}
             selected={selected}
             setSelected={setSelected}
             defaultValue={defaultValue}
             setDefaultValue={setDefaultValue}
+            viewRef={ref}
+            search={{
+              search: priceFilter,
+              setSearch: setPriceFilter,
+              onChange: onChange,
+            }}
           />
           <Textbox label={"Description"} name={"description"} />
           <Button title={"Create Product"} />
