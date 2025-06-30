@@ -1,5 +1,6 @@
 .heading {
   /* grid-column: span 5 / span 5; */
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -94,7 +95,7 @@
   display: block;
   text-wrap: nowrap;
 }
-.titleContainer > span:first-child {
+.titleContainer {
 }
 
 .titleContainer > span:first-child > svg {

@@ -7,18 +7,23 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 const Dropdown = () => {
-  const [language, setLanguage] = useState("en");
+  const [dir, setDir] = useState("ltr");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (language == "en") {
-      document.dir = "ltr";
+    document.dir = dir;
+  }, [dir]);
+
+  const toggleLanguage = (e) => {
+    e.stopPropagation();
+    if (dir == "ltr") {
+      setDir("rtl");
     } else {
-      document.dir = "rtl";
+      setDir("ltr");
     }
-  }, [language]);
+  };
 
   const signOut = () => {
     dispatch(resetState());
@@ -27,7 +32,8 @@ const Dropdown = () => {
       navigate("/Signin");
     });
   };
-  const profile = () => {
+  const profile = (e) => {
+    e.stopPropagation();
     navigate("/profile");
   };
   return (
@@ -37,30 +43,20 @@ const Dropdown = () => {
       transition={{ duration: 0.3 }}
       className={styles["dropdown"]}
     >
-      <div className={styles["language"]}>
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            setLanguage("en");
-          }}
-          className={styles[language == "en" ? "active" : "deactive"]}
-        >
+      <div tabIndex={1} className={styles["language"]} onClick={toggleLanguage}>
+        <span className={styles[dir == "ltr" ? "active" : "deactive"]}>
           English
         </span>
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            setLanguage("ar");
-          }}
-          className={styles[language == "ar" ? "active" : "deactive"]}
-        >
+        <span className={styles[dir == "rtl" ? "active" : "deactive"]}>
           عربي
         </span>
       </div>
-      <div className={styles["account"]} onClick={profile}>
+      <div tabIndex={2} className={styles["account"]} onClick={profile}>
         Account
       </div>
-      <div onClick={signOut}>Sign out</div>
+      <div tabIndex={3} onClick={signOut}>
+        Sign out
+      </div>
     </motion.div>
   );
 };
