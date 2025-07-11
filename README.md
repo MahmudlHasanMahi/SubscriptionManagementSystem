@@ -7,7 +7,7 @@ A modern, full-stack Subscription Management System built with **Django** (backe
 - 🎯 Multi-role User Access (e.g., Admin, Manager, Subscriber)
 - 🔐 Session-based Authentication
 - 📦 Subscription Plan Creation & Management
-- 📊 Dashboard & Analytics (optional, based on your implementation)
+- 📊 Dashboard & Analytics
 - 🛠️ RESTful API with Django REST Framework
 - ⚛️ Responsive React Frontend with modern UI/UX
 - 🔄 Global state management with Redux
@@ -22,7 +22,8 @@ A modern, full-stack Subscription Management System built with **Django** (backe
 - Redux (for global state)
 - React Router (for navigation)
 - Axios
-- Tailwind CSS (or your preferred styling system)
+- Tanstack Query
+- RTK Query
 
 **Backend:**
 - Django
