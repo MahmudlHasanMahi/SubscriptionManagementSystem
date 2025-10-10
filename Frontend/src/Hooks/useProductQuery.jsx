@@ -1,12 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { products } from "../Utils/Subscription";
+import { API_ROOT } from "../Utils/enviroment";
 const useProductQuery = () => {
   const productObject = useInfiniteQuery({
     queryKey: ["/products"],
     queryFn: products,
-    initialPageParam: "http://127.0.0.1:8000/products",
+    initialPageParam: `${API_ROOT}/products`,
     getNextPageParam: (props) => {
-      return props.next;
+      // return props.next;
     },
     staleTime: 5 * 1000,
   });

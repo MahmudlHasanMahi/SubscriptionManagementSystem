@@ -1,4 +1,5 @@
 import getCookie from "./extractCSRFToken";
+import { API_ROOT } from "./enviroment";
 const getGroups = async () => {
   const headers = {
     Accept: "application/json",
@@ -6,7 +7,7 @@ const getGroups = async () => {
     "X-CSRFToken": getCookie("csrftoken"),
   };
   try {
-    const res = await fetch("http://127.0.0.1:8000/user/groups", headers);
+    const res = await fetch(`${API_ROOT}/user/groups`, headers);
     const data = await res.json();
     return data;
   } catch (err) {

@@ -1,5 +1,3 @@
-import React from "react";
-
 const Sub1 = () => {
   return (
     <svg
@@ -24,7 +22,7 @@ const Sub1 = () => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="#14ADD6" />
-          <stop offset="1" stop-color="#384295" />
+          <stop offset="1" stopColor="#384295" />
         </linearGradient>
       </defs>
     </svg>

@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import fetchStaff from "../Utils/GetStaff";
+import { API_ROOT } from "../Utils/enviroment";
 const useStaffQuery = ({ filterby, data }) => {
-  const baseurl = `http://127.0.0.1:8000/user/staff-list`;
+  const baseurl = `${API_ROOT}/user/staff-list`;
   const pagination = `?page=${btoa(null)}&page_size=${10}`;
   const filterParams = filterby ? `&filterby=${filterby}&data=${data}` : "";
   const url = baseurl + pagination + filterParams;

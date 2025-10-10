@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import getCookie from "./extractCSRFToken";
+import { API_ROOT } from "./enviroment";
 const CSRFProtect = () => {
   const [CSRFToken, setCSRTToken] = useState("");
 
   useEffect(() => {
     const getCsrfToken = async () => {
+      console.log(API_ROOT);
       try {
-        fetch("http://127.0.0.1:8000/user/getCSRFToken").then(() => {
+        fetch(`${API_ROOT}/user/getCSRFToken`).then(() => {
           setCSRTToken(getCookie("csrftoken"));
         });
       } catch (err) {}

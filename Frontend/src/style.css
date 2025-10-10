@@ -10,6 +10,7 @@
 body {
   background-color: var(--bg);
   font-family: nunito;
+  counter-reset: Serial;
 }
 .toast-success-container {
   background-color: #4d6dac40;
@@ -20,13 +21,17 @@ body {
   color: rgb(255, 255, 255);
 }
 
-.rs-input-group-inside {
-  padding: 0.5em 0em;
-}
 .rs-input-group.rs-input-group-inside,
 .rs-input {
   background-color: rgba(0, 0, 0, 0) !important;
 }
 .rs-input-group.rs-input-group-inside {
   border: none;
+}
+.rs-picker-input-group {
+  height: 100%;
+}
+.rs-picker-toggle-wrapper {
+  display: flex;
+  flex-grow: 1;
 }

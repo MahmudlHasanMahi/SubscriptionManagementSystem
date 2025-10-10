@@ -21,7 +21,14 @@ const ProtectedRoute = () => {
   if (userState) {
     return <Outlet />;
   } else {
-    return <Navigate to="/Signin" state={{ prev: location.pathname }} />;
+    return (
+      <Navigate
+        to="/Signin"
+        state={{
+          prev: location.pathname === "/" ? "/dashboard" : location.pathname,
+        }}
+      />
+    );
   }
 };
 

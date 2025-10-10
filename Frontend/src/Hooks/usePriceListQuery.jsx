@@ -1,11 +1,14 @@
 import { priceList } from "../Utils/Subscription";
 import { useInfiniteQuery } from "@tanstack/react-query";
-
+import { API_ROOT } from "../Utils/enviroment";
 const usePriceListQuery = () => {
+  const baseurl = `${API_ROOT}/price-lists`;
+  const pagination = `?page=${btoa(null)}&page_size=${7}`;
+  const url = baseurl + pagination;
   const priceListObject = useInfiniteQuery({
     queryKey: ["/price-list"],
     queryFn: priceList,
-    initialPageParam: "http://127.0.0.1:8000/price-lists",
+    initialPageParam: url,
     getNextPageParam: (props) => {
       return props.next;
     },
