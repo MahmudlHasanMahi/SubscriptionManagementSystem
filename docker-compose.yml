@@ -1,0 +1,31 @@
+name: subscription-management-system
+
+services:
+  app:
+    build: .
+    container_name: docker-container
+    image: docker-image
+    command: >
+      sh -c "rm -rf */migrations/__pycache__ &&
+            rm -rf */migrations/0* &&
+            python manage.py makemigrations &&
+            python manage.py migrate --fake-initial &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8000 "
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  frontend:
+    build:
+      context: .
+      target: Frontend # <— use the frontend stage
+    container_name: react-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Frontend:/app
+
+    environment:
+      - CHOKIDAR_USEPOLLING=true
