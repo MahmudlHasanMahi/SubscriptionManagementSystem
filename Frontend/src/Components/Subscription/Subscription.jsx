@@ -10,27 +10,23 @@ import Subplan from "../../svg/Subplan";
 import Sub from "../../svg/Sub";
 import { matchPath, Outlet } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { border } from "@mui/system";
+
 const Subscription = () => {
   const location = useLocation();
   const dispatch = useDispatch();
 
   const routes = {
     services: "/subscription/products",
-    plans: "/subscription/plans",
-    subscription: "/subscription",
+    plans: "/subscription",
+    subscription: "/subscription/plans",
   };
+
   const matchRoute = (path) => {
     return !!matchPath(routes[path], location.pathname);
   };
-  useEffect(() => {
-    dispatch(
-      updateHeaderState({
-        title1: `Subscription`,
-        title2: "View, search for and add new subscription",
-        logo: <Sub1 />,
-      })
-    );
-  }, []);
+
   return (
     <Body>
       <div className={styles["cardRow"]}>
@@ -47,8 +43,8 @@ const Subscription = () => {
           highlight={matchRoute("services")}
         />
         <Card
-          title1={"Subscription Plan"}
-          title2="Subscription Plan and Type"
+          title1={"Subscription"}
+          title2="Create Subscription, Review Status"
           logo={<Subplan />}
           style={{
             background: "rgba(147, 126, 205, 0.4)",
@@ -67,11 +63,20 @@ const Subscription = () => {
             width: "30%",
             cursor: "pointer",
           }}
-          link={routes.subscription}
+          // link={routes.subscription}
           highlight={matchRoute("subscription")}
         />
       </div>
-      <Outlet />
+
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0, duration: 0.3 }}
+        className={styles["outletContainer"]}
+      >
+        <Outlet />
+      </motion.div>
     </Body>
   );
 };

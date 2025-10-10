@@ -1,6 +1,12 @@
 import styles from "./FormContainer.module.css";
 import LinearProgress from "@mui/material/LinearProgress";
-const FormContainer = ({ children, title, isLoading }) => {
+const FormContainer = ({
+  children,
+  title,
+  isLoading,
+  disable = false,
+  style = null,
+}) => {
   return (
     <div className={styles["staffFromContainer"]}>
       {isLoading && (
@@ -9,9 +15,9 @@ const FormContainer = ({ children, title, isLoading }) => {
         </div>
       )}
       <div className={styles["form"]}>
-        {isLoading && <div className={styles["loading"]}></div>}
+        {isLoading || (disable && <div className={styles["loading"]}></div>)}
         <span>{title}</span>
-        <div>{children}</div>
+        <div style={style}>{children}</div>
       </div>
     </div>
   );

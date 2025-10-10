@@ -1,12 +1,15 @@
+import SelectOption from "../Staff/Filter/SelectOption";
+import { useInView } from "react-intersection-observer";
+import { AnimatePresence, invariant, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import Label from "../Forms/TextFields/Label";
 import styles from "./MultiSelect.module.css";
+import setDefault from "./setDefault";
 import ObjectTag from "./ObjectTag";
-import SelectOption from "../Staff/Filter/SelectOption";
-import { AnimatePresence, motion } from "motion/react";
 import Arrow from "../../svg/Arrow";
 import Cross from "../../svg/Cross";
-import setDefault from "./setDefault";
+import ItemMenu from "./ItemMenu";
+
 const MultiSelect = ({
   children,
   label,
@@ -14,12 +17,21 @@ const MultiSelect = ({
   objects,
   selected,
   setSelected,
-  defaultValue,
-  setDefaultValue,
+  defaultValue = null,
+  setDefaultValue = null,
   ref = null,
   onChange = null,
+  search = null,
+  type = "multi",
+  listTitle,
 }) => {
+  const containerRef = useRef(null);
   const [show, setShow] = useState(false);
+  const { ref: viewRef, inView } = useInView({ triggerOnce: true });
+  useEffect(() => {
+    objects.fetchNextPage();
+  }, [inView]);
+
   const getModifiedOption = (object) => {
     return setDefault(
       <SelectOption
@@ -32,7 +44,11 @@ const MultiSelect = ({
       onChange
     );
   };
+
   const toggleShow = (e) => {
+    if (search && show) {
+      search.setSearch(null);
+    }
     setShow((prev) => !prev);
   };
 
@@ -49,27 +65,30 @@ const MultiSelect = ({
   };
   const selectEvent = (option, e) => {
     e.stopPropagation();
-
-    setSelected((prev) => {
-      if (!defaultValue) {
-        setDefaultValue(option);
-        setOnChange(option);
-      }
-      const if_exists = isSelected(option);
-
-      if (!if_exists) {
-        return [...prev, option];
-      } else {
-        const filtered = prev.filter((item) => item.id !== option.id);
-        if (!filtered.some((item) => item.id === defaultValue.id)) {
-          const data = filtered.length > 0 ? filtered[0] : null;
-          setDefaultValue(data);
-          setOnChange(data);
+    const if_exists = isSelected(option);
+    if (type == "single") {
+      setSelected(!if_exists ? [option] : []);
+    } else {
+      setSelected((prev) => {
+        if (!defaultValue) {
+          setDefaultValue(option);
+          setOnChange(option);
         }
 
-        return filtered;
-      }
-    });
+        if (!if_exists) {
+          return [...prev, option];
+        } else {
+          const filtered = prev.filter((item) => item.id !== option.id);
+          if (!filtered.some((item) => item.id === defaultValue.id)) {
+            const data = filtered.length > 0 ? filtered[0] : null;
+            setDefaultValue(data);
+            setOnChange(data);
+          }
+
+          return filtered;
+        }
+      });
+    }
   };
 
   return (
@@ -85,10 +104,11 @@ const MultiSelect = ({
       />
       <Label label={label} />
       <div
+        ref={containerRef}
         className={styles["multiSelectObjectContainer"]}
         tabIndex={0}
-        onBlur={() => {
-          setShow(false);
+        onBlur={(e) => {
+          if (!containerRef.current.contains(e.relatedTarget)) toggleShow();
         }}
         onClick={toggleShow}
       >
@@ -114,38 +134,21 @@ const MultiSelect = ({
               </ObjectTag>
             );
           })}
+
           <AnimatePresence>
             {show && (
-              <motion.div
-                className={styles["options"]}
-                animate={{
-                  scale: 1,
-                  maxHeight: "10em",
-                  transition: {
-                    duration: 0.1,
-                  },
-                }}
-                onMouseLeave={toggleShow}
-              >
-                {objects?.map((option) => {
-                  return (
-                    <div
-                      key={option.id}
-                      className={`${styles["optionWrapper"]} ${
-                        isSelected(option)
-                          ? styles["active"]
-                          : styles["highlight"]
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        selectEvent(option, e);
-                      }}
-                    >
-                      <SelectOption title={option.title} />
-                    </div>
-                  );
-                })}
-              </motion.div>
+              <div style={{ position: "absolute", bottom: "-1em" }}>
+                <ItemMenu
+                  itemTitle={listTitle}
+                  search={search}
+                  onChange={onChange}
+                  selectEvent={selectEvent}
+                  objects={objects}
+                  isSelected={isSelected}
+                >
+                  {children}
+                </ItemMenu>
+              </div>
             )}
           </AnimatePresence>
         </div>

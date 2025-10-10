@@ -1,6 +1,7 @@
 .staffFromContainer {
   /* height: fit-content; */
-  background-color: rgba(53, 71, 158, 0.4);
+  background-color: rgba(31, 37, 71, 1);
+
   border-radius: 1.25em;
   position: relative;
 }

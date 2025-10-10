@@ -14,7 +14,6 @@
   align-items: stretch;
   padding-inline: 0.625em;
   min-height: 3.2em;
-  
 }
 .multiSelectObjectContainer > div:first-child {
   display: flex;
@@ -92,14 +91,22 @@
   position: absolute;
   border-radius: 5px;
   width: fit-content;
-  overflow: hidden;
+  height: fit-content;
+  /* overflow-x: scroll; */
   background-color: rgba(29, 29, 29, 0.738);
   scrollbar-color: rgb(53, 68, 71) rgba(0, 0, 0, 0);
   scrollbar-width: thin;
   user-select: none;
-  top: calc(100% + 1em);
-  z-index: 1;
+  /* top: calc(100% + 1em); */
+  /* bottom: 1em; */
+  z-index: 5;
 }
+.options > div {
+  overflow-x: scroll;
+  max-height: 8em;
+  scrollbar-width: thin;
+}
+
 .optionWrapper {
   cursor: pointer;
 }
@@ -116,4 +123,16 @@
   background-color: rgb(29, 29, 29);
   border-radius: 5px;
   z-index: 5;
+}
+.searchBox {
+  border: solid red;
+  padding: 1em;
+  background-color: inherit;
+  border: none;
+  color: white;
+  outline: none;
+  border-bottom: 1px solid rgba(125, 125, 125, 0.688);
+}
+.searchBox::placeholder {
+  color: rgba(255, 255, 255, 0.691);
 }

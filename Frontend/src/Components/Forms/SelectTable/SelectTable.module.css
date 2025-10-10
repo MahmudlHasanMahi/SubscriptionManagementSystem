@@ -10,4 +10,69 @@
 }
 .SelectTable > table {
   width: 100%;
+  border-collapse: collapse;
+}
+.SelectTable > table > tbody > tr,
+.SelectTable > table > thead {
+  border-bottom: 0.5px solid hsl(0, 0%, 71%);
+}
+
+.SelectTable > table > tbody > tr > td {
+  padding: 1em 0.5em;
+}
+.plans {
+  border-radius: 3px;
+  border: 0.3px solid #959595;
+  font-weight: 600;
+  padding: 0.43em;
+  display: flex;
+  width: 100%;
+}
+.plans > span {
+  color: rgba(255, 255, 255, 0.4);
+  font: 0.5em;
+}
+.optionWrapper {
+  position: relative;
+  top: 1em;
+}
+.add {
+  font-size: 1em;
+  margin: 0.68em 0 0 0.68em;
+  cursor: pointer;
+  transition: color 500ms;
+  color: rgba(226, 226, 226, 0.915);
+  width: fit-content;
+}
+.add:hover {
+  color: rgb(255, 255, 255);
+}
+.text {
+  /* border: solid red; */
+  display: flex;
+  justify-content: center;
+}
+.text > input {
+  width: 40%;
+  color: white;
+  padding: 0.63em 0.3em 0.63em 0.63em;
+  border: none;
+  outline: 0.3px solid #959595;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0);
+}
+.delete {
+  text-align: end;
+}
+.row {
+  position: relative;
+}
+.overlay {
+  position: absolute;
+  z-index: 2;
+  background-color: rgba(255, 0, 0, 0.24);
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }

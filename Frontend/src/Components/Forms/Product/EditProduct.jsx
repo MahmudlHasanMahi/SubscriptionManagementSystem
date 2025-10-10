@@ -21,6 +21,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../../Features/headerState";
 import { useDebouncedCallback } from "use-debounce";
+import AddPriceForm from "../AddPriceForm/AddPriceForm";
+import { AnimatePresence } from "framer-motion";
+import SelectOption from "../../Staff/Filter/SelectOption";
 const EditProduct = () => {
   const { productId } = useParams();
   const queryClient = useQueryClient();
@@ -30,7 +33,7 @@ const EditProduct = () => {
 
   const [priceFilter, setPriceFilter] = useState(null);
   const price = useGetPriceListInfiniteQuery({ size: 3, filter: priceFilter });
-
+  const [showPriceFrom, setShowPriceFrom] = useState(false);
   const [patchProduct, patchDetails] = usePatchProductMutation();
   const [selected, setSelected] = useState([]);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -108,61 +111,96 @@ const EditProduct = () => {
     setSearch(e.target.value);
   }, 500);
 
+  const Addprice = (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: "0 0 0 1em",
+        textDecoration: "none",
+        color: "white",
+      }}
+      onClick={() => setShowPriceFrom(true)}
+    >
+      <span style={{ fontSize: "1.4em" }}>+</span>
+      <SelectOption
+        title="Add Price"
+        style={{
+          fontSize: "0.9em",
+          textDecoration: "underline",
+          fontWeight: "700",
+        }}
+      />
+    </div>
+  );
+
   return (
     <Body>
-      <form onSubmit={onSubmit} onChange={onChange}>
-        <FormContainer
-          isLoading={isLoading || price.isLoading}
-          title={"Edit Product"}
-        >
-          <CSRFProtect />
-          <TextFields
-            type={"text"}
-            name={"name"}
-            label={"Name"}
-            value={data?.name}
-            editField
-            required
-          />
-          <Textbox
-            label={"Description"}
-            name={"description"}
-            value={data?.description}
-            onChange={onChange}
-          />
-          <MultiSelect
-            label={"Price"}
-            name={"default_price"}
-            objects={price}
-            selected={selected}
-            setSelected={setSelected}
-            defaultValue={defaultValue}
-            setDefaultValue={setDefaultValue}
-            onChange={onChange}
-            search={{
-              search: priceFilter,
-              setSearch: setPriceFilter,
-              onChange: onPriceListSearch,
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              gap: "1em",
-              paddingBlockStart: "3em",
-            }}
+      <div style={{ position: "relative" }}>
+        <form onSubmit={onSubmit} onChange={onChange}>
+          <FormContainer
+            isLoading={isLoading || price.isLoading}
+            title={"Edit Product"}
           >
-            <Button title={"Save"} disable={disable} />
-
-            <Button
-              title={"Cancel"}
-              style={{ background: "#ffffff3b" }}
-              link={"/subscription/products"}
+            <CSRFProtect />
+            <TextFields
+              type={"text"}
+              name={"name"}
+              label={"Name"}
+              value={data?.name}
+              editField
+              required
             />
-          </div>
-        </FormContainer>
-      </form>
+
+            <MultiSelect
+              label={"Price"}
+              name={"default_price"}
+              objects={price}
+              selected={selected}
+              setSelected={setSelected}
+              defaultValue={defaultValue}
+              setDefaultValue={setDefaultValue}
+              onChange={onChange}
+              listTitle={"title"}
+              search={{
+                search: priceFilter,
+                setSearch: setPriceFilter,
+                onChange: onPriceListSearch,
+              }}
+            >
+              {Addprice}
+            </MultiSelect>
+            <div style={{ marginTop: "1em" }}>
+              <Textbox
+                label={"Description"}
+                name={"description"}
+                value={data?.description}
+                onChange={onChange}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                gap: "1em",
+                paddingBlockStart: "3em",
+              }}
+            >
+              <Button title={"Save"} disable={disable} />
+
+              <Button
+                title={"Cancel"}
+                style={{ background: "#ffffff3b" }}
+                link={"/subscription/products"}
+              />
+            </div>
+          </FormContainer>
+        </form>
+        <AnimatePresence>
+          {showPriceFrom && <AddPriceForm state={setShowPriceFrom} />}
+        </AnimatePresence>
+      </div>
     </Body>
   );
 };

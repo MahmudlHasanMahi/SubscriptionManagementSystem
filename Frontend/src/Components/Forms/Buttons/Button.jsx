@@ -7,9 +7,11 @@ function Button({
   link = undefined,
   value = null,
   disable = false,
+  onClick,
 }) {
   return (
     <button
+      onClick={onClick}
       type={!disable ? "submit" : "button"}
       className={`${styles["button"]} ${disable && styles["disable"]}`}
       style={style}

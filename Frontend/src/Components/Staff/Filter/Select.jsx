@@ -40,7 +40,7 @@ const Select = ({
                 },
               }}
             >
-              {children.map((option, idx) => {
+              {children?.map((option, idx) => {
                 return (
                   <OptionWrapper
                     active={property?.selected == idx}

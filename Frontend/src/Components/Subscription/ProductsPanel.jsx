@@ -1,15 +1,30 @@
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Panel from "../Panel/Panel";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
 import Select from "../Staff/Filter/Select";
 import SelectOption from "../Staff/Filter/SelectOption";
 import Button from "../Forms/Buttons/Button";
-const ProductsPanel = ({ filter, setfilter, setinput, fields }) => {
+const ProductsPanel = ({
+  filter,
+  setfilter,
+  setinput,
+  fields,
+  numeric = 0,
+}) => {
   const inputRef = useRef();
+  useEffect(() => {
+    if (filter.selected == null) {
+      setinput(null);
+      inputRef.current.value = "";
+    }
+  }, [filter]);
   return (
-    <Panel backgroud_color={"rgba(22, 115, 161, 0.4)"}>
-      <NumericTextBox title1={250} title2={"Total Products"} />
+    <Panel
+      style={{ backgroundColor: "rgba(22, 115, 161, 0.4)" }}
+      backgroud_color={"rgba(22, 115, 161, 0.4)"}
+    >
+      <NumericTextBox title1={numeric} title2={"Total Products"} />
       <TextFields
         type={"text"}
         ref={inputRef}

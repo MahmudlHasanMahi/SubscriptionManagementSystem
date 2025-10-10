@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 const Dropdown = () => {
-  const [dir, setDir] = useState("ltr");
+  const [dir, setDir] = useState(document.dir);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -17,7 +17,6 @@ const Dropdown = () => {
   }, [dir]);
 
   const toggleLanguage = (e) => {
-    e.stopPropagation();
     if (dir == "ltr") {
       setDir("rtl");
     } else {
@@ -43,15 +42,21 @@ const Dropdown = () => {
       transition={{ duration: 0.3 }}
       className={styles["dropdown"]}
     >
-      <div tabIndex={1} className={styles["language"]} onClick={toggleLanguage}>
-        <span className={styles[dir == "ltr" ? "active" : "deactive"]}>
+      <div className={styles["language"]} onClick={toggleLanguage}>
+        <span
+          tabIndex={0}
+          className={styles[dir == "ltr" || dir == "" ? "active" : "deactive"]}
+        >
           English
         </span>
-        <span className={styles[dir == "rtl" ? "active" : "deactive"]}>
+        <span
+          tabIndex={2}
+          className={styles[dir == "rtl" ? "active" : "deactive"]}
+        >
           عربي
         </span>
       </div>
-      <div tabIndex={2} className={styles["account"]} onClick={profile}>
+      <div className={styles["account"]} onClick={profile}>
         Account
       </div>
       <div tabIndex={3} onClick={signOut}>

@@ -24,7 +24,7 @@ const ChangePasswordForm = () => {
     const re_password = e.target.re_password.value;
     if (password == re_password) {
       dispatch(ChangePassword({ password, re_password })).then((res) => {
-        navigate("/");
+        navigate("/dashboard");
       });
     } else {
       notifyError(PASSWORDS_UNMATCH);
@@ -40,12 +40,14 @@ const ChangePasswordForm = () => {
           label={"password"}
           required={true}
         />
+        <br />
         <TextFields
           type={"password"}
           label={"Confirm password"}
           name={"re_password"}
           required={true}
         />
+        <br />
         <Button type="submit" title={"Change Password"} />
       </form>
     </FormContainer>

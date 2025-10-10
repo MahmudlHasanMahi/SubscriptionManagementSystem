@@ -16,8 +16,7 @@ import createStaff from "../../../Utils/CreateStaff";
 import getGroups from "../../../Utils/GetGroups";
 import FormContainer from "../FormContainer/FormContainer";
 import CSRFProtect from "../../../Utils/CSRFProtect";
-import Staff2 from "../../../svg/Staff2";
-const AddStaffForm = () => {
+const AddClientForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -26,7 +25,6 @@ const AddStaffForm = () => {
     show: false,
     selected: null,
   });
-  const [groups, setGroups] = useState([]);
   const randomString = useMemo(() => {
     return GenerateString(10);
   }, []);
@@ -34,33 +32,28 @@ const AddStaffForm = () => {
   useEffect(() => {
     dispatch(
       updateHeaderState({
-        title1: `New Staff`,
-        title2: "Create account for a new staff",
-        logo: <Staff2 color={"#acc2ecff"} />,
+        title1: `New Client`,
+        title2: "Create account for a new client",
+        logo: null,
       })
     );
-    getGroups().then((val) => {
-      setGroups(val);
-    });
   }, []);
   const onSubmit = (e) => {
     e.preventDefault();
-    if (property.selected == null) {
-      return notifyError("Please select role");
-    }
+
     const obj = {
       name: e.target.name.value,
       email: e.target.email.value,
       mobile: e.target.mobile.value,
       password: e.target.password.value,
       active: e.target.activateAccount.checked,
-      groups_level: groups[property.selected].level,
+      groups_level: "Client",
     };
     createStaff(obj).then(() => {
       queryClient.removeQueries({
         queryKey: ["staff/fetchStaff"],
       });
-      navigate("/staff");
+      navigate("/client");
     });
   };
   return (
@@ -94,16 +87,7 @@ const AddStaffForm = () => {
             value="asdlflskdf"
             editField={true}
           /> */}
-          <Select
-            placeholder={"Select Role"}
-            title={"Role"}
-            property={property}
-            setProperty={setProperty}
-          >
-            {groups.map((prev, idx) => {
-              return <SelectOption key={idx} title={prev.name} />;
-            })}
-          </Select>
+
           <TextFields
             type={"text"}
             name={"password"}
@@ -134,4 +118,4 @@ const AddStaffForm = () => {
   );
 };
 
-export default AddStaffForm;
+export default AddClientForm;

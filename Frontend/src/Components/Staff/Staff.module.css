@@ -1,7 +1,9 @@
 .tableContainer {
   max-height: 30em;
   margin-top: 1.56em;
+  height: 20em;
 }
-.tableContainer > div {
-  background-color: rgba(77, 109, 172, 0.4);
+.tableContainer {
+
+
 }

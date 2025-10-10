@@ -2,21 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Body from "../Body/Body";
 import { updateHeaderState } from "../../Features/headerState";
 import { useDispatch } from "react-redux";
-import StaffPanel from "./StaffPanel";
+import ClientPanel from "./ClientPanel";
 import Table from "../Table/Table";
-import styles from "./Staff.module.css";
+import styles from "../Staff/Staff.module.css";
 import { user } from "../../Features/UserAuth/UserAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
 import useStaffQuery from "../../Hooks/useStaffQuery";
 import Staff2 from "../../svg/Staff2";
 import ActionButton from "../Table/ActionButton";
 import { useGetStaffListInfiniteQuery } from "../../Features/Services/staffApi";
-const Staff = () => {
+const Client = () => {
   const userState = useSelector(user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [input, setInput] = useState(null);
   const [filter, setFilter] = useState({
     selected: null,
@@ -25,33 +24,24 @@ const Staff = () => {
   const fields = {
     name: "name",
     email: "email",
-    groups: "groups",
-    mobile: "mobile",
-  };
-  const fields2 = {
-    name: "name",
-    email: "email",
     mobile: "mobile",
   };
 
   const staffList = useGetStaffListInfiniteQuery({
     page_size: 5,
     filter: input && {
-      filterBy: Object.values(fields2)[filter.selected],
+      filterBy: Object.values(fields)[filter.selected],
       data: input,
     },
-    usertype: "staff",
+    usertype: "client",
   });
   useEffect(() => {
-    if (userState.groups === "Employee") {
-      return navigate("/");
-    }
     dispatch(fetchStaff({ count: true }));
     dispatch(
       updateHeaderState({
-        title1: `Staffs`,
-        title2: "Create account for a new staff",
-        logo: <Staff2 color={"#acc2ecff"} />,
+        title1: `Clients`,
+        title2: "Create account for a new clients",
+        logo: <Staff2 color={"#C759CF"} />,
       })
     );
   }, []);
@@ -61,21 +51,19 @@ const Staff = () => {
         <Navigate to="/dashboard" />
       ) : (
         <>
-          <StaffPanel
+          <ClientPanel
             filter={filter}
             setfilter={setFilter}
             setinput={setInput}
-            fields={fields2}
+            fields={fields}
           />
           <div className={styles["tableContainer"]} setInput={setInput}>
             <Table
               color={"rgba(42, 51, 77, 1)"}
-              title={"Staff List"}
+              title={"Client List"}
               endpont={{}}
               fields={fields}
-              actionButtons={[
-                <ActionButton title={"Edit"} url={"edit-staff/"} />,
-              ]}
+              actionButton={<ActionButton title={"Edit"} url={"edit-staff/"} />}
               queryObject={staffList}
             />
           </div>
@@ -85,4 +73,4 @@ const Staff = () => {
   );
 };
 
-export default Staff;
+export default Client;

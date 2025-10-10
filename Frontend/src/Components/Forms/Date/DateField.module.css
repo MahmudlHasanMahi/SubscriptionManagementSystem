@@ -8,22 +8,21 @@
 }
 .date {
   display: flex;
-  width: 100%;
-  border: 1px solid #d0d0d0;
-  /* height: 100%; */
+  flex-grow: 1;
+  justify-content: center;
+  align-items: stretch;
+  /* width: 100%; */
   border-radius: 10px;
   user-select: none;
   gap: 0.5em;
-  margin-top: 0.3em;
-  /* padding-inline: 0.5em; */
-  /* padding-block: 0.4em; */
+  height: 3.2em;
   overflow: hidden;
 }
 .cycleContainer {
   display: flex;
   align-items: center;
   background: rgba(0, 0, 0, 0);
-  width: 30%;
+  /* width: 30%; */
   justify-content: center;
   padding-inline: 0.5em 0.25em;
   border-inline: 1px solid #d0d0d0;
@@ -38,7 +37,8 @@
   padding: 0.5em 0.25em;
   border: none;
   color: white;
-  width: 100%;
+  flex-grow: 1;
+  /* width: 100%; */
 }
 
 .cycle::placeholder {

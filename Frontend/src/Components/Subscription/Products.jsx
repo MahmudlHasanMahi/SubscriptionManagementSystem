@@ -1,51 +1,78 @@
 import { useEffect, useState } from "react";
 import styles from "./Products.module.css";
-import useProductQuery from "../../Hooks/useProductQuery";
 import Table from "../Table/Table";
 import Period from "./Period";
 import PriceList from "./PriceList";
 import ProductsPanel from "./ProductsPanel";
 import ActionButton from "../Table/ActionButton";
-
+import { useGetProductListInfiniteQuery } from "../../Features/Services/productApi";
+import { useDispatch } from "react-redux";
+import { updateHeaderState } from "../../Features/headerState";
+import Sub1 from "../../svg/sub1";
+import zeropad from "../../Utils/zeropad";
 const Products = () => {
-  const productObject = useProductQuery();
-  const [input, setInput] = useState("");
+  const dispatch = useDispatch();
+  const [input, setInput] = useState(null);
   const [filter, setFilter] = useState({
     selected: null,
   });
   const fields = {
     name: "name",
     price: "default_price.title",
-    date: "created_at",
   };
+  const filterField = {
+    name: "name",
+  };
+  const products = useGetProductListInfiniteQuery({
+    size: 0,
+    filter: {
+      filterBy: Object.values(filterField)[filter.selected],
+      data: input,
+    },
+  });
 
+  useEffect(() => {
+    dispatch(
+      updateHeaderState({
+        title1: `Product`,
+        title2: "View, search for and add new product",
+        logo: <Sub1 />,
+      })
+    );
+  }, []);
+
+  console.log(products);
   return (
-    <div className={styles["product"]}>
+    <>
       <ProductsPanel
         filter={filter}
         setfilter={setFilter}
         setinput={setInput}
-        fields={fields}
+        fields={filterField}
+        numberic={zeropad(products.data?.pages[0].length)}
       />
 
       <Table
+        color={"rgba(24, 55, 73, 1)"}
         title={"Products"}
         endpont={{}}
         fields={fields}
-        height={"55vh"}
-        actionButton={
+        height={"45vh"}
+        actionButtons={[
           <ActionButton
             url={"/subscription/edit-product"}
             title={"View more"}
-          />
-        }
-        queryObject={productObject}
+          />,
+        ]}
+        queryObject={products}
       />
+      <br />
+      <br />
       <div>
-        <Period />
-        <PriceList />
+        {/* <Period />
+        <PriceList /> */}
       </div>
-    </div>
+    </>
   );
 };
 

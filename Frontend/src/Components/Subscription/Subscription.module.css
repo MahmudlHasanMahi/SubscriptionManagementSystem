@@ -2,5 +2,11 @@
   display: flex;
   flex-direction: row;
   gap: 1.4em;
-  
+  height: 11em;
+}
+.outletContainer {
+  padding-block: 1.56em;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.56em;
 }

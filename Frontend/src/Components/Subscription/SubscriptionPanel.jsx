@@ -5,12 +5,12 @@ import Button from "../Forms/Buttons/Button";
 import TextFields from "../Forms/TextFields/TextFields";
 import Select from "../Staff/Filter/Select";
 import SelectOption from "../Staff/Filter/SelectOption";
-const SubscriptionPanel = () => {
+const SubscriptionPanel = ({ numeric = 0 }) => {
   const [input, setinput] = useState();
   const [filter, setfilter] = useState();
   return (
-    <Panel backgroud_color={"rgba(22, 115, 161, 0.4)"}>
-      <NumericTextBox title1={250} title2={"Total Products"} />
+    <Panel style={{ backgroundColor: "rgba(22, 115, 161, 0.4)" }}>
+      <NumericTextBox title1={numeric} title2={"Total Products"} />
       <TextFields
         type={"text"}
         label={"Quick search a product"}
@@ -36,7 +36,7 @@ const SubscriptionPanel = () => {
       <Button
         link={"/subscription/create-subscription"}
         style={{ width: "20%" }}
-        title={"Create Product"}
+        title={"Create Subscription"}
       />
     </Panel>
   );

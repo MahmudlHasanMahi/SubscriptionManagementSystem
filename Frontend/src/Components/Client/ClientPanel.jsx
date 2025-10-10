@@ -1,30 +1,27 @@
+import React from "react";
+
 import { useEffect, useRef, useState } from "react";
-import styles from "./Staff.module.css";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
 import Button from "../Forms/Buttons/Button";
-import Select from "./Filter/Select";
-import SelectOption from "./Filter/SelectOption";
+import Select from "../Staff/Filter/Select";
+import SelectOption from "../Staff/Filter/SelectOption";
 import { useSelector } from "react-redux";
 import { staffState } from "../../Features/staff";
 import Panel from "../Panel/Panel";
-import Menu from "../MultiSelect/Menu";
-const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
+import { user } from "../../Features/UserAuth/UserAuth";
+const ClientPanel = ({ filter, setfilter, setinput, fields }) => {
   const inputRef = useRef();
   const staff = useSelector(staffState);
-
+  const { groups } = useSelector(user);
   useEffect(() => {
     inputRef.current.focus();
-    if (filter.selected == null) {
-      setinput(null);
-      inputRef.current.value = "";
-    }
   }, [filter]);
   return (
-    <Panel style={{ backgroundColor: "rgba(77, 109, 172, 0.4)" }}>
+    <Panel style={{ backgroundColor: "rgba(42, 51, 77, 1)" }}>
       <NumericTextBox
         title1={staff.staffState?.count}
-        title2={"Total number of staff"}
+        title2={"Total number of client"}
       />
 
       <TextFields
@@ -35,7 +32,7 @@ const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
             ? "Please select filter"
             : `Filter ${Object.keys(fields)[filter.selected]}...`
         }
-        label={"Quick search a staff"}
+        label={"Quick search a client"}
         style={{ margin: 0, width: "20em" }}
         setinput={setinput}
         disabled={filter.selected == null}
@@ -53,13 +50,15 @@ const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
           ))}
         </Select>
       </div>
-      <Button
-        link={"add-staff"}
-        style={{ width: "20%" }}
-        title={"Add New Staff"}
-      />
+      {groups === "Manager" && (
+        <Button
+          link={"add-client"}  
+          style={{ width: "20%" }}
+          title={"Add New Client"}
+        />
+      )}
     </Panel>
   );
 };
 
-export default StaffPanel;
+export default ClientPanel;

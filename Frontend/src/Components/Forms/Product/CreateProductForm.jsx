@@ -21,7 +21,11 @@ import { SOMETHING_WENT_WRONG } from "../../../Utils/types";
 import ErrorToString from "../../../Utils/ErrorToString";
 import { useInView } from "react-intersection-observer";
 import { useDebouncedCallback } from "use-debounce";
-
+import SelectOption from "../../Staff/Filter/SelectOption";
+import { AnimatePresence } from "framer-motion";
+import { Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
+import AddPriceForm from "../AddPriceForm/AddPriceForm";
 const CreateProductForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +33,7 @@ const CreateProductForm = () => {
   const [selected, setSelected] = useState([]);
   const [priceFilter, setPriceFilter] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
+  const [addPrice, setAddPrice] = useState(false);
   const objects = useGetPriceListInfiniteQuery({
     size: 3,
     filter: priceFilter,
@@ -36,6 +41,7 @@ const CreateProductForm = () => {
 
   const [createProduct, result] = useCreateProductMutation();
   const { ref, inView } = useInView();
+
   useEffect(() => {
     objects.fetchNextPage();
   }, [inView]);
@@ -81,44 +87,80 @@ const CreateProductForm = () => {
     setSearch(e.target.value);
   }, 500);
 
+  const Addprice = (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: "0 0 0 1em",
+        textDecoration: "none",
+        color: "white",
+      }}
+      onClick={(prev) => setAddPrice(true)}
+    >
+      <span style={{ fontSize: "1.4em" }}>+</span>
+      <SelectOption
+        title="Add Price"
+        style={{
+          fontSize: "0.9em",
+          textDecoration: "underline",
+          fontWeight: "700",
+        }}
+      />
+    </div>
+  );
+
   return (
     <Body>
-      <form onSubmit={onSubmit}>
-        <FormContainer
-          title={"Create new products"}
-          isLoading={objects.isLoading || result.isLoading}
-        >
-          <TextFields
-            type={"text"}
-            required={true}
-            name={"name"}
-            label={"Name"}
-          />
-          <MultiSelect
-            label={"Price"}
-            // type="single"
-            name={"defaultValue"}
-            objects={objects}
-            selected={selected}
-            setSelected={setSelected}
-            defaultValue={defaultValue}
-            setDefaultValue={setDefaultValue}
-            viewRef={ref}
-            search={{
-              search: priceFilter,
-              setSearch: setPriceFilter,
-              onChange: onChange,
-            }}
-          />
-          <Textbox label={"Description"} name={"description"} />
-          <Button title={"Create Product"} />
-          <Button
-            title={"Cancel"}
-            style={{ background: "#ffffff3b" }}
-            link={"/subscription/products"}
-          />
-        </FormContainer>
-      </form>
+      <div style={{ position: "relative" }}>
+        <form onSubmit={onSubmit}>
+          <FormContainer
+            title={"Create new products"}
+            isLoading={objects.isLoading || result.isLoading}
+          >
+            <TextFields
+              type={"text"}
+              required={true}
+              name={"name"}
+              label={"Name"}
+            />
+            <MultiSelect
+              label={"Price"}
+              name={"defaultValue"}
+              objects={objects}
+              selected={selected}
+              setSelected={setSelected}
+              defaultValue={defaultValue}
+              setDefaultValue={setDefaultValue}
+              viewRef={ref}
+              listTitle="title"
+              search={{
+                search: priceFilter,
+                setSearch: setPriceFilter,
+                onChange: onChange,
+              }}
+            >
+              {Addprice}
+            </MultiSelect>
+            <div style={{ marginTop: "1em" }}>
+              <Textbox label={"Description"} name={"description"} />
+            </div>
+            <div></div>
+            <div style={{ width: "100%", display: "flex", gap: "1em" }}>
+              <Button title={"Create Product"} />
+              <Button
+                title={"Cancel"}
+                style={{ background: "#ffffff3b" }}
+                link={"/subscription/products"}
+              />
+            </div>
+          </FormContainer>
+        </form>
+        <AnimatePresence>
+          {addPrice && <AddPriceForm state={setAddPrice} />}
+        </AnimatePresence>
+      </div>
     </Body>
   );
 };

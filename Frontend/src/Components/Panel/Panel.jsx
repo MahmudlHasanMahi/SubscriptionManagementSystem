@@ -1,12 +1,7 @@
 import styles from "./Panel.module.css";
-const Panel = ({ children, backgroud_color = null }) => {
+const Panel = ({ children, style }) => {
   return (
-    <div
-      style={{
-        backgroundColor: backgroud_color,
-      }}
-      className={styles["panel"]}
-    >
+    <div style={{ ...style }} className={styles["panel"]}>
       {children}
     </div>
   );

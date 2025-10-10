@@ -10,14 +10,12 @@ const Profile = () => {
   const { name, groups } = useSelector(user);
   const [isClicked, setIsClicked] = useState(false);
   const toggleClick = (e) => {
-    e.stopPropagation();
     setIsClicked((prev) => !prev);
   };
 
   return (
     <div
       className={styles["profile"]}
-      tabIndex={0}
       onBlur={toggleClick}
       onClick={toggleClick}
     >

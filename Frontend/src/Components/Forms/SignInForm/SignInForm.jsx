@@ -33,12 +33,14 @@ const SignInForm = () => {
           label={"Email"}
           required={true}
         />
+        <br />
         <TextFields
           type={"password"}
           name={"password"}
           label={"Password"}
           required={true}
         />
+        <br />
         <Button title={"Sign in"} />
       </form>
     </FormContainer>

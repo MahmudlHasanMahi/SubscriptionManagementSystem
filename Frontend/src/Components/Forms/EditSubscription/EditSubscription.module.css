@@ -1,0 +1,27 @@
+.column {
+  text-align: center;
+}
+.dotMenu-container {
+  width: fit-content;
+  float: right;
+  position: relative;
+}
+.dotMenu {
+  cursor: pointer;
+  border-radius: 3px;
+  border: 0.3px solid #959595;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  background-color: rgb(34, 34, 34);
+  transition: background-color 0.25s;
+}
+
+.menu {
+  position: absolute;
+}
+
+.dotMenu:hover {
+  background-color: rgb(94, 94, 94);
+}

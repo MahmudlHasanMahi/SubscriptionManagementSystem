@@ -18,7 +18,7 @@ const Card = ({
       className={`${styles["card"]} ${link && !highlight && styles["hover"]}`}
       style={{
         ...style,
-        border: highlight ? "solid #FFFFFF" : "none",
+        outline: highlight ? "solid #FFFFFF" : "none",
         cursor: link ? "pointer" : "default",
       }}
     >
