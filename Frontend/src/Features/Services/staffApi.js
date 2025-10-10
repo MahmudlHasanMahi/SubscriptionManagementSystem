@@ -5,15 +5,15 @@ const headers = {
   "Content-Type": "application/json",
 };
 import { API_ROOT } from "../../Utils/enviroment";
-export const clientApi = createApi({
-  reducerPath: "clientApi",
+export const staffApi = createApi({
+  reducerPath: "staffApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_ROOT}/subscription`,
+    baseUrl: `${API_ROOT}/user`,
   }),
   endpoints: (builder) => ({
-    getClientList: builder.infiniteQuery({
+    getStaffList: builder.infiniteQuery({
       infiniteQueryOptions: {
-        initialPageParam: "clients",
+        initialPageParam: "",
 
         getNextPageParam: (
           lastPage,
@@ -35,11 +35,11 @@ export const clientApi = createApi({
           ? `&filterby=${queryArg.filter.filterBy}&data=${queryArg.filter.data}`
           : "";
 
-        const params = `clients?${paginationParams}${filter}&type=${"client"}`;
+        const params = `staff-list?${paginationParams}${filter}&type=${queryArg.usertype}`;
         return params;
       },
     }),
-    createClient: builder.mutation({
+    createStaff: builder.mutation({
       query: (objects) => ({
         url: "client",
         headers,
@@ -47,8 +47,12 @@ export const clientApi = createApi({
         body: JSON.stringify(objects),
       }),
     }),
+    getStaffCount: builder.query({}),
   }),
 });
 
-export const { useGetClientListInfiniteQuery, useCreateClientMutation } =
-  clientApi;
+export const {
+  useGetStaffListInfiniteQuery,
+  useGetStaffCountQuery,
+  useCreateStaffMutation,
+} = staffApi;

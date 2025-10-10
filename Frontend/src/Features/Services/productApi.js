@@ -5,10 +5,10 @@ const headers = {
   "Content-Type": "application/json",
   "X-CSRFToken": getCookie("csrftoken"),
 };
-
+import { API_ROOT } from "../../Utils/enviroment";
 export const productsApi = createApi({
   reducerPath: "productsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${API_ROOT}` }),
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: () => "products",
@@ -33,10 +33,32 @@ export const productsApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Product", id }],
     }),
+    getProductList: builder.infiniteQuery({
+      infiniteQueryOptions: {
+        initialPageParam: "page_size=2",
+
+        getNextPageParam: (
+          lastPage,
+          allPages,
+          lastPageParam,
+          allPageParams
+        ) => {
+          return lastPage?.next;
+        },
+      },
+      query({ queryArg, pageParam }) {
+        const paginationParams = `${pageParam}&page_size=${queryArg.size}`;
+        const filter = queryArg.filter?.data
+          ? `&filterby=${queryArg.filter.filterBy}&data=${queryArg.filter.data}`
+          : "";
+        return `products?${paginationParams}${filter}`;
+      },
+    }),
   }),
 });
 
 export const {
+  useGetProductListInfiniteQuery,
   useGetProductsQuery,
   useCreateProductMutation,
   useGetProductQuery,

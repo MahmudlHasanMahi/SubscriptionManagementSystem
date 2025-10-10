@@ -6,6 +6,7 @@ const initialState = {
   staffState: null,
   isLoading: false,
 };
+import { API_ROOT } from "../Utils/enviroment";
 // const initialState = {
 // staffState:{
 // statffList:[],
@@ -24,9 +25,7 @@ export const fetchStaff = createAsyncThunk(
   "staff/fetchStaff",
   async ({ pageParam, count }) => {
     try {
-      const url = count
-        ? "http://127.0.0.1:8000/user/staff-list?count=true"
-        : pageParam;
+      const url = count ? `${API_ROOT}/user/staff-list?count=true` : pageParam;
       const res = await fetch(url, { headers });
       const data = await res.json();
       return data;
@@ -36,7 +35,7 @@ export const fetchStaff = createAsyncThunk(
 
 export const getGroups = createAsyncThunk("groups/role", async () => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/user/groups", headers);
+    const res = await fetch(`${API_ROOT}/user/groups`, headers);
     const data = await res.json();
     return data;
   } catch (err) {}
@@ -44,7 +43,7 @@ export const getGroups = createAsyncThunk("groups/role", async () => {
 
 export const getStaff = createAsyncThunk("staff/get-staff", async (id) => {
   try {
-    const res = await fetch(`http://127.0.0.1:8000/user/staff/${id}`, headers);
+    const res = await fetch(`${API_ROOT}/user/staff/${id}`, headers);
     const data = await res.json();
     if (res.ok) return data;
     else return notifyError(USER_DOESNOT_EXISTS);
@@ -57,7 +56,7 @@ export const editStaff = createAsyncThunk(
   "staff/edit",
   async ({ staffId, body }) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/user/staff/${staffId}`, {
+      const res = await fetch(`${API_ROOT}/user/staff/${staffId}`, {
         method: "PATCH",
         headers,
         body: JSON.stringify(body),

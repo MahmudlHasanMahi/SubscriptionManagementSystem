@@ -10,7 +10,7 @@ const initialState = {
   user: null,
   isLoading: false,
 };
-
+import { API_ROOT } from "../../Utils/enviroment";
 export const SignIn = createAsyncThunk(
   "UserAuth/sign",
   async (signInCredentials) => {
@@ -20,7 +20,7 @@ export const SignIn = createAsyncThunk(
       "X-CSRFToken": getCookie("csrftoken"),
     };
     try {
-      const res = await fetch("http://127.0.0.1:8000/user/signup", {
+      const res = await fetch(`${API_ROOT}/user/signup`, {
         method: "POST",
         headers,
         body: JSON.stringify(signInCredentials),
@@ -31,7 +31,6 @@ export const SignIn = createAsyncThunk(
         return null;
       }
       if (data.last_login) {
-        notifySuccess(LOGIN_SUCCESSFULL);
         return data;
       }
       return { ...data, password: signInCredentials.password };
@@ -49,7 +48,7 @@ export const Signout = createAsyncThunk("UserAuth/signout", async () => {
       "X-CSRFToken": getCookie("csrftoken"),
     };
 
-    const res = await fetch("http://127.0.0.1:8000/user/signOut", {
+    const res = await fetch(`${API_ROOT}/user/signOut`, {
       method: "POST",
       headers,
     });
@@ -60,7 +59,7 @@ export const IsAuthenticated = createAsyncThunk(
   "UserAuth/IsAuthenticated",
   async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/user/checkAuthentication");
+      const res = await fetch(`${API_ROOT}/user/checkAuthentication`);
       const data = await res.json();
       return data;
     } catch (err) {
@@ -85,7 +84,7 @@ export const ChangePassword = createAsyncThunk(
       re_password: newPasswords.re_password,
     };
     try {
-      const res = await fetch("http://127.0.0.1:8000/user/resetPassword", {
+      const res = await fetch(`${API_ROOT}/user/resetPassword`, {
         method: "POST",
         headers,
         body: JSON.stringify(body),
