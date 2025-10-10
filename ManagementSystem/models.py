@@ -1,28 +1,19 @@
-from django.db import models
+from django.db import models,transaction,IntegrityError
+from django.utils import timezone
+from User.models import User,Client
+from django.dispatch import receiver
 from datetime import datetime, timedelta
 from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.exceptions import ValidationError
-from User.models import User
-class Client(models.Model):
-    client = models.CharField(max_length=64, blank=False)
-    address = models.CharField(max_length=1024, blank=False)
-    representative = models.ManyToManyField(
-        "Representative", blank=True, related_name="Client")
-
-    class Meta:
-        verbose_name_plural = "Clients"
-
-    def __str__(self):
-        return self.client
-
+from django.utils.translation import gettext_lazy as _
+from .Mixins.subscriptionmixin import SubscriptionMixIn,SubscriptionPlanMixIn
 
 class Representative(models.Model):
 
     name = models.CharField(max_length=64, unique=True, blank=False)
     client = models.ManyToManyField(
         Client, blank=True, related_name="Representative")
-
+    
     def __str__(self):
         return self.name
 
@@ -60,71 +51,26 @@ class Product(models.Model):
 
 
 
+
 # *********************
-class SubscriptionPlan(models.Model):
-    STATUS = [
-        ("ACTIVE", "Active"),
-        ("CANCELLED", "Cancelled"),
-        ("DEACTIVE", "Deactive"),
-        ("EXPIRED", "Expired"),
-    ]
-    product = models.ForeignKey(Product,default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
-    status = models.CharField(max_length=15, choices=STATUS, default="DEACTIVE")
-    subscription = models.ForeignKey(
-        "Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="subscription_plans")
-    quantity = models.PositiveIntegerField(default=1)
+class SubscriptionPlan(SubscriptionPlanMixIn):
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-class Subscription(models.Model):
-
-    STATUS = [
-        ("SCHEDULED","Scheduled"),
-        ("PENDING","Pending"),
-        ("ACTIVE", "Active"),
-        ("DEACTIVE", "Deactive"),
-        ("CANCELLED", "Cancelled"),
-        ("EXPIRED", "Expired"),
-        ("REJECTED","Rejected")
-    ]
-
-    client = models.ForeignKey(
-        Client, null=True, on_delete=models.PROTECT, related_name="Subscription")
-    begin = models.DateTimeField(
-        null=True, default=datetime.now, editable=True)
-    end = models.DateTimeField(null=True, blank=True, editable=True)
-    status = models.CharField(max_length=15, choices=STATUS, default="DEACTIVE")
-    approved = models.BooleanField(default=False,blank=False)
-    rejected_by = models.ForeignKey(User,blank=True,null=True,on_delete=models.PROTECT)
-
-    def activate_subscription(self):
-        if self.approved and self.status == "ACTIVE":
-            raise ValidationError("Subscription is already active or have not been approved")
-        if self.status in ["CANCELLED", "REJECTED", "EXPIRED"]:
-            raise ValidationError(f"Cannot activate plans because subscription is {self.status.lower()}.")
-        self.status = "ACTIVE"
-        self.subscription_plans.update(status="ACTIVE")
-        self.save(update_fields=['status'])
 
 
-    def _validate_creation_status(self):
-        not_allowed_status = ["EXPIRED","DEACTIVE","CANCELLED","REJECTED"]
-        if self.status in not_allowed_status:
-            raise ValidationError(f"Cannot set {self.status} during creation of Subscription") 
-        
+    @classmethod
+    def create_subscriptionPlan(cls,subscription,**subscription_plan):
+        obj = cls(subscription=subscription,**subscription_plan)
+        obj._validate_creation()
+        # obj.save()
+        return obj
 
-    def _update_plans_status(self):
+    @classmethod 
+    def create_bulk_subscriptionPlan(cls,subscription_plans):
+        print(subscription_plans)
 
-        if self.approved and self.status == "ACTIVE":
-            subscription_plans = self.subscription_plans.all()
-            if subscription_plans:
-                subscription_plans.update(status=self.status) 
-
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            self._validate_creation_status()
-        super().save(*args, **kwargs)
-    
 
 class Invoice(models.Model):
     STATUS = [
@@ -140,7 +86,60 @@ class Invoice(models.Model):
     representative = models.ForeignKey(
         Representative, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
     subscription = models.ForeignKey(
-        Subscription, blank=False, null=False, on_delete=models.PROTECT, related_name="Invoice")
+        "Subscription", blank=False, null=False, on_delete=models.PROTECT, related_name="Invoice")
+
     status = models.CharField(max_length=15, choices=STATUS, default="Draft")
     created = models.DateField(auto_now_add=True)
     due_date = models.DateField(editable=True, null=True, blank=True)
+
+
+class Subscription(SubscriptionMixIn):
+    class Meta:
+        permissions = [
+            ("can_approve_subscription", "Can approve subscription"),
+            ]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def create_subscrption(cls,**kwargs):
+        subscription_plans = kwargs.pop("subscription_plans",[])
+        if not subscription_plans:
+            raise ValidationError(_("At least one subscription plan must be provided."))
+            
+        try:
+            with transaction.atomic():
+                subscription = cls(**kwargs)
+                subscription._validate_creation()
+                subscription.save()
+                period = subscription_plans[0].get("price").period
+                plans = []
+                for plan in subscription_plans:
+                    if not plan.get("price").period == period:
+                        raise ValidationError(_("Subscription plans must have same period"))
+                    obj = SubscriptionPlan.create_subscriptionPlan(subscription,**plan)
+                    plans.append(obj)
+                SubscriptionPlan.objects.bulk_create(plans)
+                return subscription
+
+        except IntegrityError:
+            raise ValidationError(_("Failed to create subscription due to invalid or duplicate data."))
+
+    def generate_invoice(self):
+        pass
+
+
+
+    
+
+
+
+
+
+
+class InvoiceDetail(models.Model):
+    product         =   models.ForeignKey(Product,null=False,blank=False, on_delete=models.PROTECT)
+    quantity        =   models.PositiveIntegerField(default=1)
+    price           =   models.ForeignKey(PriceList,null=False,blank=False,on_delete=models.PROTECT)
+    invoice         =   models.ForeignKey(Invoice,null=False,blank=False,on_delete=models.PROTECT)
