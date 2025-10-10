@@ -26,3 +26,5 @@ class CannotCreateProduct(Exception):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     default_detail = _('Cannot to create product')
     default_code = 'cannot_to_create_product'
+
+
