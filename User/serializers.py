@@ -69,6 +69,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
        
 
     def create(self,validated_data):
+        print(validated_data)
         groups_level = validated_data.get("groups_level")
         name = validated_data.get("name")
         email = validated_data.get("email")
@@ -83,6 +84,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             return User.objects.create_manager(email,mobile,password,name,is_active)
         elif getattr(group,"name",None) =="Employee":
             return User.objects.create_employee(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
+            
 
 
 

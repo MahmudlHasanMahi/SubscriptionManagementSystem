@@ -85,3 +85,7 @@ class AdminManager(_StaffManager):
 class EmployeeManager(_StaffManager):
     def get_queryset(self,*args,**kwargs):
         return super().get_queryset("Employee",*args,**kwargs)
+
+class ClientManager(_StaffManager):
+    def get_queryset(self,*args,**kwargs):
+        return super().get_queryset("Client",*args,**kwargs)

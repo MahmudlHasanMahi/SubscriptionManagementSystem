@@ -1,6 +1,5 @@
-from rest_framework.pagination import CursorPagination
-
-class StaffPagination(CursorPagination):
+from ManagementSystem.pagination import Pagination
+class StaffPagination(Pagination):
     page_size = 5
     ordering='pk'
     cursor_query_param = 'page'
