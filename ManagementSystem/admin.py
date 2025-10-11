@@ -8,8 +8,6 @@ class RepresentativeAdmin(admin.ModelAdmin):
     filter_horizontal = ("client",)
 
 
-class ClientAdmin(admin.ModelAdmin):
-    filter_horizontal = ("representative",)
 
 class PeriodAdmin(admin.ModelAdmin):
     model = Period
@@ -17,7 +15,7 @@ class PeriodAdmin(admin.ModelAdmin):
 
 class PriceListAdmin(admin.ModelAdmin):
     model = PriceList
-    list_display=["__str__","price"]
+    list_display=["id","__str__","price",]
 
 # class PlanAdmin(admin.ModelAdmin):
 #     model = Plan
@@ -37,7 +35,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     
 class InvoiceAdmin(admin.ModelAdmin):
     model = Invoice
-    list_display = ["id","client","status","created","due_date"]
+    list_display = ["id","status","created","due_date"]
     
 class ProductAdmin(admin.ModelAdmin):
     model = Product
@@ -50,7 +48,7 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product,ProductAdmin)
 admin.site.register(SubscriptionPlan)
 admin.site.register(Period,PeriodAdmin)
-admin.site.register(Client,ClientAdmin)
+admin.site.register(InvoiceDetail)
 admin.site.register(Invoice,InvoiceAdmin)
 admin.site.register(PriceList,PriceListAdmin)
 admin.site.register(Subscription,SubscriptionAdmin)

@@ -103,6 +103,8 @@ class SubscriptionMixIn(models.Model):
         if self.is_current_day():
             field = self.set_status("DEACTIVE")
             self.activate(commit)
+            self.active_subscription_plans()
+            self.generate_invoice()
         else:
             field = self.set_status("SCHEDULED")
 
@@ -126,7 +128,10 @@ class SubscriptionMixIn(models.Model):
             ))
         self.renewal_date = datetime.now(timezone.utc)
         field = self.set_status("ACTIVE")
-        # self.active_subscription_plans()
+    
+        # Invoice could be generated from here
+
+      
         if commit:
             self.save(update_fields=field)
         
@@ -184,6 +189,8 @@ class SubscriptionMixIn(models.Model):
 
 
             # print(self.subscription_plans.model.objects.)
+
+
 
     @property
     def in_trial(self):
