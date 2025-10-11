@@ -81,10 +81,10 @@ class Invoice(models.Model):
         ("UNCOLLECTABLE", "Uncollectable"),
     ]
 
-    client = models.ForeignKey(
-        Client, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
-    representative = models.ForeignKey(
-        Representative, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
+    # client = models.ForeignKey(
+    #     Client, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
+    # representative = models.ForeignKey(
+    #     Representative, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
     subscription = models.ForeignKey(
         "Subscription", blank=False, null=False, on_delete=models.PROTECT, related_name="Invoice")
 
@@ -112,6 +112,7 @@ class Subscription(SubscriptionMixIn):
             with transaction.atomic():
                 subscription = cls(**kwargs)
                 subscription._validate_creation()
+
                 subscription.save()
                 period = subscription_plans[0].get("price").period
                 plans = []
@@ -121,20 +122,24 @@ class Subscription(SubscriptionMixIn):
                     obj = SubscriptionPlan.create_subscriptionPlan(subscription,**plan)
                     plans.append(obj)
                 SubscriptionPlan.objects.bulk_create(plans)
+                # subscription.generate_invoice()
                 return subscription
 
         except IntegrityError:
             raise ValidationError(_("Failed to create subscription due to invalid or duplicate data."))
 
     def generate_invoice(self):
-        pass
+        with transaction.atomic():
+            if self.is_active:
+                invoice = Invoice(subscription=self)
+                invoice.save()
+                invoice_details = []
+                for plan in self.subscription_plans.filter(status="ACTIVE"):
+                    invoice_detail = InvoiceDetail(product = plan.product,quantity=plan.quantity,price=plan.price,invoice=invoice)
+                    invoice_details.append(invoice_detail)
+                InvoiceDetail.objects.bulk_create(invoice_details)
 
-
-
-    
-
-
-
+                    
 
 
 
