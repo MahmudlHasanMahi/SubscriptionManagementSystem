@@ -5,6 +5,8 @@ services:
     build: .
     container_name: docker-container
     image: docker-image
+    environment:
+      - PYTHONUNBUFFERED=1
     command: >
       sh -c "rm -rf */migrations/__pycache__ &&
             rm -rf */migrations/0* &&
