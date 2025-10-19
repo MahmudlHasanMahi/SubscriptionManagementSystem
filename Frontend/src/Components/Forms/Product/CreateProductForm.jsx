@@ -23,9 +23,8 @@ import { useInView } from "react-intersection-observer";
 import { useDebouncedCallback } from "use-debounce";
 import SelectOption from "../../Staff/Filter/SelectOption";
 import { AnimatePresence } from "framer-motion";
-import { Outlet } from "react-router-dom";
-import { Link } from "react-router-dom";
 import AddPriceForm from "../AddPriceForm/AddPriceForm";
+import formatCurrency from "../../../Utils/CurrencyFormater";
 const CreateProductForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -111,6 +110,11 @@ const CreateProductForm = () => {
     </div>
   );
 
+  const getMultiSelectTitle = (obj) => {
+    const x = formatCurrency(obj.price);
+    return `${x}/${obj.period.name}`;
+  };
+
   return (
     <Body>
       <div style={{ position: "relative" }}>
@@ -134,7 +138,7 @@ const CreateProductForm = () => {
               defaultValue={defaultValue}
               setDefaultValue={setDefaultValue}
               viewRef={ref}
-              listTitle="title"
+              getTitle={getMultiSelectTitle}
               search={{
                 search: priceFilter,
                 setSearch: setPriceFilter,
@@ -146,7 +150,7 @@ const CreateProductForm = () => {
             <div style={{ marginTop: "1em" }}>
               <Textbox label={"Description"} name={"description"} />
             </div>
-            <div></div>
+            {/* <div></div> */}
             <div style={{ width: "100%", display: "flex", gap: "1em" }}>
               <Button title={"Create Product"} />
               <Button
