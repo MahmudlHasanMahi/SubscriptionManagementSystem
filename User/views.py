@@ -14,7 +14,6 @@ from django.contrib.auth import logout
 from rest_framework import status
 import time
 
-
 def staffQuery(user):
     user_level = user.groups.first().level
     return User.objects.filter(groups__level__gte=user_level)

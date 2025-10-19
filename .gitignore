@@ -1,5 +1,10 @@
+.env
 venv
 .venv
+.DS_Store
 __pycache__
 /Frontend/static/Frontend
 db.sqlite3
+.dockerignore
+.gitignore
+celerybeat-schedule
