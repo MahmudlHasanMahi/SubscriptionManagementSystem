@@ -70,7 +70,8 @@ const SubscriptionForm = () => {
     createSubscription(obj);
   };
   const isSamePeriod = selected.every(
-    (item) => item.default_price?.period === selected[0]?.default_price?.period
+    (item) =>
+      item.default_price?.period.id === selected[0]?.default_price?.period.id
   );
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const SubscriptionForm = () => {
       })
     );
   }, []);
+  console.log(selected);
 
   return (
     <Body>
@@ -102,7 +104,7 @@ const SubscriptionForm = () => {
             <DateField
               disable={!isSamePeriod}
               date={date}
-              period={parseInt(selected[0]?.default_price?.period)}
+              period={parseInt(selected[0]?.default_price?.period.days)}
             />
             <ClientSelect
               objects={clients}
