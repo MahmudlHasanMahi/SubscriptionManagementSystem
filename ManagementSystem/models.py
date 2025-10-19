@@ -19,9 +19,8 @@ class Representative(models.Model):
 
 
 class Period(models.Model):
-    name = models.CharField(max_length=20, unique=True, blank=False, null=False)
-    days = models.PositiveIntegerField(blank=False, null=False, default=7)
-
+    name    = models.CharField(max_length=20, unique=True, blank=False, null=False)
+    days    = models.PositiveIntegerField(blank=False, null=False, default=7)
     def __str__(self):
         return self.name
 
@@ -69,17 +68,19 @@ class SubscriptionPlan(SubscriptionPlanMixIn):
 
     @classmethod 
     def create_bulk_subscriptionPlan(cls,subscription_plans):
-        print(subscription_plans)
+        pass
 
+
+class InvoiceStatus(models.TextChoices):
+    ACTIVE      = 'DRAFT', _('Draft')
+    DEACTIVE    = 'PAID', _('Paid')
+    CANCELLED   = 'OVERDUE', _('Overdue')
+    EXPIRED     = 'VOID', _('Void')
+    PAUSED      = 'UNCOLLECTABLE', _('Uncollectable')
+    
 
 class Invoice(models.Model):
-    STATUS = [
-        ("DRAFT", "Draft"),
-        ("PAID", "Paid"),
-        ("OVERDUE", "Overdue"),
-        ("VOID", "Void"),
-        ("UNCOLLECTABLE", "Uncollectable"),
-    ]
+ 
 
     # client = models.ForeignKey(
     #     Client, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
@@ -88,7 +89,7 @@ class Invoice(models.Model):
     subscription = models.ForeignKey(
         "Subscription", blank=False, null=False, on_delete=models.PROTECT, related_name="Invoice")
 
-    status = models.CharField(max_length=15, choices=STATUS, default="Draft")
+    status = models.CharField(max_length=15, choices=InvoiceStatus, default="Draft")
     created = models.DateField(auto_now_add=True)
     due_date = models.DateField(editable=True, null=True, blank=True)
 
@@ -128,19 +129,23 @@ class Subscription(SubscriptionMixIn):
         except IntegrityError:
             raise ValidationError(_("Failed to create subscription due to invalid or duplicate data."))
 
-    def generate_invoice(self):
+    def generate_invoice(self,commit: bool = False):
         with transaction.atomic():
             if self.is_active:
                 invoice = Invoice(subscription=self)
                 invoice.save()
                 invoice_details = []
-                for plan in self.subscription_plans.filter(status="ACTIVE"):
+                subscription_plans  = self.subscription_plans.filter(status="ACTIVE") # pyright: ignore[reportAttributeAccessIssue]
+                for plan in subscription_plans:
                     invoice_detail = InvoiceDetail(product = plan.product,quantity=plan.quantity,price=plan.price,invoice=invoice)
                     invoice_details.append(invoice_detail)
+      
+                # is_successfull = self.extend_renewal_date(commit=commit)
+                # if is_successfull:
                 InvoiceDetail.objects.bulk_create(invoice_details)
-
-                    
-
+                # else:
+                    # invoice.delete()
+                
 
 
 class InvoiceDetail(models.Model):
