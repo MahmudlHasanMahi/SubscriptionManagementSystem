@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@d*m*@f%j9=ta$44iv(rwp!j1@o2)as09zeu-gc#c74r3mdz8c'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -38,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'viewflow',
+    'viewflow.workflow',
     "corsheaders",
     'rest_framework',
     "Frontend",
     "User",
     'ManagementSystem',
+    'django_celery_results',
 ]
 
 
@@ -141,6 +145,14 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -161,3 +173,15 @@ LANGUAGES =(
     ("fr",_("French")),
 )
 
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BORKER","redis://redis:6379/0")
+# CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND","redis://redis:6379/0")
+CELERY_RESULT_EXTEND =  True
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULE = {
+    'every-10-seconds':{
+        "task":"ManagementSystem.tasks.scheduled_task",
+        "schedule":10,
+
+    }
+}
