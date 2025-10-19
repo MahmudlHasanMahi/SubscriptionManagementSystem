@@ -1,9 +1,11 @@
 from django.db import models,transaction
 from User.models import User,Client
-from datetime import datetime, timezone
+from django.utils import timezone
+from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from viewflow.fsm import State
+from .CustomManager import SubscriptionManager
 SUBSCRIPTION_STATUS = [
     ("DRAFT","Draft"),
     ("SCHEDULED","Scheduled"),
@@ -25,6 +27,12 @@ SUBSCRIPTIONPLAN_STATUS = [
 DISALLOWED_CREATION_STATUSES = ["EXPIRED","CANCELLED","REJECTED"]
 
 SUBSCRIPTIONPLAN_PERMANENT_STATUS = ["EXPIRED","CANCELLED"] 
+
+
+
+
+from .Time import Time
+
 
 class SubscriptionPlanState(models.TextChoices):
     ACTIVE      = 'ACTIVE', _('Active')
@@ -48,7 +56,8 @@ class SubscriptionState(models.TextChoices):
 
 
 
-class SubscriptionMixIn(models.Model):
+
+class SubscriptionMixIn(models.Model,Time):
 
     client       =   models.ForeignKey(Client, null=False,blank=False, on_delete=models.PROTECT, related_name="Subscription")
     status       =   models.CharField(max_length=15, choices=SUBSCRIPTION_STATUS, default="DRAFT")
@@ -56,14 +65,14 @@ class SubscriptionMixIn(models.Model):
     created_by   =   models.ForeignKey(User,blank=False,null=False,on_delete=models.PROTECT, related_name="subscriptions_created_by")
     approved_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.SET_NULL,related_name="subscriptions_approved_by")
 
-    begin        =   models.DateTimeField(null=True, default=datetime.now, editable=True)
+    begin        =   models.DateTimeField(null=True, default=timezone.now(), editable=True)
     end          =   models.DateTimeField(null=True, blank=True, editable=True)
-    trial_end    =   models.DateTimeField(null=True,default=datetime.now(),blank=True)
+    trial        =   models.PositiveIntegerField(null=False,blank=False,default=0)
     renewal_date =   models.DateTimeField(null=True,blank=True)
 
     state_field  =   State(SubscriptionState, default=SubscriptionState.DRAFT)
 
-
+    objects = SubscriptionManager()
 
     class Meta:
         abstract = True
@@ -82,8 +91,7 @@ class SubscriptionMixIn(models.Model):
         if not self.begin:
             raise AttributeError(_("Cannot create subscription: begin date is missing."))
 
-        now_utc = datetime.now(timezone.utc)
-        return now_utc.date() == self.begin.date()
+        return self.time_now  >= self.begin
 
 
     @state_field.transition(source=SubscriptionState.DRAFT)
@@ -100,11 +108,12 @@ class SubscriptionMixIn(models.Model):
         fields = []
         if self.approved_by:
             return
+        self.set_renewal_date()
+        fields.append("renewal_date")
         if self.is_current_day():
             field = self.set_status("DEACTIVE")
-            self.activate(commit)
-            self.active_subscription_plans()
-            self.generate_invoice()
+            self.activate(commit,renew=True,activate_plans=True)
+            
         else:
             field = self.set_status("SCHEDULED")
 
@@ -117,23 +126,74 @@ class SubscriptionMixIn(models.Model):
         else:
             return fields
     
-        
-        
     @state_field.transition(source=SubscriptionState.SCHEDULED)
     @state_field.transition(source=SubscriptionState.DEACTIVE)
-    def activate(self,commit: bool = False):
+    def activate(self,commit: bool = False, renew: bool = False,activate_plans:bool = False):
         if self.rejected_by: 
             raise ValidationError(_(
                 f"Cannot activate this subscription because it was rejected by {self.rejected_by}."
             ))
-        self.renewal_date = datetime.now(timezone.utc)
-        field = self.set_status("ACTIVE")
-    
-        # Invoice could be generated from here
 
+        
+
+        fields = self.set_status("ACTIVE")
+        if activate_plans:
+            self.active_subscription_plans(commit)    
+        # Invoice could be generated from here and asynchrously
+
+        if renew:
+            self.renew_subscription(commit,generate_invoice=True)
       
         if commit:
-            self.save(update_fields=field)
+            self.save(update_fields=fields)
+        
+    def set_renewal_date(self):
+        self.renewal_date = self.begin + timedelta(days=self.trial)
+        return self.renewal_date
+
+
+
+    @state_field.transition(source=SubscriptionState.ACTIVE)
+    @state_field.transition(source=SubscriptionState.DEACTIVE)
+    def expire(self,commit: bool=False):
+        fields = self.set_status("EXPIRED")
+
+        self.expire_subscription_plans(commit=commit)
+        print(fields)
+        if commit:
+            self.save(update_fields=fields)
+
+
+
+        
+    @state_field.transition(source=SubscriptionState.EXPIRED)
+    def expire_subscription_plans(self,commit: bool = False):
+
+        plans = self.subscription_plans.filter(status="ACTIVE")
+        for plan in plans:
+            plan.expire(commit=commit)
+
+
+    def extend_renewal_date(self,commit: bool = False):
+        if self.in_trial:
+            return False
+
+        if self.has_reached_expiry_date:
+            self.expire(commit=commit)
+            return False
+        
+
+        period = self.subscription_plans.first().price.period.days
+        if self.begin + timedelta(days=self.trial) == self.renewal_date: 
+            self.renewal_date += timedelta(days=period-self.trial) 
+        else:
+            self.renewal_date += timedelta(days=period) 
+
+        if commit:
+            self.save(update_fields=["renewal_date"])
+        return True
+
+
         
     @state_field.transition(source=SubscriptionState.PENDING)
     def reject(self,rejected_by:User,commit: bool = False):
@@ -149,17 +209,25 @@ class SubscriptionMixIn(models.Model):
     
     # could use to celery task to offload this function for performance 
     @state_field.transition(source=SubscriptionState.ACTIVE)
-    def active_subscription_plans(self):
+    def active_subscription_plans(self,commit: bool = False):
         
         if not self.can_edit_or_add_plans:
             raise ValidationError(_("Unable to active Subscription plans"))
 
-        plans = self.subscription_plans.all()
+        plans = self.subscription_plans.filter(status="DEACTIVE")
         for plan in plans:
-            plan.activate(commit=True)
+            plan.activate(commit=commit)
+            
     #--
 
-    
+    @state_field.transition(source=SubscriptionState.ACTIVE)
+    def renew_subscription(self,commit:bool = False,generate_invoice=False):
+        is_successfull = self.extend_renewal_date(commit=commit)
+        if is_successfull:
+            self.active_subscription_plans(commit=commit)
+            if generate_invoice:
+                self.generate_invoice()
+
 
     def set_status(self,status):
         for STATUS in SUBSCRIPTION_STATUS:
@@ -190,12 +258,14 @@ class SubscriptionMixIn(models.Model):
 
             # print(self.subscription_plans.model.objects.)
 
+ 
+
 
 
     @property
     def in_trial(self):
-        now_utc = datetime.now(timezone.utc)
-        return now_utc.date() <= self.trial_end.date()
+        trial_end_date = self.begin + timedelta(days=self.trial)
+        return  self.time_now  < trial_end_date
 
     @property
     def can_edit_or_add_plans(self):
@@ -205,9 +275,17 @@ class SubscriptionMixIn(models.Model):
     def is_active(self):
         return self.status == "ACTIVE"
 
+    @property
+    def is_renewal_date_passed(self):
+        return self.time_now  >= self.renewal_date
+
+    @property   
+    def has_reached_expiry_date(self):
+        return self.end and self.time_now >= self.end
 
 
-class SubscriptionPlanMixIn(models.Model):
+
+class SubscriptionPlanMixIn(models.Model,Time):
 
     product         =   models.ForeignKey("ManagementSystem.Product",default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
     status          =   models.CharField(max_length=15, choices=SubscriptionPlanState, default="DEACTIVE")
@@ -236,7 +314,8 @@ class SubscriptionPlanMixIn(models.Model):
         if not subscription.can_edit_or_add_plans:
             raise ValidationError(_(f"Cannot add plans: subscription is {subscription.status}."))
 
-        if subscription.is_active:
+        if subscription.is_active and subscription.is_renewal_date_passed:
+            print(self.subscription.renewal_date)
             self.activate()
         else:
             self.set_status("DEACTIVE")
@@ -248,8 +327,6 @@ class SubscriptionPlanMixIn(models.Model):
         if not self.subscription.is_active:
             raise ValidationError(_("This subscription is not active"))
         
-        if not self.subscription.in_trial:
-            return 
         
         self.set_status("ACTIVE")
         if commit:
@@ -263,6 +340,10 @@ class SubscriptionPlanMixIn(models.Model):
 
         raise ValidationError(_(f"invalid status: {status}"))
 
+    def expire(self ,commit: bool=False):
+        self.set_status("EXPIRED")
+        if commit:
+            self.save(update_fields=["status"])
 
     @state_field.transition(source=SubscriptionPlanState.PAUSED)
     @state_field.transition(source=SubscriptionPlanState.DEACTIVE)
