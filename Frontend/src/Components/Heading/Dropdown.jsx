@@ -6,24 +6,20 @@ import { resetState } from "../../Features/UserAuth/UserAuth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChangeLanguage } from "../../Utils/ChangeLanguage";
 const Dropdown = () => {
-  const [dir, setDir] = useState(document.dir);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    document.dir = dir;
-  }, [dir]);
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
 
   const toggleLanguage = (e) => {
-    if (dir == "ltr") {
-      setDir("rtl");
-    } else {
-      setDir("ltr");
-    }
+    // e.stopPropagation();
+    const language = lang === "ar" ? "en" : "ar";
+    ChangeLanguage(language);
+    setLang(language);
   };
-
   const signOut = () => {
     dispatch(resetState());
     dispatch(Signout()).then(() => {
@@ -43,25 +39,17 @@ const Dropdown = () => {
       className={styles["dropdown"]}
     >
       <div className={styles["language"]} onClick={toggleLanguage}>
-        <span
-          tabIndex={0}
-          className={styles[dir == "ltr" || dir == "" ? "active" : "deactive"]}
-        >
+        <span className={styles[lang == "en" ? "active" : "deactive"]}>
           English
         </span>
-        <span
-          tabIndex={2}
-          className={styles[dir == "rtl" ? "active" : "deactive"]}
-        >
+        <span className={styles[lang == "ar" ? "active" : "deactive"]}>
           عربي
         </span>
       </div>
       <div className={styles["account"]} onClick={profile}>
         Account
       </div>
-      <div tabIndex={3} onClick={signOut}>
-        Sign out
-      </div>
+      <div onClick={signOut}>Sign out</div>
     </motion.div>
   );
 };
