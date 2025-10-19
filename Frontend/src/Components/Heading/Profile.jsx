@@ -18,6 +18,7 @@ const Profile = () => {
       className={styles["profile"]}
       onBlur={toggleClick}
       onClick={toggleClick}
+      tabIndex={1}
     >
       <img src={PIC} />
       <div className={styles["userinfo"]}>
