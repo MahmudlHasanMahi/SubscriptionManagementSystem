@@ -5,24 +5,51 @@ services:
     build: .
     container_name: docker-container
     image: docker-image
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+
     command: >
       sh -c "rm -rf */migrations/__pycache__ &&
             rm -rf */migrations/0* &&
             python manage.py makemigrations &&
             python manage.py migrate --fake-initial &&
             python manage.py migrate &&
-            python manage.py runserver 0.0.0.0:8000 "
+            python manage.py runserver 0.0.0.0:8000 &&
+            python manage.py migrate django_celery_results
+            "
+
     ports:
-      - "8000:8000"
+      - 8000:8000
     volumes:
       - .:/app
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:8.2.2-alpine
+
+  celery_beat:
+    container_name: celery_beat
+    build: .
+    command: "celery --app=SubscriptionManagement beat -l INFO"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: "celery --app=SubscriptionManagement worker -l INFO"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
 
   frontend:
     build:
       context: .
-      target: Frontend # <— use the frontend stage
+      target: Frontend
     container_name: react-frontend
     ports:
       - "3000:3000"
