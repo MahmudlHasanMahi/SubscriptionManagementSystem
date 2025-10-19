@@ -16,20 +16,19 @@ class ClientSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
+class PeriodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Period
+        fields = "__all__"
+
 
 class PriceListSerializer(serializers.ModelSerializer):
-    period = serializers.SerializerMethodField(read_only=True)
-    title = serializers.SerializerMethodField(read_only=True)
+    period = PeriodSerializer()
 
     class Meta:
         model = PriceList
-        fields = ["id","period","price","title"]
+        fields = ["id","price","period"]
     
-    def get_period(self,obj):
-        return f"{obj.period.days}"
-    def get_title(self,obj):
-        return f"{obj.price}/{obj.period.name}"
-
 class ProductSerializer(serializers.ModelSerializer):
    
     class Meta:
@@ -47,15 +46,11 @@ class ProductSerializer(serializers.ModelSerializer):
         return representation
   
     
-class PeriodSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Period
-        fields = "__all__"
+
     
 class BulkSubscriptionPlanSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         plans = [SubscriptionPlan(subscription=item.pop("subscription"),**item) for item in validated_data]
-        print("***",plans)
         return SubscriptionPlan.objects.bulk_create(plans)
         # return  {"detail":"success"}k
         
