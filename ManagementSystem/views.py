@@ -12,13 +12,15 @@ from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from django.shortcuts import render
 from .pagination import Pagination
+from rest_framework import status
 from django.db.models import Q
 from .serlializer import * 
 from .sql import *
 import time
 import re
 
-from rest_framework import status
+from .tasks import scheduled_task
+
 def home(request):
     return 
 
@@ -138,7 +140,6 @@ class PriceListView(ListAPIView,APIView):
         serializers_data = self.serializer_class(self.get_queryset(),many=True)
         return Response(serializers_data.data)
     def post(self,request):
-        print(request.data)
         period = request.data.get("period",None)
         price = request.data.get("price",None)
         pricelist = create_pricelist(price,period)
@@ -164,7 +165,6 @@ class SubscriptionListView(SubscriptionBase, ListAPIView):
 class SubscriptionView(SubscriptionBase, APIView):
 
     def post(self,request):
-        print(request.data)
         if request.user.has_perm("ManagementSystem.add_subscription"):
             serialized = self.serializer_class(data=request.data,context={'user': request.user})
             if serialized.is_valid(raise_exception=True):
@@ -269,7 +269,6 @@ class Invoice(InvoiceBase,APIView):
             )
 
         serializer = SubscriptionSerializer(obj)
-        print(serializer.data.get("status"))
         if serializer.data.get("status") != "CANCELLED" and serializer.data.get("status") != "REJECTED" :
             pdf = generate_invoice(serializer.data)
         else:
@@ -294,9 +293,15 @@ class ClientView(ClientBase, ProductsList):
 
 class test(APIView,SubscriptionBase):
     def get(self,request):
-        # obj = self.model.objects.get(id=id)
+
         obj = Subscription.objects.first()
-        
+        # print(obj)
+        # obj.activate(commit=True)
+        # obj.generate_invoice(commit=True)
+        # subs = Subscription.objects.scheduled_subscription()
+        # for sub in subs:
+        # obj.activate(commit=True,generate_invoice=True,activate_plans=True)
+        scheduled_task()
         return Response({})
     
     def get_queryset(self):
