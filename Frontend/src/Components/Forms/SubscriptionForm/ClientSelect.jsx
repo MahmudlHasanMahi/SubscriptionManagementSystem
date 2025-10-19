@@ -26,6 +26,9 @@ const ClientSelect = ({
   const filter = useDebouncedCallback((e, setSearch) => {
     setSearch(e.target.value);
   }, 500);
+  const getTitle = (obj) => {
+    return obj.name;
+  };
   return (
     <div
       style={{
@@ -45,7 +48,7 @@ const ClientSelect = ({
             selectEvent={selectEvent}
             selected={selected}
             objects={objects}
-            itemTitle={"name"}
+            getTitle={getTitle}
             search={{
               search: clientFilter,
               setSearch: setClientFilter,

@@ -9,12 +9,11 @@ const SingleSelect = ({
   objects,
   row,
   pagination,
-  itemTitle,
   currentSelected,
   search = null,
+  getTitle,
 }) => {
   const [show, setShow] = useState(null);
-
   return (
     <div
       tabIndex={0}
@@ -26,13 +25,13 @@ const SingleSelect = ({
       }}
       onClick={() => setShow(show === row ? null : row)}
     >
-      {currentSelected(row)}
+      {currentSelected(selected[row])}
       {show === row && (
         <div className={styles["optionWrapper"]}>
           <ItemMenu
             row={row}
             pagination={pagination}
-            itemTitle={itemTitle}
+            getTitle={getTitle}
             search={search}
             onChange={{}}
             isSelected={isSelected}
