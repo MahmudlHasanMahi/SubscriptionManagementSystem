@@ -7,6 +7,7 @@ import { useDebouncedCallback } from "use-debounce";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SelectTableContainer from "./SelectTableContainer";
 import InputContainer from "./InputContainer";
+import { Number } from "../../../Utils/NumericUtils";
 const SelectTable = ({
   title,
   TableHeader,
@@ -21,6 +22,7 @@ const SelectTable = ({
   const isSelected = (option) => {
     return selected?.some((item) => item.id === option.id);
   };
+  
   const selectEvent = (option, e, row) => {
     if (isSelected(option)) return;
     setSelected((prev) => {
@@ -31,8 +33,9 @@ const SelectTable = ({
     });
   };
 
-  const currentPlanSelected = (row) => {
-    const obj = selected[row]?.name;
+  const currentPlanSelected = (object) => {
+    const obj = object.name;
+
     return obj ? (
       <InputContainer>{obj}</InputContainer>
     ) : (
@@ -40,10 +43,13 @@ const SelectTable = ({
     );
   };
 
-  const currentPriceSelected = (row) => {
-    const obj = selected[row]?.default_price?.title;
+  const currentPriceSelected = (object) => {
+    const obj = object.default_price;
+
     return obj ? (
-      <InputContainer>{obj}</InputContainer>
+      <InputContainer>{`${Number(obj.price, true)}/${
+        obj.period.name
+      }`}</InputContainer>
     ) : (
       <InputContainer>Add plan . . .</InputContainer>
     );
@@ -103,12 +109,12 @@ const SelectTable = ({
                   selectEvent={selectEvent}
                   selected={selected}
                   objects={plans}
-                  itemTitle={"name"}
                   search={{
                     search: planFilter,
                     setSearch: setPlanFilter,
                     onChange: filter,
                   }}
+                  getTitle={(obj) => obj.name}
                 />
               </td>
 
@@ -129,6 +135,9 @@ const SelectTable = ({
 
               <td>
                 <SingleSelect
+                  getTitle={({ period, price }) => {
+                    return `${Number(price, true)}/${period.name}`;
+                  }}
                   pagination={false}
                   row={idx}
                   currentSelected={currentPriceSelected}
@@ -136,7 +145,6 @@ const SelectTable = ({
                   selectEvent={selectPriceEvent}
                   selected={selected}
                   objects={selected[idx].price_list}
-                  itemTitle={"title"}
                   search={{
                     search: priceFilter,
                     setSearch: setPriceFilter,
