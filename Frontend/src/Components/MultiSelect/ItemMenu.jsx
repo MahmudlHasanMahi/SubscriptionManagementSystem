@@ -9,7 +9,7 @@ const ItemMenu = ({
   isSelected,
   selectEvent,
   objects,
-  itemTitle,
+  getTitle,
   row = null,
   pagination = true,
   children,
@@ -29,10 +29,12 @@ const ItemMenu = ({
     >
       {search && (
         <input
+          style={{ width: "100%" }}
           className={styles["searchBox"]}
           placeholder="Search Price..."
-          onClick={(e) => e.stopPropagation()}
-          // {...search}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
           onChange={(e) => {
             if (search) {
               search.onChange(e, search.setSearch);
@@ -57,13 +59,12 @@ const ItemMenu = ({
                       selectEvent(option, e, row);
                     }}
                   >
-                    <SelectOption title={option[itemTitle]} />
+                    <SelectOption title={getTitle(option)} />
                   </div>
                 );
               });
             })
           : objects?.map((option, idx) => {
-            
               return (
                 <div
                   key={option.id}
@@ -76,7 +77,7 @@ const ItemMenu = ({
                     selectEvent(option, e, row);
                   }}
                 >
-                  <SelectOption title={option[itemTitle]} />
+                  <SelectOption title={getTitle(option)} />
                 </div>
               );
             })}
