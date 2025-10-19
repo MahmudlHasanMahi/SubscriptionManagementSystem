@@ -1,32 +1,37 @@
-import { Routes, Route, Switch } from "react-router-dom";
-import SignIn from "./Pages/SignIn";
-import ProtectedRoute from "./Utils/ProtectedRoute";
-import ChangePassword from "./Pages/ChangePassword";
 import "./style.css";
+import { useEffect } from "react";
+import SignIn from "./Pages/SignIn";
 import Home from "./Pages/Home/Home";
+import Invoice from "./Pages/Invoice";
 import Body from "./Components/Body/Body";
-import Loading from "./Components/Loading/Loading";
-import Dashboard from "./Components/Dashboard/Dashboard";
 import Staff from "./Components/Staff/Staff";
-import AddStaffForm from "./Components/Forms/AddStaffForm/AddStaffForm";
-import EditStaff from "./Components/Forms/StaffEditForm/EditStaff";
-import Profile from "./Components/Forms/UserProfileForm/Profile";
-import Subscription from "./Components/Subscription/Subscription";
-import Products from "./Components/Subscription/Products";
-import Plans from "./Components/Subscription/Plans";
-import CreateProductForm from "./Components/Forms/Product/CreateProductForm";
-import EditProduct from "./Components/Forms/Product/EditProduct";
-import Subscriptions from "./Components/Subscription/Subscriptions";
-import SubscriptionForm from "./Components/Forms/SubscriptionForm/SubscriptionForm";
-import Client from "./Components/Client/Client";
-import AddClientForm from "./Components/Forms/AddClientForm/AddClientForm";
-import EditSubscription from "./Components/Forms/EditSubscription/EditSubscription";
-import AddPriceForm from "./Components/Forms/AddPriceForm/AddPriceForm";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import Invoice from "./Pages/Invoice";
+import Client from "./Components/Client/Client";
+import { Routes, Route } from "react-router-dom";
+import Loading from "./Components/Loading/Loading";
+import ProtectedRoute from "./Utils/ProtectedRoute";
+import ChangePassword from "./Pages/ChangePassword";
+import Plans from "./Components/Subscription/Plans";
+import Dashboard from "./Components/Dashboard/Dashboard";
+import Products from "./Components/Subscription/Products";
+import EditProduct from "./Components/Forms/Product/EditProduct";
+import Profile from "./Components/Forms/UserProfileForm/Profile";
+import Subscription from "./Components/Subscription/Subscription";
+import EditStaff from "./Components/Forms/StaffEditForm/EditStaff";
+import Subscriptions from "./Components/Subscription/Subscriptions";
+import AddStaffForm from "./Components/Forms/AddStaffForm/AddStaffForm";
+import AddPriceForm from "./Components/Forms/AddPriceForm/AddPriceForm";
+import AddClientForm from "./Components/Forms/AddClientForm/AddClientForm";
+import CreateProductForm from "./Components/Forms/Product/CreateProductForm";
+import SubscriptionForm from "./Components/Forms/SubscriptionForm/SubscriptionForm";
+import EditSubscription from "./Components/Forms/EditSubscription/EditSubscription";
+import { setLanguage } from "./Utils/ChangeLanguage";
 const App = () => {
   const location = useLocation();
+  useEffect(() => {
+    setLanguage();
+  }, []);
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
