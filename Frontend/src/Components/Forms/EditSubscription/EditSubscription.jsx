@@ -98,7 +98,8 @@ const EditSubscription = () => {
     EditSubscription(obj);
   };
   const isSamePeriod = plans.every(({ default_price, price }) => {
-    return price?.period === plans[0]?.price.period;
+    console.log(plans);
+    return price?.period.days === plans[0]?.price.period.days;
   });
 
   const disabledFrom =
@@ -114,6 +115,7 @@ const EditSubscription = () => {
     letterSpacing: "1px",
     textWrap: "nowrap",
   };
+
   return (
     <Body>
       <form onSubmit={submit} style={{ position: "relative" }}>

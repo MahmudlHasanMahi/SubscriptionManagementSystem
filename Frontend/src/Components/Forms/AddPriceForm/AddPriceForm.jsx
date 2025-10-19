@@ -11,6 +11,8 @@ import { useGetPeriodsQuery } from "../../../Features/Services/periodApi";
 import { useCreatePriceListMutation } from "../../../Features/Services/priceListApi";
 import { useDebouncedCallback } from "use-debounce";
 import { notifyError } from "../../../Utils/nofify";
+import NumericInputField from "../TextFields/NumericInputField";
+import { isValidNumber, Number } from "../../../Utils/NumericUtils";
 const AddPriceForm = ({ state }) => {
   const location = useLocation();
   const object = useGetPeriodsQuery();
@@ -37,12 +39,28 @@ const AddPriceForm = ({ state }) => {
     if (!selected.id) return notifyError("Please Select a Period");
     const data = {
       period: selected.id,
-      price: e.target.price.value,
+      price: Number(e.target.price.value),
     };
     createPeriod(data).then((data) => {
       state(false);
     });
   };
+  const getTitle = (object) => {
+    return object.name;
+  };
+
+  const handleInvalid = (e) => {
+    e.target.setCustomValidity("Please provide a price.");
+  };
+
+  const handleInput = (e) => {
+    if (isValidNumber(e.target.value)) {
+      e.target.setCustomValidity("");
+    } else {
+      e.target.setCustomValidity("please enter valid price");
+    }
+  };
+
   return (
     <motion.div
       key={location.pathname}
@@ -75,11 +93,13 @@ const AddPriceForm = ({ state }) => {
       >
         <form onSubmit={create}>
           <FormContainer title={"Add price"}>
-            <TextFields
-              type={"number"}
+            <NumericInputField
+              type={"text"}
               required={true}
               name={"price"}
               label={"Price"}
+              handleInput={handleInput}
+              handleInvalid={handleInvalid}
             />
 
             <div
@@ -106,7 +126,7 @@ const AddPriceForm = ({ state }) => {
                     selectEvent={selectEvent}
                     selected={selected}
                     objects={object.data}
-                    itemTitle={"name"}
+                    getTitle={getTitle}
                   />
                 </div>
               </InputOutline>

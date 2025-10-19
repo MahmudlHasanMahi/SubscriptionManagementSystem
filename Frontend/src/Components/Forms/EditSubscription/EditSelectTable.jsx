@@ -18,6 +18,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { Number } from "../../../Utils/NumericUtils";
 
 const EditSelectTable = ({
   title,
@@ -36,6 +37,7 @@ const EditSelectTable = ({
   const isSelected = (option) => {
     return selected?.some((item) => item.id === option.id);
   };
+
   const selectEvent = (option, e, row) => {
     if (isSelected(option)) return;
     setSelected((prev) => {
@@ -51,7 +53,7 @@ const EditSelectTable = ({
   };
 
   const currentPlanSelected = (row) => {
-    const obj = selected[row]?.name;
+    const obj = row.name;
     return obj ? (
       <InputContainer>{obj}</InputContainer>
     ) : (
@@ -59,12 +61,13 @@ const EditSelectTable = ({
     );
   };
 
-  const currentPriceSelected = (row) => {
-    const obj = selected[row].price
-      ? selected[row].price?.title
-      : selected[row].default_price?.title;
+  const currentPriceSelected = (object) => {
+    const obj = object.price;
+
     return obj ? (
-      <InputContainer>{obj}</InputContainer>
+      <InputContainer>{`${Number(obj.price, true)}/${
+        obj.period.name
+      }`}</InputContainer>
     ) : (
       <InputContainer>Add plan . . .</InputContainer>
     );
@@ -75,6 +78,7 @@ const EditSelectTable = ({
       ? selected[row]?.price.id == option.id
       : selected[row]?.default_price.id == option.id;
   };
+  console.log(selected);
   const selectPriceEvent = (option, e, row) => {
     setSelected((prev) => {
       const update = [...prev];
@@ -142,6 +146,9 @@ const EditSelectTable = ({
               {idx > initalLength - 1 ? (
                 <td>
                   <SingleSelect
+                    getTitle={(obj) => {
+                      return obj.name;
+                    }}
                     pagination={true}
                     row={idx}
                     currentSelected={currentPlanSelected}
@@ -149,7 +156,6 @@ const EditSelectTable = ({
                     selectEvent={selectEvent}
                     selected={selected}
                     objects={plans}
-                    itemTitle={"name"}
                     search={{
                       search: planFilter,
                       setSearch: setPlanFilter,
@@ -188,7 +194,9 @@ const EditSelectTable = ({
                   selectEvent={selectPriceEvent}
                   selected={selected}
                   objects={selected[idx].price_list}
-                  itemTitle={"title"}
+                  getTitle={({ period, price }) => {
+                    return `${Number(price, true)}/${period.name}`;
+                  }}
                   search={{
                     search: priceFilter,
                     setSearch: setPriceFilter,
