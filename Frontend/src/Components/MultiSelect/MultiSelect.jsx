@@ -23,7 +23,7 @@ const MultiSelect = ({
   onChange = null,
   search = null,
   type = "multi",
-  listTitle,
+  getTitle,
 }) => {
   const containerRef = useRef(null);
   const [show, setShow] = useState(false);
@@ -84,7 +84,6 @@ const MultiSelect = ({
             setDefaultValue(data);
             setOnChange(data);
           }
-
           return filtered;
         }
       });
@@ -92,7 +91,7 @@ const MultiSelect = ({
   };
 
   return (
-    <div className={styles["multiSelect"]}>
+    <div className={styles["multiSelect"]} tabIndex={1}>
       <input
         ref={ref}
         type="number"
@@ -106,11 +105,12 @@ const MultiSelect = ({
       <div
         ref={containerRef}
         className={styles["multiSelectObjectContainer"]}
+        onClick={toggleShow}
         tabIndex={0}
         onBlur={(e) => {
-          if (!containerRef.current.contains(e.relatedTarget)) toggleShow();
+          // e.stopPropagation();
+          if (!containerRef.current.contains(e.relatedTarget)) setShow(false);
         }}
-        onClick={toggleShow}
       >
         <div className={styles["ObjectTagContainer"]}>
           {selected?.map((object, idx) => {
@@ -119,7 +119,7 @@ const MultiSelect = ({
                 <ObjectTag
                   setDefault={setDefaultValue}
                   defaultTag={true}
-                  title={object.title}
+                  title={getTitle(object)}
                   key={idx}
                 >
                   {getModifiedOption(object)}
@@ -128,7 +128,7 @@ const MultiSelect = ({
               );
 
             return (
-              <ObjectTag title={object.title} key={idx}>
+              <ObjectTag title={getTitle(object)} key={idx}>
                 {getModifiedOption(object)}
                 <SelectOption style={{ padding: "0.5em 1em" }} title={""} />
               </ObjectTag>
@@ -139,7 +139,7 @@ const MultiSelect = ({
             {show && (
               <div style={{ position: "absolute", bottom: "-1em" }}>
                 <ItemMenu
-                  itemTitle={listTitle}
+                  getTitle={getTitle}
                   search={search}
                   onChange={onChange}
                   selectEvent={selectEvent}
