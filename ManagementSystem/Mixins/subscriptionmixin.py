@@ -59,16 +59,16 @@ class SubscriptionState(models.TextChoices):
 
 class SubscriptionMixIn(models.Model,Time):
 
-    client       =   models.ForeignKey(Client, null=False,blank=False, on_delete=models.PROTECT, related_name="Subscription")
-    status       =   models.CharField(max_length=15, choices=SUBSCRIPTION_STATUS, default="DRAFT")
-    rejected_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.PROTECT, related_name="subscriptions_rejected_by")
-    created_by   =   models.ForeignKey(User,blank=False,null=False,on_delete=models.PROTECT, related_name="subscriptions_created_by")
-    approved_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.SET_NULL,related_name="subscriptions_approved_by")
+    client       =   models.ForeignKey(Client, null=False,blank=False, on_delete=models.PROTECT, related_name="Subscription", verbose_name=_("Client"))
+    status       =   models.CharField(max_length=15, choices=SUBSCRIPTION_STATUS, default="DRAFT", verbose_name=_("Status"))
+    rejected_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.PROTECT, related_name="subscriptions_rejected_by", verbose_name=_("Rejected_by"))
+    created_by   =   models.ForeignKey(User,blank=False,null=False,on_delete=models.PROTECT, related_name="subscriptions_created_by", verbose_name=_("Created_by"))
+    approved_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.SET_NULL,related_name="subscriptions_approved_by", verbose_name=_("Approved_by"))
 
-    begin        =   models.DateTimeField(null=True, default=timezone.now(), editable=True)
-    end          =   models.DateTimeField(null=True, blank=True, editable=True)
-    trial        =   models.PositiveIntegerField(null=False,blank=False,default=0)
-    renewal_date =   models.DateTimeField(null=True,blank=True)
+    begin        =   models.DateTimeField(null=True, default=timezone.now(), editable=True, verbose_name=_("Begin"))
+    end          =   models.DateTimeField(null=True, blank=True, editable=True, verbose_name=_("End"))
+    trial        =   models.PositiveIntegerField(null=False,blank=False,default=0, verbose_name=_("Trial"))
+    renewal_date =   models.DateTimeField(null=True,blank=True, verbose_name=_("Renewal_date"))
 
     state_field  =   State(SubscriptionState, default=SubscriptionState.DRAFT)
 
@@ -287,11 +287,11 @@ class SubscriptionMixIn(models.Model,Time):
 
 class SubscriptionPlanMixIn(models.Model,Time):
 
-    product         =   models.ForeignKey("ManagementSystem.Product",default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT)
-    status          =   models.CharField(max_length=15, choices=SubscriptionPlanState, default="DEACTIVE")
-    subscription    =   models.ForeignKey("ManagementSystem.Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="subscription_plans")
-    quantity        =   models.PositiveIntegerField(default=1)
-    price           =   models.ForeignKey("ManagementSystem.PriceList",blank=False,null=False,on_delete=models.PROTECT,related_name="subscription_plan_%(class)s_related")
+    product         =   models.ForeignKey("ManagementSystem.Product",default=None,related_name="subscription_plan_%(class)s_related",on_delete=models.PROTECT, verbose_name=_("Product"))
+    status          =   models.CharField(max_length=15, choices=SubscriptionPlanState, default="DEACTIVE", verbose_name=_("Status"))
+    subscription    =   models.ForeignKey("ManagementSystem.Subscription", null=False, blank=False, on_delete=models.PROTECT, related_name="subscription_plans", verbose_name=_("Status"))
+    quantity        =   models.PositiveIntegerField(default=1, verbose_name=_("Quantity"))
+    price           =   models.ForeignKey("ManagementSystem.PriceList",blank=False,null=False,on_delete=models.PROTECT,related_name="subscription_plan_%(class)s_related", verbose_name=_("Price"))
     state_field     =   State(SubscriptionPlanState, default=SubscriptionPlanState.DEACTIVE)
 
 
