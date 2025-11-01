@@ -3,6 +3,8 @@ from rest_framework import serializers
 from User.serializers import UserSerializer
 from datetime import datetime
 from .sql import *
+from User.mixins.TranslatedFieldsMixin import TranslatedFieldMixin
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
@@ -29,7 +31,7 @@ class PriceListSerializer(serializers.ModelSerializer):
         model = PriceList
         fields = ["id","price","period"]
     
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(TranslatedFieldMixin,serializers.ModelSerializer):
    
     class Meta:
         model = Product
@@ -42,7 +44,7 @@ class ProductSerializer(serializers.ModelSerializer):
         representation['price_list'] = PriceListSerializer(instance.price_list.all(), many=True).data
         price_data = PriceListSerializer(instance.default_price).data
         representation['default_price'] = PriceListSerializer(instance.default_price).data
-
+        
         return representation
   
     

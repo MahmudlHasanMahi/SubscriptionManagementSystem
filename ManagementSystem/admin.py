@@ -36,7 +36,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 class InvoiceAdmin(admin.ModelAdmin):
     model = Invoice
     list_display = ["id","status","created","due_date"]
-    
+    readonly_fields = ['created']
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display=["id","name","default_price"]
