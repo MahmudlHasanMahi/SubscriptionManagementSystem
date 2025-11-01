@@ -10,15 +10,15 @@ const initialState = {
   user: null,
   isLoading: false,
 };
+import { getHeader } from "../../Utils/headers";
 import { API_ROOT } from "../../Utils/enviroment";
 export const SignIn = createAsyncThunk(
   "UserAuth/sign",
   async (signInCredentials) => {
     const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCookie("csrftoken"),
+      ...getHeader(true),
     };
+
     try {
       const res = await fetch(`${API_ROOT}/user/signup`, {
         method: "POST",
@@ -43,9 +43,7 @@ export const SignIn = createAsyncThunk(
 export const Signout = createAsyncThunk("UserAuth/signout", async () => {
   try {
     const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCookie("csrftoken"),
+      ...getHeader(true),
     };
 
     const res = await fetch(`${API_ROOT}/user/signOut`, {
@@ -58,8 +56,13 @@ export const Signout = createAsyncThunk("UserAuth/signout", async () => {
 export const IsAuthenticated = createAsyncThunk(
   "UserAuth/IsAuthenticated",
   async () => {
+    const headers = {
+      ...getHeader(),
+    };
     try {
-      const res = await fetch(`${API_ROOT}/user/checkAuthentication`);
+      const res = await fetch(`${API_ROOT}/user/checkAuthentication`, {
+        headers,
+      });
       const data = await res.json();
       return data;
     } catch (err) {
@@ -72,9 +75,7 @@ export const ChangePassword = createAsyncThunk(
   "UserAuth/ChangePassword",
   async (newPasswords, { getState }) => {
     const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCookie("csrftoken"),
+      ...getHeader(true),
     };
     const { password, id } = getState().auth.user;
     const body = {
