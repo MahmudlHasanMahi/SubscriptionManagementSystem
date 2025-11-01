@@ -137,7 +137,12 @@ const MultiSelect = ({
 
           <AnimatePresence>
             {show && (
-              <div style={{ position: "absolute", bottom: "-1em" }}>
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0.3 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.1 }}
+                style={{ position: "absolute", bottom: "-1em" }}
+              >
                 <ItemMenu
                   getTitle={getTitle}
                   search={search}
@@ -148,7 +153,7 @@ const MultiSelect = ({
                 >
                   {children}
                 </ItemMenu>
-              </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
