@@ -90,26 +90,31 @@
 .options {
   position: absolute;
   border-radius: 5px;
-  width: fit-content;
   height: fit-content;
-  /* overflow-x: scroll; */
-  background-color: rgba(29, 29, 29, 0.738);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* min-width: 40%; */
+  width: fit-content;
+
+  background-color: rgba(29, 29, 29, 0.682);
   scrollbar-color: rgb(53, 68, 71) rgba(0, 0, 0, 0);
   scrollbar-width: thin;
   user-select: none;
-  /* top: calc(100% + 1em); */
-  /* bottom: 1em; */
   z-index: 5;
 }
 .options > div {
   overflow-x: scroll;
   max-height: 8em;
   scrollbar-width: thin;
+  width: 100%;
 }
 
 .optionWrapper {
   cursor: pointer;
+  text-wrap: nowrap;
+  padding-inline: 1em;
 }
+
 .active {
   background-color: rgba(149, 217, 150, 0.351);
 }

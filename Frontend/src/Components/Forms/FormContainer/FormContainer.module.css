@@ -1,5 +1,6 @@
 .staffFromContainer {
   /* height: fit-content; */
+  height: 100%;
   background-color: rgba(31, 37, 71, 1);
 
   border-radius: 1.25em;

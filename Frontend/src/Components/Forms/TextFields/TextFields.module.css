@@ -22,7 +22,7 @@
 .inputField > input {
   border: none;
   outline: none;
-  padding: 1em 0em 1em 1em;
+  padding: 1em;
   background-color: rgba(0, 0, 0, 0);
   padding: auto;
   color: white;

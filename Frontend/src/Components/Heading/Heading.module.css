@@ -1,6 +1,4 @@
 .heading {
-  /* grid-column: span 5 / span 5; */
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -76,6 +74,9 @@
 }
 .account:hover {
   background-color: #5e5e5e;
+}
+.dropdown {
+  z-index: 99;
 }
 .dropdown > div {
   user-select: none;

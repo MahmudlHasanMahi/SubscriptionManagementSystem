@@ -106,6 +106,9 @@
   counter-increment: Serial;
   content: counter(Serial);
 }
+[dir="rtl"] .serial::before {
+  content: counter(Serial, arabic-indic);
+}
 .table > tbody td {
   font-weight: 400;
   padding-block: 1.4em 1em;
