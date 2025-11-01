@@ -10,7 +10,6 @@ const getGroups = async () => {
     const res = await fetch(`${API_ROOT}/user/groups`, headers);
     const data = await res.json();
     return data;
-  } catch (err) {
-  }
+  } catch (err) {}
 };
 export default getGroups;

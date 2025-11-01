@@ -17,6 +17,6 @@ const headerStateSlice = createSlice({
   },
 });
 
-export const {updateHeaderState} = headerStateSlice.actions
+export const { updateHeaderState } = headerStateSlice.actions;
 
-export default headerStateSlice.reducer
+export default headerStateSlice.reducer;
