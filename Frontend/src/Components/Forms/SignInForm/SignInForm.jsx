@@ -4,20 +4,19 @@ import Button from "../Buttons/Button";
 import CSRFProtect from "../../../Utils/CSRFProtect";
 import FormContainer from "../FormTemplate/FormContainer";
 import { SignIn } from "../../../Features/UserAuth/UserAuth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { useState } from "react";
 const SignInForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const onSubmit = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
     dispatch(SignIn({ email, password })).then((res) => {
       if (res.payload?.last_login) {
-        navigate("/dashboard");
+        navigate("/");
       } else {
         navigate("/ChangePassword");
       }
