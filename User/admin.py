@@ -6,7 +6,7 @@ from django.contrib import admin
 from django import forms
 from django.contrib.sessions.models import Session
 
-
+from parler.admin import TranslatableAdmin
 class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
