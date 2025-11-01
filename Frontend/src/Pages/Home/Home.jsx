@@ -3,6 +3,7 @@ import Heading from "../../Components/Heading/Heading";
 import styles from "./Home.module.css";
 import { Outlet } from "react-router-dom";
 const Home = () => {
+  console.log("ASDF");
   return (
     <div className={styles["home"]}>
       <Navigation />
