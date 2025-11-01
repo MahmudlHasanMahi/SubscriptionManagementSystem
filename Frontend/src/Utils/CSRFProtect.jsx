@@ -6,7 +6,6 @@ const CSRFProtect = () => {
 
   useEffect(() => {
     const getCsrfToken = async () => {
-      console.log(API_ROOT);
       try {
         fetch(`${API_ROOT}/user/getCSRFToken`).then(() => {
           setCSRTToken(getCookie("csrftoken"));
