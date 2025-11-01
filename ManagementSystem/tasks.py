@@ -5,9 +5,9 @@ from .serlializer import SubscriptionSerializer
 @shared_task
 def scheduled_task():
     arr = []
-    subs = Subscription.objects.scheduled_subscription()
+    subs = Subscription.objects.scheduled_subscription()  
     for sub in subs:
-        before = SubscriptionSerializer(sub).data 
+        before =     SubscriptionSerializer(sub).data 
         
         sub.activate(commit=True,renew=True,activate_plans=True)
         after = SubscriptionSerializer(sub).data 
@@ -17,9 +17,8 @@ def scheduled_task():
         }
         arr.append(log) 
 
-    subs = Subscription.objects.due_for_renewal()
+    subs = Subscription.objects.due_for_renewal() 
     for sub in subs:
-        # sub.active_subscription_plans(commit=True)
         sub.renew_subscription(commit=True,generate_invoice=True)
 
     return arr
