@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import authSlice from "../Features/UserAuth/UserAuth";
-import navbarReducer from "../Features/Navbar";
 import headerReducer from "../Features/headerState";
 import staffSlice from "../Features/staff";
 import { productsApi } from "../Features/Services/productApi";
@@ -13,7 +12,6 @@ import { staffApi } from "../Features/Services/staffApi";
 export const store = configureStore({
   reducer: {
     auth: authSlice,
-    navbarState: navbarReducer,
     headerState: headerReducer,
     staffState: staffSlice,
     [productsApi.reducerPath]: productsApi.reducer,
