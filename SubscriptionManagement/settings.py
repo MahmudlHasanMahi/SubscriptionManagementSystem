@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'viewflow',
     'viewflow.workflow',
+    'parler',
     "corsheaders",
     'rest_framework',
     "Frontend",
@@ -128,13 +129,23 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+LANGUAGES =(
+      ('en', _('English')),
+    ('ar', _('Arabic')),
+)
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale/')
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://192.168.2.1:8080"
@@ -166,12 +177,8 @@ AUTH_USER_MODEL = 'User.User'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LANGUAGE_CODE = "en"
 
-LANGUAGES =(
-    ("en",_("English")),
-    ("fr",_("French")),
-)
+
 
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BORKER","redis://redis:6379/0")
