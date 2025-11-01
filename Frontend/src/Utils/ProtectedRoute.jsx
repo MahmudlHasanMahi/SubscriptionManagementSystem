@@ -1,35 +1,39 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import {
   user,
   IsAuthenticated,
   isLoading,
 } from "../Features/UserAuth/UserAuth";
-import { useEffect } from "react";
+import Loading from "../Components/Loading/Loading";
 
 const ProtectedRoute = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userState = useSelector(user);
   const loading = useSelector(isLoading);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (!userState) {
+    if (userState === null && !loading) {
       dispatch(IsAuthenticated());
     }
   }, []);
-  if (userState) {
+  if (loading) {
+    return <Loading />;
+  } else if (userState !== null) {
     return <Outlet />;
-  } else {
+  } else if (userState === null && loading)
     return (
       <Navigate
         to="/Signin"
         state={{
-          prev: location.pathname === "/" ? "/dashboard" : location.pathname,
+          prev: location.pathname === "/" ? "" : location.pathname,
         }}
+        replace
       />
     );
-  }
 };
 
 export default ProtectedRoute;

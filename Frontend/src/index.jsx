@@ -6,21 +6,19 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import i18n from "./Utils/i18n";
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
 
 const queryClient = new QueryClient();
 
 root.render(
-  // <StrictMode>
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="yasier/">
+  <BrowserRouter basename="yasier/">
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
         <ToastContainer autoClose={3000} closeOnClick={true} theme="dark" />
         <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </Provider>
-  // </StrictMode>
+      </QueryClientProvider>
+    </Provider>
+  </BrowserRouter>
 );

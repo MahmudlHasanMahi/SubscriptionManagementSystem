@@ -24,7 +24,7 @@ const ChangePasswordForm = () => {
     const re_password = e.target.re_password.value;
     if (password == re_password) {
       dispatch(ChangePassword({ password, re_password })).then((res) => {
-        navigate("/dashboard");
+        navigate("/");
       });
     } else {
       notifyError(PASSWORDS_UNMATCH);

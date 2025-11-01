@@ -8,7 +8,7 @@ import Staff from "./Components/Staff/Staff";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Client from "./Components/Client/Client";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Router } from "react-router-dom";
 import Loading from "./Components/Loading/Loading";
 import ProtectedRoute from "./Utils/ProtectedRoute";
 import ChangePassword from "./Pages/ChangePassword";
@@ -21,62 +21,57 @@ import Subscription from "./Components/Subscription/Subscription";
 import EditStaff from "./Components/Forms/StaffEditForm/EditStaff";
 import Subscriptions from "./Components/Subscription/Subscriptions";
 import AddStaffForm from "./Components/Forms/AddStaffForm/AddStaffForm";
-import AddPriceForm from "./Components/Forms/AddPriceForm/AddPriceForm";
 import AddClientForm from "./Components/Forms/AddClientForm/AddClientForm";
 import CreateProductForm from "./Components/Forms/Product/CreateProductForm";
 import SubscriptionForm from "./Components/Forms/SubscriptionForm/SubscriptionForm";
 import EditSubscription from "./Components/Forms/EditSubscription/EditSubscription";
-import { setLanguage } from "./Utils/ChangeLanguage";
+import { useTranslation } from "react-i18next";
+
 const App = () => {
   const location = useLocation();
+  const { i18n } = useTranslation();
   useEffect(() => {
-    setLanguage();
-  }, []);
+    document.body.dir = i18n.dir();
+  }, [i18n, i18n.language]);
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route element={<Loading />}>
-          <Route path="/Signin" element={<SignIn />} />
-          <Route path="/ChangePassword" element={<ChangePassword />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />}>
-              <Route path="" element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="staff">
-                <Route path="" element={<Staff />} />
-                <Route path="add-staff" element={<AddStaffForm />} />
-                <Route path="edit-staff/:staffId" element={<EditStaff />} />
+        <Route path="/Signin" element={<SignIn />} />
+        <Route path="/ChangePassword" element={<ChangePassword />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="" element={<Home />}>
+            <Route path="" element={<Dashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="staff">
+              <Route path="" element={<Staff />} />
+              <Route path="add-staff" element={<AddStaffForm />} />
+              <Route path="edit-staff/:staffId" element={<EditStaff />} />
+            </Route>
+            <Route path="subscription">
+              <Route path="create-product" element={<CreateProductForm />}>
+                {/* <Route path="price" element={<AddPriceForm />} /> */}
               </Route>
-              <Route path="subscription">
-                <Route path="create-product" element={<CreateProductForm />}>
-                  {/* <Route path="price" element={<AddPriceForm />} /> */}
-                </Route>
+              <Route
+                path="create-subscription"
+                element={<SubscriptionForm />}
+              />
+              <Route
+                path="edit-subscription/:subscriptionId"
+                element={<EditSubscription />}
+              />
+              <Route path="edit-product/:productId" element={<EditProduct />} />
+              <Route element={<Subscription />}>
+                <Route path="" element={<Plans />} />
+                <Route path="invoice/:id" element={<Invoice />} />
 
-                <Route
-                  path="create-subscription"
-                  element={<SubscriptionForm />}
-                />
-                <Route
-                  path="edit-subscription/:subscriptionId"
-                  element={<EditSubscription />}
-                />
-                <Route
-                  path="edit-product/:productId"
-                  element={<EditProduct />}
-                />
-                <Route element={<Subscription />}>
-                  <Route path="" element={<Plans />} />
-                  <Route path="invoice/:id" element={<Invoice />} />
-
-                  <Route path="products" element={<Products />} />
-                  <Route path="plans" element={<Subscriptions />} />
-                </Route>
+                <Route path="products" element={<Products />} />
+                <Route path="plans" element={<Subscriptions />} />
               </Route>
-              <Route path="client">
-                <Route path="" element={<Client />} />
-                <Route path="add-client" element={<AddClientForm />} />
-              </Route>
+            </Route>
+            <Route path="client">
+              <Route path="" element={<Client />} />
+              <Route path="add-client" element={<AddClientForm />} />
             </Route>
           </Route>
         </Route>
