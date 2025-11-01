@@ -9,7 +9,6 @@ import { user } from "../../Features/UserAuth/UserAuth";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchStaff } from "../../Features/staff";
-import useStaffQuery from "../../Hooks/useStaffQuery";
 import Staff2 from "../../svg/Staff2";
 import ActionButton from "../Table/ActionButton";
 import { useGetStaffListInfiniteQuery } from "../../Features/Services/staffApi";

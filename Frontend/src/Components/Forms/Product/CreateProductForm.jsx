@@ -150,7 +150,6 @@ const CreateProductForm = () => {
             <div style={{ marginTop: "1em" }}>
               <Textbox label={"Description"} name={"description"} />
             </div>
-            {/* <div></div> */}
             <div style={{ width: "100%", display: "flex", gap: "1em" }}>
               <Button title={"Create Product"} />
               <Button

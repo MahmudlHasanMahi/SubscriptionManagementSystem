@@ -27,7 +27,7 @@ const ClientSelect = ({
     setSearch(e.target.value);
   }, 500);
   const getTitle = (obj) => {
-    return obj.name;
+    return `${obj.name}`;
   };
   return (
     <div

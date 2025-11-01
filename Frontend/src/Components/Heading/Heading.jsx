@@ -1,5 +1,5 @@
 import styles from "./Heading.module.css";
-import Profile from "./profile";
+import Profile from "./Profile";
 import TitleContainer from "./TitleContainer";
 
 const Heading = () => {
