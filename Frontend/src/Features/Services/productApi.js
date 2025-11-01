@@ -1,14 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getCookie from "../../Utils/extractCSRFToken";
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-  "X-CSRFToken": getCookie("csrftoken"),
-};
+import { getHeader } from "../../Utils/headers";
 import { API_ROOT } from "../../Utils/enviroment";
 export const productsApi = createApi({
   reducerPath: "productsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_ROOT}` }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${API_ROOT}`,
+    headers: { ...getHeader() },
+  }),
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: () => "products",

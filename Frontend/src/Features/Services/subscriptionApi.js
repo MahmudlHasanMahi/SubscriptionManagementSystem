@@ -1,10 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getCookie from "../../Utils/extractCSRFToken";
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-  "X-CSRFToken": getCookie("csrftoken"),
-};
+import { getHeader } from "../../Utils/headers";
+const headers = getHeader(true);
 import { API_ROOT } from "../../Utils/enviroment";
 export const subscriptionApi = createApi({
   reducerPath: "subscriptionApi",
@@ -72,7 +68,6 @@ export const subscriptionApi = createApi({
       query: () => "subscription/unapproved",
       providesTags: (result) => {
         const val = [...result.map(({ id }) => ({ type: "subscription", id }))];
-        console.log(val);
         return val;
       },
     }),

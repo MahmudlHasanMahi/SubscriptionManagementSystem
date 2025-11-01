@@ -7,18 +7,11 @@ const initialState = {
   isLoading: false,
 };
 import { API_ROOT } from "../Utils/enviroment";
-// const initialState = {
-// staffState:{
-// statffList:[],
-
-//staffcount:0;
-// }
-// }
-
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",
   "X-CSRFToken": getCookie("csrftoken"),
+  "Accept-language": "ar",
 };
 
 export const fetchStaff = createAsyncThunk(

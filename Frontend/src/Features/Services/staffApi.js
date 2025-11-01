@@ -1,14 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getCookie from "../../Utils/extractCSRFToken";
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-};
+import { getHeader } from "../../Utils/headers";
 import { API_ROOT } from "../../Utils/enviroment";
 export const staffApi = createApi({
   reducerPath: "staffApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_ROOT}/user`,
+    headers: { ...getHeader() },
   }),
   endpoints: (builder) => ({
     getStaffList: builder.infiniteQuery({
@@ -26,7 +23,6 @@ export const staffApi = createApi({
       },
       query({ queryArg, pageParam }) {
         const page_size = queryArg.page_size;
-
         const paginationParams = `${page_size ? `page_size=${page_size}` : ""}${
           pageParam ? `&${pageParam}` : ""
         }`;
@@ -42,7 +38,7 @@ export const staffApi = createApi({
     createStaff: builder.mutation({
       query: (objects) => ({
         url: "client",
-        headers,
+        ...getHeader(),
         method: "POST",
         body: JSON.stringify(objects),
       }),

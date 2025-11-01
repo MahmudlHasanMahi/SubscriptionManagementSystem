@@ -1,10 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getCookie from "../../Utils/extractCSRFToken";
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-};
 import { API_ROOT } from "../../Utils/enviroment";
+import { getHeader } from "../../Utils/headers";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const clientApi = createApi({
   reducerPath: "clientApi",
   baseQuery: fetchBaseQuery({
@@ -42,7 +38,7 @@ export const clientApi = createApi({
     createClient: builder.mutation({
       query: (objects) => ({
         url: "client",
-        headers,
+        ...getHeader(true),
         method: "POST",
         body: JSON.stringify(objects),
       }),
