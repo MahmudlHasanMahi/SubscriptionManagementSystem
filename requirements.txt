@@ -11,6 +11,7 @@ click-repl==0.3.0
 Django==5.2.1
 django-cors-headers==4.7.0
 django-filter==25.1
+django-parler==2.3
 django-viewflow==2.2.12
 django_celery_results==2.6.0
 djangorestframework==3.16.0
@@ -20,6 +21,7 @@ kombu==5.5.4
 MarkupSafe==3.0.2
 packaging==25.0
 pdfkit==1.0.0
+polib==1.2.0
 prompt_toolkit==3.0.52
 python-dateutil==2.9.0.post0
 redis==6.4.0
