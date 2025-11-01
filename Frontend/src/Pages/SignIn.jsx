@@ -1,30 +1,28 @@
-import { useEffect } from "react";
 import SignInForm from "../Components/Forms/SignInForm/SignInForm";
-import { useDispatch } from "react-redux";
-import {
-  IsAuthenticated,
-  user,
-  isLoading,
-} from "../Features/UserAuth/UserAuth";
+import { IsAuthenticated, user } from "../Features/UserAuth/UserAuth";
+import { useDispatch, useSelector } from "react-redux";
+import { isLoading } from "../Features/UserAuth/UserAuth";
 import { Navigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { updateNavbar } from "../Features/Navbar";
+import Loading from "../Components/Loading/Loading";
+import { useEffect } from "react";
 const SignIn = () => {
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const path = location.state ? location.state.prev : "dashboard";
   const userState = useSelector(user);
   const loading = useSelector(isLoading);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(updateNavbar(path.split("/")[1]));
-    if (!userState && loading) {
+    if (userState === null || !loading) {
       dispatch(IsAuthenticated());
     }
   }, []);
 
-  return userState ? <Navigate to={path} replace /> : <SignInForm />;
+  if (userState) {
+    return <Navigate to="/" />;
+  } else if (loading) {
+    return <Loading />;
+  } else {
+    return <SignInForm />;
+  }
 };
 
 export default SignIn;
