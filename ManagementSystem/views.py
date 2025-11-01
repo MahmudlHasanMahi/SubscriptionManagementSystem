@@ -191,41 +191,7 @@ class SubscriptionView(SubscriptionBase, APIView):
             serializer.save()
 
         return Response({})
-        # old_subscription_plans = []
-        # new_subscription_plans = []
-        # cancellation_flag = 0
-        # if request.data.get("status") == "CANCELLED":
-        #     return Response({"detail":"This subscription is Cancelled"},status=status.HTTP_400_BAD_REQUEST)
-        # for subscription in data:
-        #     if subscription.get("id",False):
-        #         old_subscription_plans.append(subscription)
-        #         if subscription.get("status",None) == "CANCELLED":
-        #             cancellation_flag += 1
-        #     else:
-        #         subscription["status"] = "DEACTIVE"
-        #         new_subscription_plans.append(subscription)
-        
-            
-
-        # for plans in old_subscription_plans:
-        #     subscriptionPlan = get_subscription_plan(plans.get("id"))
-        #     serializers = SubscriptionPlanSerializer(subscriptionPlan,data=plans,partial=True)
-        #     if serializers.is_valid(raise_exception=True):
-        #         serializers.save()
-                
-        # if not new_subscription_plans and len(old_subscription_plans) == cancellation_flag:
-        #     subscription = get_subscription(subscription_id)
-            
-        #     serializers = SubscriptionSerializer(subscription,data={"status":"CANCELLED"},partial=True)
-        #     if serializers.is_valid():
-        #         serializers.save()
-        #     return Response({"detail":"Successfully updated"})
-
-        # new_subscription_serializer = _InternalSubscriptionPlanSerializer(data=new_subscription_plans,many=True)
-        # if new_subscription_serializer.is_valid(raise_exception=True):
-        #     new_subscription_serializer.save()
-        # return Response({"detail":"Successfully updated"})
-
+    
 
 class SubscriptionApproval(SubscriptionBase,APIView):
     permission_classes = [IsAuthenticated|SubscriptionPermission]
@@ -295,12 +261,7 @@ class test(APIView,SubscriptionBase):
     def get(self,request):
 
         obj = Subscription.objects.first()
-        # print(obj)
-        # obj.activate(commit=True)
-        # obj.generate_invoice(commit=True)
-        # subs = Subscription.objects.scheduled_subscription()
-        # for sub in subs:
-        # obj.activate(commit=True,generate_invoice=True,activate_plans=True)
+        
         scheduled_task()
         return Response({})
     
