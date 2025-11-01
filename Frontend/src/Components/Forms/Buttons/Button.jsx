@@ -1,5 +1,6 @@
 import styles from "./Button.module.css";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 function Button({
   title,
   onSubmit,
@@ -9,6 +10,7 @@ function Button({
   disable = false,
   onClick,
 }) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
@@ -31,10 +33,10 @@ function Button({
             color: "white",
           }}
         >
-          {title}
+          {t(title)}
         </Link>
       ) : (
-        <>{title}</>
+        <>{t(title)}</>
       )}
     </button>
   );

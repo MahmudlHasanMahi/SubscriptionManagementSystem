@@ -12,19 +12,20 @@ import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../Features/headerState";
 import { useEffect } from "react";
 import Sub1 from "../../svg/sub1";
-import zeropad from "../../Utils/zeropad";
+import { useTranslation } from "react-i18next";
 const Plans = () => {
   const dispatch = useDispatch();
 
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     dispatch(
       updateHeaderState({
-        title1: `Subscription`,
-        title2: "View, search for and add new subscription",
+        title1: t(`Subscription`),
+        title2: t("View, search for and add new subscription"),
         logo: <Sub1 />,
       })
     );
-  }, []);
+  }, [i18n.language]);
   const SubsctiptionObject = useGetSubscriptionsInfiniteQuery({
     page_size: 10,
   });
@@ -34,11 +35,11 @@ const Plans = () => {
     begin: "begin",
     status: "status",
   };
-  console.log(SubsctiptionObject);
+  
   return (
     <div>
       <SubscriptionPanel
-        numeric={zeropad(SubsctiptionObject.data?.pages[0].results.length)}
+        numeric={SubsctiptionObject.data?.pages[0].results.length}
       />
       <br />
 
@@ -56,7 +57,9 @@ const Plans = () => {
           <ActionButton title={"Download Invoice"} url={"invoice"} />,
         ]}
       />
-      <br /><br /><br />
+      <br />
+      <br />
+      <br />
     </div>
   );
 };

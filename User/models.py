@@ -3,10 +3,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import *
 
+from django.utils.translation import gettext_lazy as _
 
 class Profile(models.Model):
     user = models.OneToOneField(
-        "User", null=True, on_delete=models.CASCADE, related_name="profile_%(class)s_related")
+        "User", null=True, on_delete=models.CASCADE, related_name="profile_%(class)s_related",verbose_name=_("Profile"))
 
     class Meta:
         abstract = True
@@ -28,22 +29,22 @@ class EmployeeProfile(Profile):
 
 
 class ClientProfile(Profile):
-    address = models.CharField(max_length=1024, blank=False)
+    address = models.CharField(max_length=1024, blank=False,verbose_name=_("Address"))
 
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    email           =   models.EmailField(max_length=300, unique=True, blank=True)
-    name            =   models.CharField(max_length=64, blank=False, null=False)
-    mobile          =   models.IntegerField(blank=True, null=True, unique=True)
-    joined          =   models.DateField(auto_now_add=True)
-    groups          =   models.ManyToManyField(Groups)
+    email           =   models.EmailField(max_length=300, unique=True, blank=True,verbose_name=_("Email"))
+    name            =   models.CharField(max_length=64, blank=False, null=False,verbose_name=_("Name"))
+    mobile          =   models.IntegerField(blank=True, null=True, unique=True,verbose_name=_("Mobile"))
+    joined          =   models.DateField(auto_now_add=True,verbose_name=_("Joined"))
+    groups          =   models.ManyToManyField(Groups,verbose_name=_("Groups"))
 
     objects         =   UserManager()
 
-    is_active       =   models.BooleanField(verbose_name="Active", default=False)
-    admin           =   models.BooleanField(default=False)
-    staff           =   models.BooleanField(default=False)
+    is_active       =   models.BooleanField(verbose_name=_("Active"), default=False)
+    admin           =   models.BooleanField(default=False,verbose_name=_("Admin"))
+    staff           =   models.BooleanField(default=False,verbose_name=_("Staff"))
 
     manager         =   models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL)
 

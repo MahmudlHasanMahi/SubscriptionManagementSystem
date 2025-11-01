@@ -2,8 +2,9 @@ import styles from "./Heading.module.css";
 import { useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 const TitleContainer = () => {
+  const { t } = useTranslation();
   const state = useSelector((state) => state.headerState);
   const location = useLocation();
 

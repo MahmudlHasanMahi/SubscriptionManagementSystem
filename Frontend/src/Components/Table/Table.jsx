@@ -4,9 +4,7 @@ import { useInView } from "react-intersection-observer";
 import LinearProgress from "@mui/material/LinearProgress";
 import React from "react";
 import get from "lodash/get";
-import { motion } from "framer-motion";
-import { border } from "@mui/system";
-import { unescape } from "lodash";
+import { useTranslation } from "react-i18next";
 const Table = ({
   title,
 
@@ -17,6 +15,7 @@ const Table = ({
   color,
   actionButtons = [],
 }) => {
+  const { t } = useTranslation();
   const extractedColor = color.match(/\d+,\s*\d+,\s*\d+/)[0];
   const { ref, inView } = useInView({ triggerOnce: true });
   const data = queryObject.data || [];
@@ -83,12 +82,16 @@ const Table = ({
     return arr?.map((res, idx) => (
       <tr key={idx}>
         <td className={styles["serial"]}></td>
-        {Object.keys(fields).map((field, idx) => {
-          if (field == "status") {
-            return <td key={idx}>{getStatusHtml(get(res, fields[field]))}</td>;
-          } else {
+        {Object.keys(fields).map((key, idx) => {
+          const value = fields[key][1];
+          if (key == "status") {
+            return <td key={idx}>{getStatusHtml(get(res, value))}</td>;
           }
-          return <td key={idx}>{get(res, fields[field])}</td>;
+          if (typeof value === "function") {
+           
+          return <td key={idx}>{ value(res, value)}</td>;
+          }
+          return <td key={idx}>{get(res, value)}</td>;
         })}
 
         <td
@@ -134,9 +137,12 @@ const Table = ({
         <table className={styles["table"]}>
           <thead>
             <tr>
-              {serial && <th>S/N</th>}
-              {Object.keys(fields).map((item, idx) => {
-                return <th key={idx}>{item}</th>;
+              {serial && <th>{t("S/N")}</th>}
+              {Object.keys(fields).map((key, idx) => {
+                let val = data.pages?.[0]?.results
+                  ? data.pages?.[0].results?.[0]
+                  : data.pages?.[0][0];
+                return <th key={idx}>{get(val, fields[key][0])}</th>;
               })}
             </tr>
           </thead>

@@ -1,0 +1,37 @@
+{
+  "welcome": "Welcome, {{user}} 👋",
+  "welcomeDate": "Today is {{dayName}}, {{date}} {{monthName}} {{year}}.",
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "weekdays": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "Dashboard": "Dashboard",
+  "Staff": "Staff",
+  "Subscription": "Subscription",
+  "Client": "Client",
+
+  "Please provide a valid price.": "Please provide a valid price.",
+  "Please provide a price.": "Please provide a price.",
+  "please enter valid price": "please enter valid price",
+  "Please Select a Period": "Please Select a Period"
+  
+}

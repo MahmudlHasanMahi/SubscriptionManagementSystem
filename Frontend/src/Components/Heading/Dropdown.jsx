@@ -1,24 +1,21 @@
-import { motion } from "motion/react";
-import styles from "./Heading.module.css";
-import { useEffect, useState } from "react";
-import { Signout } from "../../Features/UserAuth/UserAuth";
 import { resetState } from "../../Features/UserAuth/UserAuth";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Signout } from "../../Features/UserAuth/UserAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChangeLanguage } from "../../Utils/ChangeLanguage";
-const Dropdown = () => {
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { motion } from "motion/react";
+import { useDispatch } from "react-redux";
+import styles from "./Heading.module.css";
+const Dropdown = ({ props }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
+  const { i18n, t } = useTranslation();
 
   const toggleLanguage = (e) => {
-    // e.stopPropagation();
-    const language = lang === "ar" ? "en" : "ar";
-    ChangeLanguage(language);
-    setLang(language);
+    const newLang = i18n.language === "ar" ? "en" : "ar";
+    i18n.changeLanguage(newLang);
+    navigate(0);
   };
   const signOut = () => {
     dispatch(resetState());
@@ -28,7 +25,6 @@ const Dropdown = () => {
     });
   };
   const profile = (e) => {
-    e.stopPropagation();
     navigate("/profile");
   };
   return (
@@ -37,19 +33,20 @@ const Dropdown = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
       className={styles["dropdown"]}
+      {...props}
     >
       <div className={styles["language"]} onClick={toggleLanguage}>
-        <span className={styles[lang == "en" ? "active" : "deactive"]}>
+        <span className={styles[i18n.language == "en" ? "active" : "deactive"]}>
           English
         </span>
-        <span className={styles[lang == "ar" ? "active" : "deactive"]}>
+        <span className={styles[i18n.language == "ar" ? "active" : "deactive"]}>
           عربي
         </span>
       </div>
       <div className={styles["account"]} onClick={profile}>
-        Account
+        {t("Account")}
       </div>
-      <div onClick={signOut}>Sign out</div>
+      <div onClick={signOut}>{t("Sign out")}</div>
     </motion.div>
   );
 };

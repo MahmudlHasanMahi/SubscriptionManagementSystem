@@ -1,13 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./SelectTable.module.css";
-import ItemMenu from "../../MultiSelect/ItemMenu";
-import { useGetProductsQuery } from "../../../Features/Services/productApi";
 import SingleSelect from "./SingleSelect";
 import { useDebouncedCallback } from "use-debounce";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SelectTableContainer from "./SelectTableContainer";
 import InputContainer from "./InputContainer";
-import { Number } from "../../../Utils/NumericUtils";
+import InvoiceSummary from "./InvoiceSummary";
+import Background from "./Background";
+import NumericInputField from "../TextFields/NumericInputField";
+import {
+  isValidNumber,
+  Number,
+  englishToArabic,
+} from "../../../Utils/NumericUtils";
 const SelectTable = ({
   title,
   TableHeader,
@@ -22,13 +27,17 @@ const SelectTable = ({
   const isSelected = (option) => {
     return selected?.some((item) => item.id === option.id);
   };
-  
+
   const selectEvent = (option, e, row) => {
     if (isSelected(option)) return;
     setSelected((prev) => {
       if (prev == []) return [option];
       const update = [...prev];
-      update[row] = { ...option, default_price: option["default_price"] };
+      update[row] = {
+        ...option,
+        quantity: 1,
+        default_price: option["default_price"],
+      };
       return update;
     });
   };
@@ -51,7 +60,7 @@ const SelectTable = ({
         obj.period.name
       }`}</InputContainer>
     ) : (
-      <InputContainer>Add plan . . .</InputContainer>
+      <InputContainer>Add price . . .</InputContainer>
     );
   };
 
@@ -71,7 +80,8 @@ const SelectTable = ({
   const setQuantity = (e, idx) => {
     setSelected((prev) => {
       const updated = [...prev];
-      prev[idx]["quantity"] = e.target.value;
+      const price = parseInt(Number(e.target.value));
+      prev[idx]["quantity"] = price > 20 ? 1 : price;
       return updated;
     });
   };
@@ -87,103 +97,139 @@ const SelectTable = ({
     setSearch(e.target.value);
   }, 500);
 
+  const total = selected.reduce(
+    (sum, item) => sum + (item.default_price?.price * item.quantity || 0),
+    0
+  );
+  const data = [
+    [
+      { title: "Subtotal", value: total },
+      { title: "Subtotal", value: total },
+    ],
+    [{ title: "Total", value: total }],
+  ];
+
+  const handleInvalid = (e) => {
+    e.target.setCustomValidity("Please provide a price.");
+    if (isValidNumber(e.target.value)) {
+      const number = parseInt(Number(e.target.value));
+      if (number > 1 && number < 20) e.target.setCustomValidity("");
+      else e.target.setCustomValidity("must be greater 1 and less than 20");
+    } else {
+      e.target.setCustomValidity("please enter valid price");
+    }
+  };
+
+  const handleInput = (e) => {
+    if (isValidNumber(e.target.value)) {
+      const number = parseInt(Number(e.target.value));
+      if (number > 1 && number < 20) e.target.setCustomValidity("");
+      else e.target.setCustomValidity("must be greater 1 and less than 20");
+    } else {
+      e.target.setCustomValidity("please enter valid price");
+    }
+  };
+
   return (
-    <SelectTableContainer title={title}>
-      <thead>
-        <tr>
-          {TableHeader.map((item, idx) => {
-            return <th key={idx}>{item}</th>;
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {selected.map((data, idx) => {
-          return (
-            <tr className={styles["row"]} key={idx}>
-              <td>
-                <SingleSelect
-                  pagination={true}
-                  row={idx}
-                  currentSelected={currentPlanSelected}
-                  isSelected={isSelected}
-                  selectEvent={selectEvent}
-                  selected={selected}
-                  objects={plans}
-                  search={{
-                    search: planFilter,
-                    setSearch: setPlanFilter,
-                    onChange: filter,
-                  }}
-                  getTitle={(obj) => obj.name}
-                />
-              </td>
-
-              <td>
-                <div className={styles["text"]}>
-                  <input
-                    onChange={(e) => {
-                      setQuantity(e, idx);
+    <Background>
+      <SelectTableContainer title={title}>
+        <thead>
+          <tr>
+            {TableHeader.map((item, idx) => {
+              return <th key={idx}>{item}</th>;
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {selected.map((data, idx) => {
+            return (
+              <tr className={styles["row"]} key={idx}>
+                <td>
+                  <SingleSelect
+                    pagination={true}
+                    row={idx}
+                    currentSelected={currentPlanSelected}
+                    isSelected={isSelected}
+                    selectEvent={selectEvent}
+                    selected={selected}
+                    objects={plans}
+                    search={{
+                      search: planFilter,
+                      setSearch: setPlanFilter,
+                      onChange: filter,
                     }}
-                    name="quantity"
-                    type="number"
-                    min="1"
-                    max="20"
-                    defaultValue={1}
+                    getTitle={(obj) => obj.name}
                   />
-                </div>
-              </td>
+                </td>
 
-              <td>
-                <SingleSelect
-                  getTitle={({ period, price }) => {
-                    return `${Number(price, true)}/${period.name}`;
-                  }}
-                  pagination={false}
-                  row={idx}
-                  currentSelected={currentPriceSelected}
-                  isSelected={isPriceSelected}
-                  selectEvent={selectPriceEvent}
-                  selected={selected}
-                  objects={selected[idx].price_list}
-                  search={{
-                    search: priceFilter,
-                    setSearch: setPriceFilter,
-                    onChange: filter,
-                  }}
-                />
-              </td>
-              <td className={styles["delete"]}>
-                <DeleteIcon
-                  onClick={() => {
-                    deleteRow(idx);
-                  }}
-                  style={{
-                    cursor: "pointer",
-                    display: !Object.hasOwn(selected[0], "id") && "none",
-                  }}
-                />
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
+                <td>
+                  <div className={styles["text"]}>
+                    <input
+                      onChange={(e) => {
+                        setQuantity(e, idx);
+                      }}
+                      name="quantity"
+                      type={"text"}
+                      defaultValue={Number(1, false, true)}
+                      onInvalid={handleInvalid}
+                      onInput={handleInput}
+                    />
+                  </div>
+                </td>
 
-      <div
-        className={styles["add"]}
-        onClick={() => {
-          setSelected((prev) => {
-            const last = prev.at(-1);
-            const isLastEmpty = last && Object.keys(last).length === 0;
-            if (!isLastEmpty) {
-              return [...prev, {}];
-            }
-            return prev;
-          });
-        }}
-      >
-        + Add product
-      </div>
-    </SelectTableContainer>
+                <td>
+                  <SingleSelect
+                    getTitle={({ period, price }) => {
+                      return `${Number(price, true)}/${period.name}`;
+                    }}
+                    pagination={false}
+                    row={idx}
+                    currentSelected={currentPriceSelected}
+                    isSelected={isPriceSelected}
+                    selectEvent={selectPriceEvent}
+                    selected={selected}
+                    objects={selected[idx].price_list}
+                    search={{
+                      search: priceFilter,
+                      setSearch: setPriceFilter,
+                      onChange: filter,
+                    }}
+                  />
+                </td>
+                <td className={styles["delete"]}>
+                  <DeleteIcon
+                    onClick={() => {
+                      deleteRow(idx);
+                    }}
+                    style={{
+                      cursor: "pointer",
+                      display: !Object.hasOwn(selected[0], "id") && "none",
+                    }}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+
+        <div
+          className={styles["add"]}
+          onClick={() => {
+            setSelected((prev) => {
+              const last = prev.at(-1);
+              const isLastEmpty = last && Object.keys(last).length === 0;
+              if (!isLastEmpty) {
+                return [...prev, {}];
+              }
+              return prev;
+            });
+          }}
+        >
+          + Add product
+        </div>
+      </SelectTableContainer>
+      <InvoiceSummary data={data} />
+    </Background>
   );
 };
 

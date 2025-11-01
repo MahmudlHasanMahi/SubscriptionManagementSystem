@@ -4,19 +4,36 @@ from rest_framework import serializers
 from .models import User, Employee,Manager,Admin
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
+from django.utils.translation import gettext_lazy as _
+from rest_framework.utils.model_meta import get_field_info
+from .mixins.TranslatedFieldsMixin import TranslatedFieldMixin
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Groups
         fields = ["id","level","name"]
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(TranslatedFieldMixin,serializers.ModelSerializer):
     groups = serializers.SerializerMethodField(read_only=True)
     groups_pk = serializers.SerializerMethodField(read_only=True)
+
     staff = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = User
         fields =  ["id","email","name","mobile","last_login","groups","groups_pk","is_active","staff"]
-       
-      
+
+    # def get_default_field_names(self, declared_fields, model_info):
+    #     a = super().get_default_field_names(declared_fields, model_info)   
+    #     print(a)
+    #     return a
+   
+
+
+
+    # def get_field_names(self, declared_fields, info):
+    #     a = super().get_field_names(declared_fields, info)
+    #     # print(a)
+    #     return  a
+
+    
     def get_staff(self,obj):
         return Employee.objects.count()
 
@@ -41,7 +58,6 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.get("password")
         mobile = validated_data.get("mobile")
         is_active = validated_data.get("active")
-        print(validated_data)
 
         group = Groups.objects.get(pk=group_id)
         if getattr(group,"name",None) == "Admin":
@@ -50,10 +66,9 @@ class UserSerializer(serializers.ModelSerializer):
             return User.objects.create_manager(email,mobile,password,name,is_active)
         elif getattr(group,"name",None) =="Employee":
             return User.objects.create_employee(email=email,mobile=mobile,password=password,name=name,is_active=is_active)
+    
 
     def update(self, instance, validated_data):
-        print(instance,validated_data)
-
         return super().update(instance, validated_data)
 
 

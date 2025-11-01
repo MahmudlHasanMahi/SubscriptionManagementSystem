@@ -1,18 +1,16 @@
 import styles from "./Navigation.module.css";
 import Active from "./Active";
-import { useDispatch } from "react-redux";
-import { updateNavbar } from "../../Features/Navbar";
 import { Link } from "react-router-dom";
-const ListItem = ({ title, Logo, link, active }) => {
-  const dispatch = useDispatch();
-  const clicked = () => {
-    dispatch(updateNavbar(link));
-  };
+
+import { useTranslation } from "react-i18next";
+const ListItem = ({ title, Logo, link, active, isResizing }) => {
+  const { i18n } = useTranslation();
+
   return (
-    <Link className={styles["listItem"]} onClick={clicked} to={link}>
+    <Link className={styles["listItem"]} to={link}>
       {Logo}
       <span>{title}</span>
-      {active && <Active />}
+      {active && i18n.isInitialized && <Active isResizing={isResizing} />}
     </Link>
   );
 };

@@ -13,7 +13,9 @@ import { useDebouncedCallback } from "use-debounce";
 import { notifyError } from "../../../Utils/nofify";
 import NumericInputField from "../TextFields/NumericInputField";
 import { isValidNumber, Number } from "../../../Utils/NumericUtils";
+import { useTranslation } from "react-i18next";
 const AddPriceForm = ({ state }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const object = useGetPeriodsQuery();
   const [createPeriod, result] = useCreatePriceListMutation();
@@ -36,7 +38,7 @@ const AddPriceForm = ({ state }) => {
   }, 500);
   const create = (e) => {
     e.preventDefault();
-    if (!selected.id) return notifyError("Please Select a Period");
+    if (!selected.id) return notifyError(t("Please Select a Period"));
     const data = {
       period: selected.id,
       price: Number(e.target.price.value),
@@ -50,14 +52,16 @@ const AddPriceForm = ({ state }) => {
   };
 
   const handleInvalid = (e) => {
-    e.target.setCustomValidity("Please provide a price.");
+    if (isValidNumber(e.target.value))
+      e.target.setCustomValidity(t("Please provide a valid price."));
+    else e.target.setCustomValidity(t("Please provide a price."));
   };
 
   const handleInput = (e) => {
     if (isValidNumber(e.target.value)) {
       e.target.setCustomValidity("");
     } else {
-      e.target.setCustomValidity("please enter valid price");
+      e.target.setCustomValidity(t("please enter valid price"));
     }
   };
 
@@ -78,20 +82,22 @@ const AddPriceForm = ({ state }) => {
       }}
       style={{
         position: "absolute",
-        width: "100%",
-        height: "100%",
+        display: "flex",
         top: "0.8em",
         left: "0.8em",
-        zIndex: "9",
+        zIndex: "2",
+        width: "100%",
+        height: "100%",
       }}
     >
       <div
         style={{
           boxShadow: " 2px 3px 11px -1px  #b1b1b1ff",
           borderRadius: "1.25em",
+          width: "100%",
         }}
       >
-        <form onSubmit={create}>
+        <form onSubmit={create} style={{ height: "100%" }}>
           <FormContainer title={"Add price"}>
             <NumericInputField
               type={"text"}
@@ -116,6 +122,7 @@ const AddPriceForm = ({ state }) => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    
                   }}
                 >
                   <SingleSelect

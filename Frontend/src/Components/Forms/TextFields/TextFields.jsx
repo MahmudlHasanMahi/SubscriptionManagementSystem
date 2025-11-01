@@ -3,6 +3,7 @@ import styles from "./TextFields.module.css";
 import { notifyDefault } from "../../../Utils/nofify";
 import { useDebouncedCallback } from "use-debounce";
 import Label from "./Label";
+import { useTranslation } from "react-i18next";
 const TextFields = ({
   type,
   label,
@@ -17,6 +18,7 @@ const TextFields = ({
   disabled = false,
   ref,
 }) => {
+  
   const [clipboard, setClipBoard] = useState(null);
   const [edit, setEdit] = useState(false);
   const onchange = useDebouncedCallback((value) => {

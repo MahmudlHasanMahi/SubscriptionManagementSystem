@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStaff, staffState } from "../../Features/staff";
 import { user } from "../../Features/UserAuth/UserAuth";
 import { updateHeaderState } from "../../Features/headerState";
-import useStaffQuery from "../../Hooks/useStaffQuery";
 import Table from "../Table/Table";
 import { useGetStaffListInfiniteQuery } from "../../Features/Services/staffApi";
 import {
@@ -21,8 +20,10 @@ import {
 } from "../../Features/Services/subscriptionApi";
 import ActionButton from "../Table/ActionButton";
 import { notifySuccess } from "../../Utils/nofify";
-import zeropad from "../../Utils/zeropad";
+import { useTranslation } from "react-i18next";
+import { Number } from "../../Utils/NumericUtils";
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const staff = useSelector(staffState);
   const { name, groups } = useSelector(user);
@@ -51,29 +52,8 @@ const Dashboard = () => {
   const formatDate = () => {
     const today = new Date();
 
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+    const days = t("weekdays");
+    const months = t("months");
 
     const dayName = days[today.getDay()];
     const date = today.getDate();
@@ -102,12 +82,12 @@ const Dashboard = () => {
     dispatch(fetchStaff({ count: true }));
     dispatch(
       updateHeaderState({
-        title1: `Welcome, ${name} 👋`,
+        title1: t("welcome", { user: name }),
         title2: formatDate(),
         logo: null,
       })
     );
-  }, []);
+  }, [i18n.language, i18n]);
 
   const approve = (pk) => {
     approveSubscription(pk).then(() => {
@@ -125,26 +105,30 @@ const Dashboard = () => {
       <div className={styles["cardContainer"]}>
         <div className={styles["cardRow"]}>
           <Card
-            title1={staff.staffState?.count}
-            title2="Total number of staff"
+            title1={Number(staff.staffState?.count, false, true)}
+            title2={t("Total number of staff")}
             style={{ background: "rgba(22, 115, 161, 0.4)" }}
             logo={<Staff2 color={"#67006E"} />}
           />
           <Card
-            title1={zeropad(subscription?.data?.pages[0].results.length)}
-            title2="Total Subscription"
+            title1={Number(
+              subscription?.data?.pages[0].results.length,
+              false,
+              true
+            )}
+            title2={t("Total Subscription")}
             logo={<Subscription2 color={"#352AAC"} />}
             style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
           <Card
-            title1="200"
-            title2="Total Client"
+            title1={Number(200, false, true)}
+            title2={t("Total Client")}
             logo={<Client color={"#8C2D56"} />}
             style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
           <Card
-            title1={zeropad(unApprovedSubscription.data?.length)}
-            title2="Subscription Pending Approval"
+            title1={Number(unApprovedSubscription.data?.length, false, true)}
+            title2={t("Subscription Pending Approval")}
             logo={<Recipt color={"#9C4C0B"} />}
             style={{ background: "rgba(22, 115, 161, 0.4)" }}
           />
@@ -158,7 +142,7 @@ const Dashboard = () => {
           >
             <Table
               color={"rgb(18,54,73)"}
-              title={"Unapproved Subscriptions"}
+              title={t("Unapproved Subscriptions")}
               queryObject={unApprovedSubscription}
               actionButtons={[
                 <ActionButton title={"Approve"} event={approve} />,
@@ -172,13 +156,13 @@ const Dashboard = () => {
           <div className={styles["tables"]}>
             <Table
               color={"rgb(18,54,73)"}
-              title={"Staff List"}
+              title={t("Staff List")}
               queryObject={staffList}
               fields={fields}
             />
             <Table
               color={"rgb(18,54,73)"}
-              title={"Staff List"}
+              title={t("Staff List")}
               queryObject={staffList}
               fields={fields}
             />

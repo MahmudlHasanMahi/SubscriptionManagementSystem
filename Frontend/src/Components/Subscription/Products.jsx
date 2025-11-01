@@ -2,61 +2,76 @@ import { useEffect, useState } from "react";
 import styles from "./Products.module.css";
 import Table from "../Table/Table";
 import Period from "./Period";
-import PriceList from "./PriceList";
 import ProductsPanel from "./ProductsPanel";
 import ActionButton from "../Table/ActionButton";
 import { useGetProductListInfiniteQuery } from "../../Features/Services/productApi";
 import { useDispatch } from "react-redux";
 import { updateHeaderState } from "../../Features/headerState";
 import Sub1 from "../../svg/sub1";
-import zeropad from "../../Utils/zeropad";
+import { useTranslation } from "react-i18next";
+import { Number } from "../../Utils/NumericUtils";
 const Products = () => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const [input, setInput] = useState(null);
   const [filter, setFilter] = useState({
     selected: null,
   });
-  const fields = {
-    name: "name",
-    price: "default_price.title",
-  };
-  const filterField = {
-    name: "name",
-  };
+
+  const filter_fields = ["name", "description"];
+
   const products = useGetProductListInfiniteQuery({
-    size: 0,
+    size: 5,
     filter: {
-      filterBy: Object.values(filterField)[filter.selected],
+      filterBy: filter_fields[filter?.selected],
       data: input,
     },
   });
 
+  const tableConfig = {
+    name: ["fields.name", "name"],
+    price: [
+      "fields.default_price",
+      (args1, args2) => {
+        return `${Number(args1["default_price"]["price"], false, true)}/${
+          args1["default_price"]["period"]["name"]
+        }`;
+      },
+    ],
+  };
+  const fields2 = Object.fromEntries(
+    filter_fields.map((key) => [key, products.data?.pages?.[0][0].fields[key]])
+  );
+  console.log(fields2);
+  // const fields2 = {
+  //   name: "asdf",
+  // };
+
   useEffect(() => {
     dispatch(
       updateHeaderState({
-        title1: `Product`,
-        title2: "View, search for and add new product",
+        title1: t(`Product`),
+        title2: t("View, search for and add new product"),
         logo: <Sub1 />,
       })
     );
-  }, []);
+  }, [i18n.language]);
 
-  console.log(products);
   return (
     <>
       <ProductsPanel
         filter={filter}
         setfilter={setFilter}
         setinput={setInput}
-        fields={filterField}
-        numberic={zeropad(products.data?.pages[0].length)}
+        fields={fields2}
+        numberic={Number(products.data?.pages[0].length, false, true)}
       />
 
       <Table
         color={"rgba(24, 55, 73, 1)"}
-        title={"Products"}
+        title={t("Products")}
         endpont={{}}
-        fields={fields}
+        fields={tableConfig}
         height={"45vh"}
         actionButtons={[
           <ActionButton
