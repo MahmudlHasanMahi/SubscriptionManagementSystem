@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./Subscription.module.css";
-import usePeriodQuery from "../../Hooks/usePeriodQuery";
 import Table from "../Table/Table";
 const Period = () => {
   const periodObject = usePeriodQuery();
@@ -14,7 +13,7 @@ const Period = () => {
       title={"Periods"}
       fields={fields}
       action={{ title: "View more", pk: "id" }}
-      queryObject={periodObject}
+      queryObject={{}}
     />
   );
 };
