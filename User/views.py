@@ -13,7 +13,7 @@ from .Pagination import StaffPagination
 from django.contrib.auth import logout
 from rest_framework import status
 import time
-
+from django.utils.translation import gettext_lazy as _ 
 def staffQuery(user):
     user_level = user.groups.first().level
     return User.objects.filter(groups__level__gte=user_level)
@@ -53,18 +53,17 @@ class ResetPassword(APIView):
     
 class CheckAuthentication(APIView):
     permission_classes = (AllowAny,)
-    
     def get(self,request):
         user = request.user
-        try:
-            if user.is_authenticated:
-                serializer = UserSerializer(user)
-                return Response(serializer.data,status=status.HTTP_200_OK)
-            return Response(status = status.HTTP_401_UNAUTHORIZED)
+        # try:
+        if user.is_authenticated:
+            serializer = UserSerializer(user)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(status = status.HTTP_401_UNAUTHORIZED)
 
-        except:
+        # except:
 
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        #     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -79,7 +78,6 @@ class SignUp(APIView):
         password = data.get("password")
         try:
             user = authenticate(email=email,password=password)
-
             if user:
                 if(user.last_login):
                     login(request,user)
@@ -156,7 +154,6 @@ class StaffView(APIView):
 
             user = User.objects.get(pk=id)
             serializer = self.serializer_class(user)
-            time.sleep(0.5)
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"err":"User does not exists"},status=status.HTTP_404_NOT_FOUND)
@@ -186,6 +183,6 @@ class test(APIView):
     permission_classes=(AllowAny,)
     def get(self,request):
         # client = Client.objects.first().Subscription.prefetch_related("active_plans").explain()
-        group = Groups.objects.filter(name="Manager")
-        print(group)
-        return Response()
+        # group = Groups.objects.filter(name="Manager")
+        # print(group)
+        return  Response({"msg": _("Hello world")})
