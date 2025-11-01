@@ -40,6 +40,7 @@ const SubscriptionForm = () => {
   const TableHeads = ["Product Name", "Quantity", "Cost"];
   const date = useRef();
   const [selected, setSelected] = useState([{}]);
+
   useEffect(() => {
     if (result.isUninitialized || result.isLoading) return;
     if (result.isSuccess) {
@@ -83,7 +84,6 @@ const SubscriptionForm = () => {
       })
     );
   }, []);
-  console.log(selected);
 
   return (
     <Body>
