@@ -4,13 +4,24 @@ from .Time import Time
 class SubscriptionManager(models.Manager,Time):
     def get_queryset(self) :
         return super().get_queryset()
+
     def scheduled_subscription(self):
         return self.filter(status="SCHEDULED",begin__lte=self.time_now)
+
     def due_for_renewal(self):
         return self.filter(status="ACTIVE").filter(
             Q(renewal_date__lte=self.time_now))
-    # def about_to_expire(self):
-        # return self.filter(renewal_date__gte=)
-        # return
+
+    def expired(self):
+        return self.filter(end__lte=models.F("renewal_date"))
+
     def expired_subscription(self):
         return self.filter(status="EXPIRED")
+
+
+class InvoiceManager(models.Manager,Time):
+    def get_queryset(self):
+        return super().get_queryset()
+    
+    def post_finalize(self):
+        return self.filter(status="DRAFT",finalize_date__lte=self.time_now)
