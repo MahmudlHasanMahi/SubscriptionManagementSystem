@@ -4,48 +4,80 @@ import { DatePicker, CustomProvider } from "rsuite";
 import "rsuite/DatePicker/styles/index.css";
 import InputOutline from "../../InputOutline/InputOutline";
 import Label from "../TextFields/Label";
-import { notifyError } from "../../../Utils/nofify";
-import { useDebouncedCallback, useThrottledCallback } from "use-debounce";
+import NumericInputField from "../TextFields/NumericInputField";
+import { isValidNumber, Number } from "../../../Utils/NumericUtils";
+import { useTranslation } from "react-i18next";
 const DateField = ({
-  title,
-  background_color = null,
   disable = true,
-  period = 30,
-  date,
+  period = null,
+  dateRef,
+  defaultCycle = null,
   beginDefault = null,
+  endDateDefault = null,
 }) => {
-  const [start, setStart] = useState(
+  const { t } = useTranslation();
+  const [begin, setBegin] = useState(
     beginDefault ? new Date(beginDefault) : new Date()
   );
 
-  const [cycle, setCycle] = useState(1);
-  const [endDate, setEndDate] = useState(null);
+  const [cycle, setCycle] = useState();
+  const [endDate, setEndDate] = useState(
+    endDateDefault ? new Date(endDateDefault) : null
+  );
   const disableBeforeToday = (date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return date < today;
   };
 
-  useEffect(() => {
-    if (date) {
-      date.current = {
-        begin: start,
-        end: endDate,
-      };
+  const updateEndDate = (cycleVal, beginDate) => {
+    console.log(begin);
+    const futureDate = new Date();
+    if (beginDate) {
+      futureDate.setDate(beginDate.getDate() + period * cycleVal);
+    } else {
+      futureDate.setDate(begin.getDate() + period * cycleVal);
     }
-  }, [start, cycle]);
+    dateRef.current.end = futureDate;
+    setEndDate(futureDate);
+  };
 
-  const onChange = (e) => {
-    const val = Number(e.target.value);
+  const changeEndDate = (e) => {
+    const val = Number(e?.target.value, false, true);
     if (val >= 1) {
-      const futureDate = new Date();
-      futureDate.setDate(start.getDate() + period * val);
-      setEndDate(futureDate);
-      setCycle(val);
+      updateEndDate(val);
     } else {
       setEndDate(null);
     }
   };
+  useEffect(() => {
+    dateRef.current = {
+      begin: begin,
+      end: endDate,
+    };
+  }, []);
+
+  const handleInvalid = (e) => {
+    const value = e.target.value.trim();
+
+    if (value === "") return e.target.setCustomValidity("");
+
+    if (isValidNumber(value)) {
+      e.target.setCustomValidity(t("Please provide a valid cycle."));
+    } else {
+      e.target.setCustomValidity(t("Please provide a cycle."));
+    }
+  };
+
+  const handleInput = (e) => {
+    const value = e.target.value.trim();
+    if (value === "" || isValidNumber(value)) {
+      e.target.setCustomValidity(""); // allow empty or valid number
+    } else {
+      e.target.setCustomValidity(t("please enter valid cycle"));
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "60%" }}>
       <CustomProvider theme="dark">
@@ -53,24 +85,33 @@ const DateField = ({
         <InputOutline>
           <div className={styles.date}>
             <DatePicker
-              disabled={disable || beginDefault}
+              onChange={(val) => {
+                setBegin(val);
+                dateRef.current.begin = val;
+                if (defaultCycle) {
+                  updateEndDate(defaultCycle, val);
+                }
+              }}
+              disabled={disable}
               label="Start:"
               className={styles["custom-datepicker"]}
               placement="leftStart"
-              defaultValue={start}
-              onChange={setStart}
+              defaultValue={begin}
               shouldDisableDate={disableBeforeToday}
             />
 
             <div className={styles["cycleContainer"]}>
               <span>Cycle → </span>
-              <input
-                disabled={disable}
-                placeholder="forever"
-                type="number"
-                min={1}
-                onChange={onChange}
-                className={styles["cycle"]}
+
+              <NumericInputField
+                value={isNaN(defaultCycle) ? null : defaultCycle}
+                placeholder={defaultCycle || "Forever"}
+                type={"text"}
+                name={"price"}
+                disabled={disable || !period}
+                onChange={changeEndDate}
+                handleInput={handleInput}
+                handleInvalid={handleInvalid}
               />
             </div>
 

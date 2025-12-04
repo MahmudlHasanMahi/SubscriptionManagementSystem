@@ -1,5 +1,6 @@
 import styles from "./SelectTable.module.css";
 import NumberFlow, { continuous } from "@number-flow/react";
+import { Number } from "../../../Utils/NumericUtils";
 const InvoiceSummary = ({ data }) => {
   return (
     <div className={styles["invoiceSummary"]}>
@@ -17,7 +18,6 @@ const InvoiceSummary = ({ data }) => {
                       currency: "USD",
                       trailingZeroDisplay: "auto",
                     }}
-                    plugins={[continuous]}
                     value={arr2.value}
                   />
                 </div>

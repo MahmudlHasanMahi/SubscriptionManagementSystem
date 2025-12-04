@@ -38,7 +38,7 @@ const SubscriptionForm = () => {
   });
 
   const TableHeads = ["Product Name", "Quantity", "Cost"];
-  const date = useRef();
+  const dateRef = useRef({ begin: null, end: null });
   const [selected, setSelected] = useState([{}]);
 
   useEffect(() => {
@@ -60,13 +60,14 @@ const SubscriptionForm = () => {
       quantity: plan?.quantity ? plan.quantity : 1,
       price: plan.default_price.id,
     }));
-
     const obj = {
       client: client.id,
       subscription_plans: plans,
       created_by: userState?.id,
-      begin: date.current.begin?.toISOString(),
-      end: date.current.end?.toISOString(),
+      begin: dateRef.current.begin?.toISOString(),
+      ...(dateRef.current.end && {
+        end: dateRef.current.end.toISOString(),
+      }),
     };
     createSubscription(obj);
   };
@@ -103,7 +104,7 @@ const SubscriptionForm = () => {
           >
             <DateField
               disable={!isSamePeriod}
-              date={date}
+              dateRef={dateRef}
               period={parseInt(selected[0]?.default_price?.period.days)}
             />
             <ClientSelect

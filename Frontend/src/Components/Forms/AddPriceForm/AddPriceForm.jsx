@@ -122,7 +122,6 @@ const AddPriceForm = ({ state }) => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    
                   }}
                 >
                   <SingleSelect

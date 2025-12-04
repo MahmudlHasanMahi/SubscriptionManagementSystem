@@ -19,6 +19,7 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Number } from "../../../Utils/NumericUtils";
+import Background from "../SelectTable/Background";
 
 const EditSelectTable = ({
   title,
@@ -33,7 +34,6 @@ const EditSelectTable = ({
   subscription,
 }) => {
   const [priceFilter, setPriceFilter] = useState();
-
   const isSelected = (option) => {
     return selected?.some((item) => item.id === option.id);
   };
@@ -78,7 +78,6 @@ const EditSelectTable = ({
       ? selected[row]?.price.id == option.id
       : selected[row]?.default_price.id == option.id;
   };
-  console.log(selected);
   const selectPriceEvent = (option, e, row) => {
     setSelected((prev) => {
       const update = [...prev];
@@ -130,147 +129,161 @@ const EditSelectTable = ({
       return newState;
     });
   };
+
+  const disableDotMenu = () => {
+    const status = subscription?.status;
+    const allowed = ["ACTIVE", "SCHEDULED", "PENDING"];
+    return !allowed.includes(status);
+  };
+
   return (
-    <SelectTableContainer title={title}>
-      <thead>
-        <tr>
-          {TableHeader.map((item, idx) => {
-            return <th key={idx}>{item}</th>;
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {selected.map((data, idx) => {
-          return (
-            <tr className={styles["row"]} key={idx}>
-              {idx > initalLength - 1 ? (
+    <Background>
+      <SelectTableContainer title={title}>
+        <thead>
+          <tr>
+            {TableHeader.map((item, idx) => {
+              return <th key={idx}>{item}</th>;
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {selected.map((data, idx) => {
+            return (
+              <tr className={styles["row"]} key={idx}>
+                {idx > initalLength - 1 ? (
+                  <td>
+                    <SingleSelect
+                      getTitle={(obj) => {
+                        return obj.name;
+                      }}
+                      pagination={true}
+                      row={idx}
+                      currentSelected={currentPlanSelected}
+                      isSelected={isSelected}
+                      selectEvent={selectEvent}
+                      selected={selected}
+                      objects={plans}
+                      search={{
+                        search: planFilter,
+                        setSearch: setPlanFilter,
+                        onChange: filter,
+                      }}
+                    />
+                  </td>
+                ) : (
+                  <td>{selected[idx].name}</td>
+                )}
+
+                <td>
+                  {data && (
+                    <div className={styles["text"]}>
+                      <input
+                        key={data.id}
+                        onChange={(e) => {
+                          setQuantity(e, idx);
+                        }}
+                        name="quantity"
+                        type="number"
+                        min="1"
+                        max="20"
+                        defaultValue={data.quantity ?? 1}
+                      />
+                    </div>
+                  )}
+                </td>
+
                 <td>
                   <SingleSelect
-                    getTitle={(obj) => {
-                      return obj.name;
-                    }}
-                    pagination={true}
+                    pagination={false}
                     row={idx}
-                    currentSelected={currentPlanSelected}
-                    isSelected={isSelected}
-                    selectEvent={selectEvent}
+                    currentSelected={currentPriceSelected}
+                    isSelected={isPriceSelected}
+                    selectEvent={selectPriceEvent}
                     selected={selected}
-                    objects={plans}
+                    objects={selected[idx].price_list}
+                    getTitle={({ period, price }) => {
+                      return `${Number(price, true)}/${period.name}`;
+                    }}
                     search={{
-                      search: planFilter,
-                      setSearch: setPlanFilter,
+                      search: priceFilter,
+                      setSearch: setPriceFilter,
                       onChange: filter,
                     }}
                   />
                 </td>
-              ) : (
-                <td>{selected[idx].name}</td>
-              )}
-
-              <td>
-                {data && (
-                  <div className={styles["text"]}>
-                    <input
-                      key={data.id}
-                      onChange={(e) => {
-                        setQuantity(e, idx);
+                <td
+                  className={styles["delete"]}
+                  style={{ opacity: data.status === "CANCELLED" && "0" }}
+                >
+                  {idx > initalLength - 1 ? (
+                    <DeleteIcon
+                      onClick={() => {
+                        deleteRow(idx);
                       }}
-                      name="quantity"
-                      type="number"
-                      min="1"
-                      max="20"
-                      defaultValue={data.quantity ?? 1}
+                      style={{
+                        cursor: "pointer",
+                        display: !Object.hasOwn(selected[0], "id") && "none",
+                      }}
                     />
-                  </div>
-                )}
-              </td>
+                  ) : (
+                    <DotMenu
+                      icon={<MoreHorizIcon />}
+                      disable={disableDotMenu()}
+                    >
+                      <Menu left={-100}>
+                        {subscription?.status !== "SCHEDULED" && (
+                          <SelectOption
+                            onClick={() => paused(idx)}
+                            style={optionStyles}
+                            title={"Pause"}
+                            disable
+                          />
+                        )}
 
-              <td>
-                <SingleSelect
-                  pagination={false}
-                  row={idx}
-                  currentSelected={currentPriceSelected}
-                  isSelected={isPriceSelected}
-                  selectEvent={selectPriceEvent}
-                  selected={selected}
-                  objects={selected[idx].price_list}
-                  getTitle={({ period, price }) => {
-                    return `${Number(price, true)}/${period.name}`;
-                  }}
-                  search={{
-                    search: priceFilter,
-                    setSearch: setPriceFilter,
-                    onChange: filter,
-                  }}
-                />
-              </td>
-              <td
-                className={styles["delete"]}
-                style={{ opacity: data.status === "CANCELLED" && "0" }}
-              >
-                {idx > initalLength - 1 ? (
-                  <DeleteIcon
-                    onClick={() => {
-                      deleteRow(idx);
-                    }}
-                    style={{
-                      cursor: "pointer",
-                      display: !Object.hasOwn(selected[0], "id") && "none",
-                    }}
-                  />
-                ) : (
-                  <DotMenu
-                    icon={<MoreHorizIcon />}
-                    disable={subscription?.status === "PENDING"}
-                  >
-                    <Menu left={-100}>
-                      <SelectOption
-                        onClick={() => paused(idx)}
-                        style={optionStyles}
-                        title={"Pause"}
-                      />
-                      <SelectOption
-                        onClick={() => cancel(idx)}
-                        style={{ ...optionStyles, color: "red" }}
-                        title={"Cancel Plan"}
-                      />
-                    </Menu>
-                  </DotMenu>
-                )}
-              </td>
-              <AnimatePresence>
-                {(data.status === "EXPIRED" || data.status === "CANCELLED") && (
-                  <motion.td
-                    initial={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    animate={{ opacity: 1, height: "100%" }}
-                    className={styles["overlay"]}
-                  ></motion.td>
-                )}
-              </AnimatePresence>
-            </tr>
-          );
-        })}
-      </tbody>
+                        <SelectOption
+                          onClick={() => cancel(idx)}
+                          style={{ ...optionStyles, color: "red" }}
+                          title={"Cancel Plan"}
+                        />
+                      </Menu>
+                    </DotMenu>
+                  )}
+                </td>
+                <AnimatePresence>
+                  {(data.status === "EXPIRED" ||
+                    data.status === "CANCELLED") && (
+                    <motion.td
+                      initial={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      animate={{ opacity: 1, height: "100%" }}
+                      className={styles["overlay"]}
+                    ></motion.td>
+                  )}
+                </AnimatePresence>
+              </tr>
+            );
+          })}
+        </tbody>
 
-      {showAdd && (
-        <div
-          className={styles["add"]}
-          onClick={() => {
-            setSelected((prev) => {
-              const last = prev.at(-1);
-              const isLastEmpty = last && Object.keys(last).length === 0;
-              if (!isLastEmpty) {
-                return [...prev, {}];
-              }
-              return prev;
-            });
-          }}
-        >
-          + Add product
-        </div>
-      )}
-    </SelectTableContainer>
+        {showAdd && (
+          <div
+            className={styles["add"]}
+            onClick={() => {
+              setSelected((prev) => {
+                const last = prev.at(-1);
+                const isLastEmpty = last && Object.keys(last).length === 0;
+                if (!isLastEmpty) {
+                  return [...prev, {}];
+                }
+                return prev;
+              });
+            }}
+          >
+            + Add product
+          </div>
+        )}
+      </SelectTableContainer>
+    </Background>
   );
 };
 export default EditSelectTable;

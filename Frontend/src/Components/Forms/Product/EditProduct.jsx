@@ -24,6 +24,7 @@ import { useDebouncedCallback } from "use-debounce";
 import AddPriceForm from "../AddPriceForm/AddPriceForm";
 import { AnimatePresence } from "framer-motion";
 import SelectOption from "../../Staff/Filter/SelectOption";
+import { Number } from "../../../Utils/NumericUtils";
 const EditProduct = () => {
   const { productId } = useParams();
   const queryClient = useQueryClient();
@@ -162,7 +163,9 @@ const EditProduct = () => {
               defaultValue={defaultValue}
               setDefaultValue={setDefaultValue}
               onChange={onChange}
-              listTitle={"title"}
+              getTitle={(obj) => {
+                return `${Number(obj.price, true)}/${obj.period.name}`;
+              }}
               search={{
                 search: priceFilter,
                 setSearch: setPriceFilter,

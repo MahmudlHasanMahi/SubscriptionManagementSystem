@@ -56,6 +56,7 @@ const CreateProductForm = () => {
   }, []);
 
   useEffect(() => {
+    console.log(result);
     if (result.isUninitialized || result.isLoading) return;
     if (result.isSuccess) {
       notifySuccess(result.data.detail);

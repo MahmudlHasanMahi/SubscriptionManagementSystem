@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./SelectTable.module.css";
 const SelectTableContainer = ({ title, children }) => {
   return (

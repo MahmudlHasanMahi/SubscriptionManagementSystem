@@ -19,12 +19,10 @@ const NumericInputField = ({
   ref,
   handleInvalid = null,
   handleInput = null,
+  onChange = null,
 }) => {
   const [clipboard, setClipBoard] = useState(null);
   const [edit, setEdit] = useState(false);
-  const onchange = useDebouncedCallback((value) => {
-    // setinput(value);
-  }, 500);
 
   return (
     <div className={styles["textField"]}>
@@ -37,16 +35,19 @@ const NumericInputField = ({
         className={styles["inputField"]}
       >
         <input
+          onDoubleClick={() => {
+            setEdit(true);
+          }}
           ref={ref}
           disabled={disabled}
-          onChange={(e) => onchange(e.target.value)}
+          onChange={onChange}
           style={{
             cursor: disabled && "not-allowed",
             textAlign: !edit && editField && "center",
           }}
           type={type}
           name={name}
-          required={true}
+          required={required}
           placeholder={placeholder}
           defaultValue={value}
           readOnly={value && !edit ? true : false}

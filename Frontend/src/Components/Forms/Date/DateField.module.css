@@ -27,6 +27,13 @@
   padding-inline: 0.5em 0.25em;
   border-inline: 1px solid #d0d0d0;
 }
+.cycleContainer > div,
+.cycleContainer > div > div {
+  outline: none;
+  padding: 0;
+  all: unset;
+}
+
 .cycleContainer > span {
   font-size: 0.8em;
   text-wrap: nowrap;
