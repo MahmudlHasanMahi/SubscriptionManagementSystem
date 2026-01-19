@@ -8,3 +8,4 @@ db.sqlite3
 .dockerignore
 .gitignore
 celerybeat-schedule
+next.md

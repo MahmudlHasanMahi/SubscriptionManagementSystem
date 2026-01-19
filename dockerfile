@@ -1,12 +1,3 @@
-FROM node:18-alpine AS frontend
-
-WORKDIR /app
-COPY Frontend/package*.json ./
-RUN npm install
-COPY Frontend/ .
-
-# React dev server (for development)
-CMD ["npm", "start"]
 
 
 FROM python:3.10-slim-bookworm
