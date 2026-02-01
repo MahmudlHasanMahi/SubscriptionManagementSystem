@@ -5,6 +5,8 @@ from .managers import *
 
 from django.utils.translation import gettext_lazy as _
 
+from cities_light.models import Country,City,Region,SubRegion
+
 class Profile(models.Model):
     user = models.OneToOneField(
         "User", null=True, on_delete=models.CASCADE, related_name="profile_%(class)s_related",verbose_name=_("Profile"))
@@ -81,6 +83,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             ClientProfile.objects.create(user=self)
         else:
             return
+    
+    
 
     @property
     def is_staff(self):
@@ -90,6 +94,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         return self.admin
 
+
+class Address(models.Model):
+    user = models.ForeignKey(User,on_delete=models.PROTECT,null=False,blank=False)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True) 
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+    region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
+    subregion = models.ForeignKey(SubRegion, on_delete=models.SET_NULL, null=True, blank=True)
 
 class Admin(User):
     objects = AdminManager()
@@ -116,3 +127,4 @@ class Client(User):
     objects = ClientManager()
     class Meta:
         proxy = True
+
