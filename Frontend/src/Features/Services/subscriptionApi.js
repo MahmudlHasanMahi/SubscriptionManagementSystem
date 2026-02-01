@@ -4,7 +4,7 @@ const headers = getHeader(true);
 import { API_ROOT } from "../../Utils/enviroment";
 export const subscriptionApi = createApi({
   reducerPath: "subscriptionApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_ROOT}` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${API_ROOT}`, headers }),
   endpoints: (builder) => ({
     getSubscriptions: builder.infiniteQuery({
       infiniteQueryOptions: {
@@ -61,7 +61,7 @@ export const subscriptionApi = createApi({
       }),
       invalidatesTags: (result, error, { id }) => {
         if (!error) return [{ type: "subscription", id }];
-        // return [];
+        return [];
       },
     }),
     getSubscriptionApprovals: builder.query({
@@ -83,6 +83,20 @@ export const subscriptionApi = createApi({
         return [];
       },
     }),
+
+    cancelSubscription: builder.mutation({
+      query: (id) => ({
+        url: `subscription/${id}/cancel`,
+        headers,
+        method: "PATCH",
+      }),
+      invalidatesTags: (result, error, id) => {
+        if (!error) return [{ type: "subscription", id }];
+
+        return [];
+      },
+    }),
+
     rejectSubscription: builder.mutation({
       query: (id) => ({
         url: `subscription/${id}/reject`,
@@ -105,4 +119,5 @@ export const {
   useApproveSubscriptionMutation,
   useRejectSubscriptionMutation,
   useEditSubscriptionMutation,
+  useCancelSubscriptionMutation,
 } = subscriptionApi;

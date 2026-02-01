@@ -14,7 +14,7 @@ export const productsApi = createApi({
     createProduct: builder.mutation({
       query: (objects) => ({
         url: "product",
-        headers,
+        headers: { ...getHeader(true) },
         method: "POST",
         body: JSON.stringify(objects),
       }),
@@ -25,7 +25,7 @@ export const productsApi = createApi({
     patchProduct: builder.mutation({
       query: ({ id, patchData }) => ({
         url: `product/${id}`,
-        headers,
+        headers: { ...getHeader(true) },
         method: "PATCH",
         body: JSON.stringify(patchData),
       }),
