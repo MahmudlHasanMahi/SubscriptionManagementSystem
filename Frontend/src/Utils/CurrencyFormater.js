@@ -1,5 +1,5 @@
 const formatCurrency = (price) => {
-  return new Intl.NumberFormat("EG-EG", {
+  return new Intl.NumberFormat("EG-AR", {
     style: "currency",
     currency: "SAR",
   }).format(price);
