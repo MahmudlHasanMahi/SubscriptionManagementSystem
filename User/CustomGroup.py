@@ -6,7 +6,7 @@ class Groups(models.Model):
     
     name = models.CharField(max_length=64,unique=True,blank=False)
     permission = models.ManyToManyField(Permission,verbose_name=_("permissions"),related_query_name="group",blank=True)
-    level = models.IntegerField(max_length=65,unique=True,blank=False)
+    level = models.IntegerField(max_length=65,default=0,unique=True,blank=False,null=False)
     objects = GroupManager()
     
     class Meta:
