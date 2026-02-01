@@ -1,5 +1,3 @@
-import React from "react";
-
 import { useEffect, useRef, useState } from "react";
 import NumericTextBox from "../Card/NumericTextBox";
 import TextFields from "../Forms/TextFields/TextFields";
@@ -46,13 +44,13 @@ const ClientPanel = ({ filter, setfilter, setinput, fields }) => {
           background_color="rgba(67, 82, 106, 1)"
         >
           {Object.keys(fields).map((data, idx) => (
-            <SelectOption key={idx} title={data} />
+            <SelectOption key={idx} title={fields[data]} />
           ))}
         </Select>
       </div>
       {groups === "Manager" && (
         <Button
-          link={"add-client"}  
+          link={"add-client"}
           style={{ width: "20%" }}
           title={"Add New Client"}
         />

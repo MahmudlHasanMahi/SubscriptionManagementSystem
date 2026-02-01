@@ -20,20 +20,31 @@ const Client = () => {
     selected: null,
   });
 
-  const fields = {
-    name: "name",
-    email: "email",
-    mobile: "mobile",
-  };
+  const filter_fields = ["name", "email", "mobile"];
 
   const staffList = useGetStaffListInfiniteQuery({
     page_size: 5,
     filter: input && {
-      filterBy: Object.values(fields)[filter.selected],
+      filterBy: filter_fields[filter.selected],
       data: input,
     },
     usertype: "client",
   });
+
+  const tableConfig = {
+    name: ["fields.name", "name"],
+    email: ["fields.email", "email"],
+    groups: ["fields.groups", "groups"],
+    mobile: ["fields.mobile", "mobile"],
+  };
+
+  const fields2 = Object.fromEntries(
+    filter_fields.map((key) => [
+      key,
+      staffList.data?.pages?.[0].results[0]?.fields[key],
+    ]),
+  );
+
   useEffect(() => {
     dispatch(fetchStaff({ count: true }));
     dispatch(
@@ -41,7 +52,7 @@ const Client = () => {
         title1: `Clients`,
         title2: "Create account for a new clients",
         logo: <Staff2 color={"#C759CF"} />,
-      })
+      }),
     );
   }, []);
   return (
@@ -54,14 +65,14 @@ const Client = () => {
             filter={filter}
             setfilter={setFilter}
             setinput={setInput}
-            fields={fields}
+            fields={fields2}
           />
           <div className={styles["tableContainer"]} setInput={setInput}>
             <Table
               color={"rgba(42, 51, 77, 1)"}
               title={"Client List"}
               endpont={{}}
-              fields={fields}
+              fields={tableConfig}
               actionButton={<ActionButton title={"Edit"} url={"edit-staff/"} />}
               queryObject={staffList}
             />
