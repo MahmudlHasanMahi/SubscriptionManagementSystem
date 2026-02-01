@@ -20,18 +20,7 @@ class UserSerializer(TranslatedFieldMixin,serializers.ModelSerializer):
         model = User
         fields =  ["id","email","name","mobile","last_login","groups","groups_pk","is_active","staff"]
 
-    # def get_default_field_names(self, declared_fields, model_info):
-    #     a = super().get_default_field_names(declared_fields, model_info)   
-    #     print(a)
-    #     return a
-   
 
-
-
-    # def get_field_names(self, declared_fields, info):
-    #     a = super().get_field_names(declared_fields, info)
-    #     # print(a)
-    #     return  a
 
     
     def get_staff(self,obj):
