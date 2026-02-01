@@ -1,11 +1,15 @@
-from typing import Collection
 from django.db import models,transaction,IntegrityError
-from User.models import User,Client
+from User.models import Client
 from datetime import timedelta
-from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .Mixins.subscriptionmixin import SubscriptionMixIn,SubscriptionPlanMixIn
+from .Mixins.Enum import InvoiceStatus
+from django.utils import timezone
+from .Mixins.Invoice_mixin import InvoiceMixIn
+from .Mixins.CustomManager import InvoiceManager
+import os
+
 class Representative(models.Model):
 
     name = models.CharField(max_length=64, unique=True, blank=False, verbose_name=_("Name"))
@@ -23,10 +27,37 @@ class Period(models.Model):
         return self.name
 
 
+class Currency(models.Model):
+    code = models.CharField(max_length=5, unique=True)   # USD, SAR, EUR
+    name = models.CharField(max_length=50, null=True, blank=True)  # US Dollar
+    native_name = models.CharField(max_length=50, null=True, blank=True)  # ريال سعودي
+    symbol = models.CharField(max_length=10, null=True, blank=True)  # $, ر.س
+
+    SYMBOL_POSITION = (
+        ('before', 'Before'),
+        ('after', 'After'),
+    )
+    symbol_position = models.CharField(max_length=6, choices=SYMBOL_POSITION, default='before')
+
+
+    class Meta:
+        verbose_name = "Currency"
+        verbose_name_plural = "Currencies"
+
+    def __str__(self):
+        return f"{self.code} ({self.symbol})"
+
+    
+
+
+
 class PriceList(models.Model):
     period = models.ForeignKey(
         Period, blank=False, null=False, on_delete=models.CASCADE, verbose_name=_("period"))
     price = models.PositiveIntegerField(blank=False, default=30, verbose_name=_("price"))
+    currency = models.ForeignKey(Currency,on_delete=models.SET_NULL,blank=True,null=True,verbose_name=_("currency"))
+
+
     def __str__(self):
         return f"{self.period.name} - {self.price}"
 
@@ -44,9 +75,6 @@ class Product(models.Model):
             
     def __str__(self):
         return f"{self.name} - {self.default_price}"
-
-
-
 
 
 # *********************
@@ -68,31 +96,78 @@ class SubscriptionPlan(SubscriptionPlanMixIn):
     def create_bulk_subscriptionPlan(cls,subscription_plans):
         pass
 
+# finalize invoice after a day
+def default_finalize_date():
+    return timezone.now() + timedelta(days=1)
 
-class InvoiceStatus(models.TextChoices):
-    ACTIVE      = 'DRAFT', _('Draft')
-    DEACTIVE    = 'PAID', _('Paid')
-    CANCELLED   = 'OVERDUE', _('Overdue')
-    EXPIRED     = 'VOID', _('Void')
-    PAUSED      = 'UNCOLLECTABLE', _('Uncollectable')
-    
-
-class Invoice(models.Model):
+class Invoice(InvoiceMixIn):
  
+    objects = InvoiceManager()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._after_save_queue = []
 
-    # client = models.ForeignKey(
-    #     Client, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
+    client = models.ForeignKey(
+        Client,blank=True,null=True, on_delete=models.CASCADE, related_name="Invoice")
     # representative = models.ForeignKey(
     #     Representative, default=None, blank=False, on_delete=models.CASCADE, related_name="Invoice")
     subscription = models.ForeignKey(
-        "Subscription", blank=False, null=False, on_delete=models.PROTECT, related_name="Invoice", verbose_name=_("Subscription"))
+        "Subscription", blank=True, null=True, on_delete=models.PROTECT, related_name="Invoice", verbose_name=_("Subscription"))
 
-    status = models.CharField(max_length=15, choices=InvoiceStatus, default="Draft", verbose_name=_("Status"))
+    status = models.CharField(max_length=15, choices=InvoiceStatus, default="DRAFT", verbose_name=_("Status"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
-    due_date = models.DateTimeField(editable=True, null=True, blank=True, verbose_name=_("Due_date"))
+    due_date = models.DateTimeField(editable=True, null=True, blank=True, verbose_name=_("Due date"))
+    finalize_date = models.DateTimeField(editable=True,null=False,blank=False,default=default_finalize_date,verbose_name=("Finalize date"))
+    paid_date = models.DateTimeField(editable=True,null=True,blank=True,verbose_name=_("Payment Date"))
+
+
+    @classmethod
+    def create_invoice(cls,**kwargs):   
+        notify = kwargs.pop("notify",False) 
+
+        invoice_details = kwargs.pop("invoice_detail",[])
+
+        if not invoice_details:
+            raise ValidationError(_("At least one invoice details must be provided."))
+        try:
+            with transaction.atomic():   
+                invoice = cls(**kwargs)
+                invoice.save()
+
+                invoice_details_object = []
+                for invoice_detail in invoice_details:
+                    obj = InvoiceDetail(**invoice_detail,invoice=invoice)
+                    invoice_details_object.append(obj)           
+                InvoiceDetail.objects.bulk_create(invoice_details_object)
+
+            if notify:
+                invoice.add_to_aftersave_tasks(invoice.notify_paid)
+                invoice._run_after_save_queue()
+
+            
+
+        except IntegrityError:
+            raise ValidationError(_("Failed to create invoice due to invalid or duplicate data."))
+
+        return invoice
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._run_after_save_queue()
+        
+
+
+    
+
+
 
 
 class Subscription(SubscriptionMixIn):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._after_save_queue = []
+
     class Meta:
         permissions = [
             ("can_approve_subscription", "Can approve subscription"),
@@ -100,8 +175,12 @@ class Subscription(SubscriptionMixIn):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        self._run_after_save_queue()
+
+
     @classmethod
     def create_subscrption(cls,**kwargs):
+        
         subscription_plans = kwargs.pop("subscription_plans",[])
         if not subscription_plans:
             raise ValidationError(_("At least one subscription plan must be provided."))
@@ -119,9 +198,14 @@ class Subscription(SubscriptionMixIn):
                         raise ValidationError(_("Subscription plans must have same period"))
                     obj = SubscriptionPlan.create_subscriptionPlan(subscription,**plan)
                     plans.append(obj)
+                
                 SubscriptionPlan.objects.bulk_create(plans)
+                created_by = subscription.created_by
+                if created_by.has_perm("ManagementSystem.can_approve_subscription"):
+                    subscription.approve(created_by,commit=True)
+
                 # subscription.generate_invoice()
-                return subscription
+            return subscription
 
         except IntegrityError:
             raise ValidationError(_("Failed to create subscription due to invalid or duplicate data."))
@@ -133,7 +217,7 @@ class Subscription(SubscriptionMixIn):
                 invoice.due_date = self.time_now + timedelta(hours=2,minutes=30)
                 invoice.save()
                 invoice_details = []
-                subscription_plans  = self.subscription_plans.filter(status="ACTIVE") # pyright: ignore[reportAttributeAccessIssue]
+                subscription_plans  = self.subscription_plans.filter(status="ACTIVE") 
                 for plan in subscription_plans:
                     invoice_detail = InvoiceDetail(product = plan.product,quantity=plan.quantity,price=plan.price,invoice=invoice)
                     invoice_details.append(invoice_detail)
@@ -143,11 +227,20 @@ class Subscription(SubscriptionMixIn):
                 InvoiceDetail.objects.bulk_create(invoice_details)
                 # else:
                     # invoice.delete()
+    
+    # def save(self, *args, **kwargs):
+        
                 
 
 
 class InvoiceDetail(models.Model):
     product         =   models.ForeignKey(Product,null=False,blank=False, on_delete=models.PROTECT, verbose_name=_("Product"))
-    quantity        =   models.PositiveIntegerField(default=1, verbose_name=_("Quantity"))
+    quantity        =   models.PositiveIntegerField(default=1,verbose_name=_("Quantity"))
     price           =   models.ForeignKey(PriceList,null=False,blank=False,on_delete=models.PROTECT, verbose_name=_("Price"))
-    invoice         =   models.ForeignKey(Invoice,null=False,blank=False,on_delete=models.PROTECT, verbose_name=_("Invoice"))
+    invoice         =   models.ForeignKey(Invoice,null=False,blank=False,on_delete=models.PROTECT, verbose_name=_("Invoice"),related_name="invoice_detail")
+
+
+
+
+
+
