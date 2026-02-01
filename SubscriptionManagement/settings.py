@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 from celery.schedules import crontab
+import moneyed
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,10 +46,14 @@ INSTALLED_APPS = [
     'parler',
     "corsheaders",
     'rest_framework',
-    "Frontend",
+    'cities_light',
+    'djmoney',
+    'Frontend',
     "User",
     'ManagementSystem',
     'django_celery_results',
+    'Notification',
+
 ]
 
 
@@ -160,6 +166,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
@@ -192,3 +199,12 @@ CELERY_BEAT_SCHEDULE = {
 
     }
 }
+
+
+
+BOB = moneyed.add_currency(
+    code='BOB',
+    numeric='068',
+    name='Peso boliviano',
+    countries=('BOLIVIA', )
+)
