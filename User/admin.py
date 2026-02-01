@@ -108,7 +108,7 @@ admin.site.register(Employee,EmployeeAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(Groups,CustomGroupAdmin)
 admin.site.register(Session)
-
+admin.site.register(Address)
 
 
 
