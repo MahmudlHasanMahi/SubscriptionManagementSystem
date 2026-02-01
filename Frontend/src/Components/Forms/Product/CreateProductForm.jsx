@@ -51,12 +51,11 @@ const CreateProductForm = () => {
         title1: `Product`,
         title2: "Create Product",
         logo: <Services />,
-      })
+      }),
     );
   }, []);
 
   useEffect(() => {
-    console.log(result);
     if (result.isUninitialized || result.isLoading) return;
     if (result.isSuccess) {
       notifySuccess(result.data.detail);
@@ -112,8 +111,8 @@ const CreateProductForm = () => {
   );
 
   const getMultiSelectTitle = (obj) => {
-    const x = formatCurrency(obj.price);
-    return `${x}/${obj.period.name}`;
+    const price = obj.price;
+    return obj.formatted;
   };
 
   return (

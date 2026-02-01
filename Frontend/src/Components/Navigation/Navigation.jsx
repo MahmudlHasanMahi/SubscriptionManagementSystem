@@ -12,7 +12,9 @@ import { useTranslation } from "react-i18next";
 import { debounce } from "lodash";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import { motion, useAnimation } from "framer-motion";
-
+import { duration } from "@mui/material";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
 function getOrSetLocal(key, defaultValue) {
   const stored = localStorage.getItem(key);
 
@@ -38,6 +40,12 @@ const Navigation = () => {
     {
       title: t("Dashboard"),
       Logo: <Dashboard color={"white"} />,
+      Logo: (
+        <DashboardCustomizeRoundedIcon
+          sx={{ color: "white" }}
+          fontSize="large"
+        />
+      ),
       link: "/",
     },
     {
@@ -51,6 +59,11 @@ const Navigation = () => {
       link: "/subscription",
     },
     { title: t("Client"), Logo: <Client color={"white"} />, link: "/client" },
+    {
+      title: t("Invoice"),
+      Logo: <ReceiptIcon sx={{ color: "white" }} fontSize="large" />,
+      link: "/invoice",
+    },
   ];
   // const [collapse, setCollapse] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
@@ -58,7 +71,6 @@ const Navigation = () => {
   const isResizing = useRef(false);
   const initialX = useRef(0);
   const initialWidth = useRef(DEFAULT_WIDTH);
-  const isExpanding = useRef(false);
 
   useEffect(() => {
     if (DEFAULT_WIDTH === 0) setShowArrow(true);
@@ -150,7 +162,7 @@ const Navigation = () => {
             onClick={() => {
               controls.start({
                 width: 300,
-                transition: { duration: 0.3 },
+                transition: { duration: 0.2, ease: "easeIn" },
               });
               setLocal("navbarSize", 300);
               setShowArrow(false);

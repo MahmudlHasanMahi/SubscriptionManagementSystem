@@ -164,7 +164,7 @@ const EditProduct = () => {
               setDefaultValue={setDefaultValue}
               onChange={onChange}
               getTitle={(obj) => {
-                return `${Number(obj.price, true)}/${obj.period.name}`;
+                return `${obj.formatted}`;
               }}
               search={{
                 search: priceFilter,

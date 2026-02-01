@@ -31,7 +31,7 @@ const EditStaff = () => {
           title1: `Update Staff ${data.payload.name}`,
           title2: "Update account of staff",
           logo: null,
-        })
+        }),
       );
     });
   }, []);

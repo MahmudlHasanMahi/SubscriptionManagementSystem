@@ -21,6 +21,7 @@ const SubscriptionForm = () => {
   const dispatch = useDispatch();
   const userState = useSelector(user);
   const [clientFilter, setClientFilter] = useState(null);
+  const [client, setClient] = useState([]);
   const clients = useGetClientListInfiniteQuery({
     page_size: 3,
     filter: clientFilter && {
@@ -28,7 +29,7 @@ const SubscriptionForm = () => {
       data: clientFilter,
     },
   });
-  const [client, setClient] = useState([]);
+
   const [planFilter, setPlanFilter] = useState(null);
   const [createSubscription, result] = useCreateSubscriptionMutation();
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const SubscriptionForm = () => {
   };
   const isSamePeriod = selected.every(
     (item) =>
-      item.default_price?.period.id === selected[0]?.default_price?.period.id
+      item.default_price?.period.id === selected[0]?.default_price?.period.id,
   );
 
   useEffect(() => {
@@ -82,7 +83,7 @@ const SubscriptionForm = () => {
         title1: `Subscription`,
         title2: "Create new subscription",
         logo: <Sub1 />,
-      })
+      }),
     );
   }, []);
 

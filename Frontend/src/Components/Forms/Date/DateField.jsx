@@ -31,7 +31,6 @@ const DateField = ({
   };
 
   const updateEndDate = (cycleVal, beginDate) => {
-    console.log(begin);
     const futureDate = new Date();
     if (beginDate) {
       futureDate.setDate(beginDate.getDate() + period * cycleVal);
