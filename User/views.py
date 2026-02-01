@@ -1,19 +1,21 @@
 from .serializers import UserSerializer,GroupSerializer,ChangePasswordSerializer,CreateUserSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie,csrf_protect
 from rest_framework.permissions import AllowAny,IsAuthenticated
+from django.utils.translation import gettext_lazy as _ 
 from django.utils.decorators import method_decorator
 from django.contrib.auth import login,authenticate
-from ManagementSystem.models import *
 from rest_framework.generics import ListAPIView 
-from .models import User,Employee
 from rest_framework.decorators import APIView
-from .CustomGroup import Groups
 from rest_framework.response import Response 
 from .Pagination import StaffPagination
 from django.contrib.auth import logout
+from ManagementSystem.models import *
 from rest_framework import status
+from .models import User,Employee
+from .CustomGroup import Groups
+
 import time
-from django.utils.translation import gettext_lazy as _ 
+
 def staffQuery(user):
     user_level = user.groups.first().level
     return User.objects.filter(groups__level__gte=user_level)
@@ -165,7 +167,6 @@ class StaffView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK)
-        time.sleep(1)
         return Response({"error":"User with same email or mobile number exists"},status=status.HTTP_409_CONFLICT)
 
     def patch(self,request,id):
