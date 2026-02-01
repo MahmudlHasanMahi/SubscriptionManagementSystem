@@ -36,7 +36,9 @@ const EditSubscription = () => {
     size: 3,
   });
 
-  const [showModal, Modal] = useModal();
+  const { showModal, openModal, closeModal, Modal } = useModal({
+    custom: false,
+  });
 
   useEffect(() => {
     if (subscription.data?.subscription_plans) {
@@ -53,7 +55,7 @@ const EditSubscription = () => {
           subscription_plan_id: id,
           quantity: quantity,
           price: price,
-        })
+        }),
       );
       setPlans(products);
     }
@@ -65,7 +67,7 @@ const EditSubscription = () => {
         title1: `Update Subscription`,
         title2: "Update account of staff",
         logo: null,
-      })
+      }),
     );
   }, []);
 
