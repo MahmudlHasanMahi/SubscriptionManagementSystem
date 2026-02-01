@@ -49,6 +49,14 @@ const Dashboard = () => {
     ["client email"]: "client_detail.email",
   };
 
+  const tableConfig = {
+    name: ["fields.begin", "begin"],
+    email: ["fields.end", "end"],
+    groups: ["fields.created_by", "creator.name"],
+    client: ["fields.client", "client_detail.name"],
+  };
+
+
   const formatDate = () => {
     const today = new Date();
 
@@ -148,7 +156,7 @@ const Dashboard = () => {
                 <ActionButton title={"Approve"} event={approve} />,
                 <ActionButton title={"Reject"} event={reject} />,
               ]}
-              fields={fields2}
+              fields={tableConfig}
             />
           </div>
         )}
