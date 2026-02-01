@@ -1,9 +1,5 @@
-import React, { useEffect } from "react";
 import Body from "../Body/Body";
-import { useDispatch } from "react-redux";
-import { updateHeaderState } from "../../Features/headerState";
 import styles from "./Subscription.module.css";
-import Sub1 from "../../svg/sub1";
 import Card from "../Card/Card";
 import Services from "../../svg/Services";
 import Subplan from "../../svg/Subplan";
@@ -15,7 +11,6 @@ import { useTranslation } from "react-i18next";
 
 const Subscription = () => {
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const { t } = useTranslation();
   const routes = {
