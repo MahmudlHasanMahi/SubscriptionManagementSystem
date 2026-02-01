@@ -1,11 +1,16 @@
+from .Enum import SubscriptionState,SubscriptionPlanState
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+from Notification.tasks import send_subscription_notification
+from .CustomManager import SubscriptionManager
 from django.db import models,transaction
 from User.models import User,Client
 from django.utils import timezone
-from datetime import timedelta
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from viewflow.fsm import State
-from .CustomManager import SubscriptionManager
+from datetime import timedelta
+from .Time import Time
+import time
+import os
 SUBSCRIPTION_STATUS = [
     ("DRAFT","Draft"),
     ("SCHEDULED","Scheduled"),
@@ -28,35 +33,6 @@ DISALLOWED_CREATION_STATUSES = ["EXPIRED","CANCELLED","REJECTED"]
 
 SUBSCRIPTIONPLAN_PERMANENT_STATUS = ["EXPIRED","CANCELLED"] 
 
-
-
-
-from .Time import Time
-
-
-class SubscriptionPlanState(models.TextChoices):
-    ACTIVE      = 'ACTIVE', _('Active')
-    DEACTIVE    = 'DEACTIVE', _('Deactive')
-    CANCELLED   = 'CANCELLED', _('Cancelled')
-    EXPIRED     = 'EXPIRED', _('Expired')
-    PAUSED      = 'PAUSED', _('PAUSED')
-
-
-class SubscriptionState(models.TextChoices):
-    DRAFT       =   'DRAFT', _('Draft')
-    SCHEDULED   =   'SCHEDULED', _('Scheduled')
-    PENDING     =   'PENDING', _('Pending')
-    ACTIVE      =   'ACTIVE', _('Active')
-    DEACTIVE    =   'DEACTIVE', _('Deactive')
-    CANCELLED   =   'CANCELLED', _('Cancelled')
-    EXPIRED     =   'EXPIRED', _('Expired')
-    REJECTED    =   'REJECTED', _('Rejected')
-
-
-
-
-
-
 class SubscriptionMixIn(models.Model,Time):
 
     client       =   models.ForeignKey(Client, null=False,blank=False, on_delete=models.PROTECT, related_name="Subscription", verbose_name=_("Client"))
@@ -64,11 +40,12 @@ class SubscriptionMixIn(models.Model,Time):
     rejected_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.PROTECT, related_name="subscriptions_rejected_by", verbose_name=_("Rejected_by"))
     created_by   =   models.ForeignKey(User,blank=False,null=False,on_delete=models.PROTECT, related_name="subscriptions_created_by", verbose_name=_("Created_by"))
     approved_by  =   models.ForeignKey(User,blank=True,null=True,on_delete=models.SET_NULL,related_name="subscriptions_approved_by", verbose_name=_("Approved_by"))
-
-    begin        =   models.DateTimeField(null=True, default=timezone.now(), editable=True, verbose_name=_("Begin"))
+    begin        =   models.DateTimeField(null=True, default=timezone.now, editable=True, verbose_name=_("Begin"))
     end          =   models.DateTimeField(null=True, blank=True, editable=True, verbose_name=_("End"))
     trial        =   models.PositiveIntegerField(null=False,blank=False,default=0, verbose_name=_("Trial"))
-    renewal_date =   models.DateTimeField(null=True,blank=True, verbose_name=_("Renewal_date"))
+    renewal_date =   models.DateTimeField(null=True,blank=True, verbose_name=_("Renewal date"))
+    rejected_at  =   models.DateTimeField(null=True,blank=True,default=None,verbose_name=_("Rejected at"))
+
 
     state_field  =   State(SubscriptionState, default=SubscriptionState.DRAFT)
 
@@ -90,16 +67,40 @@ class SubscriptionMixIn(models.Model,Time):
     def is_current_day(self):
         if not self.begin:
             raise AttributeError(_("Cannot create subscription: begin date is missing."))
-
         return self.time_now  >= self.begin
+    
+    def add_to_aftersave_tasks(self,func,*args, **kwargs):
+
+        if not callable(func):
+            raise ValueError("Callback must be callable")
+
+        self._after_save_queue.append((func,args,kwargs))
+        
+    def _run_after_save_queue(self):
+
+        for func, args, kwargs in self._after_save_queue:
+
+            def runner(f=func, a=args, k=kwargs):
+                if hasattr(f, "delay"):
+                    return f.delay(**k) 
+                return f(**k)
+
+            transaction.on_commit(runner)
+
+        self._after_save_queue.clear()
+
+
+    def notify_activate_subscription(self):        
+        send_subscription_notification.delay(self.pk,self.client.pk,"New Subscription","new_subscription")
+
+
+
+    def notify_expired_subscription(self):
+        send_subscription_notification.delay(self.pk,self.client.pk,"Expired Subscription","expired_subscription")
 
 
     @state_field.transition(source=SubscriptionState.DRAFT)
     def _validate_creation(self):
-        created_by = self.created_by
-        if created_by.has_perm("ManagementSystem.can_approve_subscription"):
-            self.approve(created_by)
-        else:
             self.set_status("PENDING")
     
     @state_field.transition(source=SubscriptionState.PENDING)
@@ -108,12 +109,13 @@ class SubscriptionMixIn(models.Model,Time):
         fields = []
         if self.approved_by:
             return
+
         self.set_renewal_date()
         fields.append("renewal_date")
+
         if self.is_current_day():
             field = self.set_status("DEACTIVE")
             self.activate(commit,renew=True,activate_plans=True)
-            
         else:
             field = self.set_status("SCHEDULED")
 
@@ -121,6 +123,7 @@ class SubscriptionMixIn(models.Model,Time):
 
         self.approved_by = approved_by
         fields.append("approved_by")
+
         if commit:
             self.save(update_fields=fields)
         else:
@@ -134,8 +137,6 @@ class SubscriptionMixIn(models.Model,Time):
                 f"Cannot activate this subscription because it was rejected by {self.rejected_by}."
             ))
 
-        
-
         fields = self.set_status("ACTIVE")
         if activate_plans:
             self.active_subscription_plans(commit)    
@@ -144,8 +145,12 @@ class SubscriptionMixIn(models.Model,Time):
         if renew:
             self.renew_subscription(commit,generate_invoice=True)
       
+        self.add_to_aftersave_tasks(self.notify_activate_subscription)
+
         if commit:
             self.save(update_fields=fields)
+
+        return fields
         
     def set_renewal_date(self):
         self.renewal_date = self.begin + timedelta(days=self.trial)
@@ -159,9 +164,11 @@ class SubscriptionMixIn(models.Model,Time):
         fields = self.set_status("EXPIRED")
 
         self.expire_subscription_plans(commit=commit)
-        print(fields)
+        self.add_to_aftersave_tasks(self.notify_expired_subscription)
         if commit:
             self.save(update_fields=fields)
+
+        
 
 
 
@@ -177,7 +184,6 @@ class SubscriptionMixIn(models.Model,Time):
     def extend_renewal_date(self,commit: bool = False):
         if self.in_trial:
             return False
-
         if self.has_reached_expiry_date:
             self.expire(commit=commit)
             return False
@@ -201,11 +207,18 @@ class SubscriptionMixIn(models.Model,Time):
         if self.status == "REJECTED":
             return 
         fields.extend(self.set_status("REJECTED"))
-        
+
         self.rejected_by = rejected_by
+        self.rejected_at = self.time_now
+
         fields.append("rejected_by")
+        fields.append("rejected_at")
+
+
         if commit:
-            self.save(update_fields=fields)
+            return self.save(update_fields=fields)
+            
+        return fields
     
     # could use to celery task to offload this function for performance 
     @state_field.transition(source=SubscriptionState.ACTIVE)
@@ -256,9 +269,7 @@ class SubscriptionMixIn(models.Model,Time):
                 self.save(update_fields=fields)
 
 
-            # print(self.subscription_plans.model.objects.)
 
- 
 
 
 
@@ -315,7 +326,6 @@ class SubscriptionPlanMixIn(models.Model,Time):
             raise ValidationError(_(f"Cannot add plans: subscription is {subscription.status}."))
 
         if subscription.is_active and subscription.is_renewal_date_passed:
-            print(self.subscription.renewal_date)
             self.activate()
         else:
             self.set_status("DEACTIVE")
@@ -326,7 +336,6 @@ class SubscriptionPlanMixIn(models.Model,Time):
     def activate(self,commit: bool = False):
         if not self.subscription.is_active:
             raise ValidationError(_("This subscription is not active"))
-        
         
         self.set_status("ACTIVE")
         if commit:
