@@ -6,6 +6,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("",include("ManagementSystem.urls")),
     path("user/",include("User.urls")),
+    path("notification",include("Notification.urls")),
     re_path(r'^yasier/.*$',include("Frontend.urls"))
 
 ]
