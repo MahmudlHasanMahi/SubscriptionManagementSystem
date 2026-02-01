@@ -29,13 +29,15 @@ const Plans = () => {
   const SubsctiptionObject = useGetSubscriptionsInfiniteQuery({
     page_size: 10,
   });
-  const fields = {
-    client: "client_detail.name",
-    creator: "creator.name",
-    begin: "begin",
-    status: "status",
+
+  const tableConfig = {
+    name: ["fields.begin", (data) => new Date(data.begin).toLocaleDateString()],
+    email: ["fields.end", (data) => new Date(data.end).toLocaleDateString()],
+    groups: ["fields.created_by", "creator.name"],
+    client: ["fields.client", "client_detail.name"],
+    status: ["status", "status"],
   };
-  
+
   return (
     <div>
       <SubscriptionPanel
@@ -47,7 +49,7 @@ const Plans = () => {
         color={"rgba(24, 55, 73, 1)"}
         title={"Subscription List"}
         height={"50vh"}
-        fields={fields}
+        fields={tableConfig}
         queryObject={SubsctiptionObject}
         actionButtons={[
           <ActionButton

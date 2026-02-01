@@ -5,6 +5,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import React from "react";
 import get from "lodash/get";
 import { useTranslation } from "react-i18next";
+import Status from "./Status";
 const Table = ({
   title,
 
@@ -36,32 +37,7 @@ const Table = ({
   };
 
   const getStatusHtml = (field) => {
-    let color;
-    switch (field) {
-      case "PENDING":
-        color = "rgb(155, 142, 69)";
-        break;
-      case "ACTIVE":
-        color = "rgb(53, 94, 33)";
-        break;
-      case "SCHEDULED":
-        color = "rgb(76, 77, 145)";
-        break;
-      case "DEACTIVE":
-        break;
-      case "REJECTED":
-        color = "rgb(151 4 88)";
-        break;
-      case "CANCELLED":
-        color = "rgb(95 27 27)";
-        break;
-      case "EXPIRED":
-        color = "rgba(76, 76, 76, 1)";
-        break;
-      default:
-        color = null;
-    }
-
+    
     return (
       <div
         style={{
@@ -69,7 +45,7 @@ const Table = ({
           borderRadius: "0.2em",
           padding: "0.2em",
           width: "70%",
-          backgroundColor: color,
+          backgroundColor: Status[field],
           fontWeight: "800",
         }}
       >
@@ -88,8 +64,7 @@ const Table = ({
             return <td key={idx}>{getStatusHtml(get(res, value))}</td>;
           }
           if (typeof value === "function") {
-           
-          return <td key={idx}>{ value(res, value)}</td>;
+            return <td key={idx}>{value(res, value)}</td>;
           }
           return <td key={idx}>{get(res, value)}</td>;
         })}
@@ -151,10 +126,18 @@ const Table = ({
             <tr style={{ border: "none" }}>
               <td></td>
             </tr>
-            {!queryObject?.isFetching && <tr ref={ref}></tr>}
-            <div>
-              <br />
-            </div>
+            {!queryObject?.isFetching && (
+              <tr ref={ref}>
+                <td></td>
+              </tr>
+            )}
+            <tr>
+              <td>
+                <div>
+                  <br />
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

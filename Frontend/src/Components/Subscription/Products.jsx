@@ -30,30 +30,20 @@ const Products = () => {
 
   const tableConfig = {
     name: ["fields.name", "name"],
-    price: [
-      "fields.default_price",
-      (args1, args2) => {
-        return `${Number(args1["default_price"]["price"], false, true)}/${
-          args1["default_price"]["period"]["name"]
-        }`;
-      },
-    ],
   };
   const fields2 = Object.fromEntries(
-    filter_fields.map((key) => [key, products.data?.pages?.[0][0].fields[key]])
+    filter_fields.map((key) => [
+      key,
+      products.data?.pages?.[0][0]?.fields[key],
+    ]),
   );
-  console.log(fields2);
-  // const fields2 = {
-  //   name: "asdf",
-  // };
-
   useEffect(() => {
     dispatch(
       updateHeaderState({
         title1: t(`Product`),
         title2: t("View, search for and add new product"),
         logo: <Sub1 />,
-      })
+      }),
     );
   }, [i18n.language]);
 
