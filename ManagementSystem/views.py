@@ -1,4 +1,4 @@
-from .models import Product as ProductModel, Subscription as SubscriptionModel, Client as ClientModel, Period, PriceList
+from .models import Product as ProductModel, Subscription as SubscriptionModel, Client as ClientModel, Period, PriceList, Invoice as InvoiceModel
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .serlializer import _InternalSubscriptionPlanSerializer
 from rest_framework.exceptions import PermissionDenied
@@ -16,10 +16,10 @@ from rest_framework import status
 from django.db.models import Q
 from .serlializer import * 
 from .sql import *
-import time
-import re
-
 from .tasks import scheduled_task
+from djmoney.models.fields import MoneyField
+import os
+import time
 
 def home(request):
     return 
@@ -43,8 +43,13 @@ class ClientBase:
 
 
 class InvoiceBase:
+    serializer_class = InvoiceSerializer
     permission_classes = (IsAuthenticated,)
-    model = Invoice
+    model = InvoiceModel
+
+class CurrencyBase:
+    PermissionDenied = (IsAuthenticated,)
+    model = Currency
 
 class ProductsList(ProductBase, ListAPIView):
     # pagination_class = Pagination
@@ -108,6 +113,18 @@ class PeriodView(ProductBase, ListAPIView):
         
         return Response({"detail":"successfull"},status=status.HTTP_200_OK)
 
+class CurrencyView(CurrencyBase,ListAPIView):
+    serializer_class = CurrencySerializer
+    permission_classes = (IsAuthenticated,)
+    model = Currency
+
+    def get_queryset(self):
+        obj = self.model.objects.all()
+        return obj
+
+
+
+
 class PriceListView(ListAPIView,APIView):
     serializer_class = PriceListSerializer
     # pagination_class = Pagination
@@ -130,20 +147,26 @@ class PriceListView(ListAPIView,APIView):
 
         return queryset
 
-    # def paginate_queryset(self, *args, **kwargs):
-    #     request = self.request
-    #     page_size = request.GET.get("page_size")
-    #     self.pagination_class.set_page_size(page_size)
-    #     return super().paginate_queryset(*args,**kwargs)
+    def paginate_queryset(self, *args, **kwargs):
+        request = self.request
+        page_size = request.GET.get("page_size")
+        self.pagination_class.set_page_size(page_size)
+        return super().paginate_queryset(*args,**kwargs)
 
     def get(self,request):
         serializers_data = self.serializer_class(self.get_queryset(),many=True)
         return Response(serializers_data.data)
     def post(self,request):
-        period = request.data.get("period",None)
-        price = request.data.get("price",None)
-        pricelist = create_pricelist(price,period)
-        return Response({"detail":"successfull"},status=status.HTTP_200_OK)
+        serialized = self.serializer_class(data=request.data)
+        print(serialized)
+        if serialized.is_valid(raise_exception=True):
+            serialized.save()
+            return Response({"detail":"successfull"},status=status.HTTP_200_OK)
+        
+
+        # period = request.data.get("period",None)
+        # price = request.data.get("price",None)
+        # pricelist = create_pricelist(price,period)
 
 
 
@@ -155,7 +178,7 @@ class SubscriptionListView(SubscriptionBase, ListAPIView):
         if filterby == "approved" and data == "false":
             return self.model.objects.filter(approved=False)
         return self.model.objects.all()
-    
+
     def paginate_queryset(self, *args, **kwargs):
         request = self.request
         page_size = request.GET.get("page_size")
@@ -169,6 +192,7 @@ class SubscriptionView(SubscriptionBase, APIView):
             serialized = self.serializer_class(data=request.data,context={'user': request.user})
             if serialized.is_valid(raise_exception=True):
                 serialized.save()
+                
                 return Response({"detail":"Subscription successfully created!"})
                 
             raise ValidationError(serialized.errors)
@@ -183,15 +207,35 @@ class SubscriptionView(SubscriptionBase, APIView):
         serializer = self.serializer_class(subscription)
         return Response(serializer.data)
 
-    def patch(self,request,id):
-        obj = self.model.objects.get(pk=request.data.get("id"))
-        serializer = self.serializer_class(obj,data=request.data,partial=True)
-        if serializer.is_valid(raise_exception=True):
-            
-            serializer.save()
 
-        return Response({})
-    
+    def patch(self,request,id,action=None):
+        if action is None:
+            try:
+                obj = self.model.objects.get(pk=id)
+            except self.model.DoesNotExist:
+                return Response({"detail":"This subscription does not exists"},status=status.HTTP_404_NOT_FOUND)
+
+            else:
+                serializer = self.serializer_class(obj,data=request.data,partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+
+                    return Response({"detail":"Subscription successfully updated!"})
+
+                return Response(serializer.errors)
+        elif action == "cancel":
+
+            try:
+                obj = self.model.objects.get(pk=id)
+            except self.model.DoesNotExist:
+                return Response({"detail":"This subscription does not exists"},status=status.HTTP_404_NOT_FOUND)
+            else:
+                obj.cancel(commit=True)
+                return Response({"detail":f"Subscription {id} is cancelled"})
+        else:
+
+            return Response({"detail":"invalid url"},status=status.HTTP_400_BAD_REQUEST)
+
 
 class SubscriptionApproval(SubscriptionBase,APIView):
     permission_classes = [IsAuthenticated|SubscriptionPermission]
@@ -217,33 +261,77 @@ class SubscriptionApproval(SubscriptionBase,APIView):
             # subscription.active_subscription_plans()
 
             return Response({"detail":"Subscription approved!"})
-        
+
+               
 
         subscription.reject(request.user,commit=True) 
         return Response({"detail":"Subscription rejected"})
         
-        
+
 class Invoice(InvoiceBase,APIView):
     def get(self,request,pk):
+        obj = self.model.objects.get(pk=pk)
+        serializer = self.serializer_class(obj)
+        return Response(serializer.data)
+
+    def patch(self,request,pk,action=None):
         try:
-            obj = get_subscription(pk) 
 
-        except Subscription.DoesNotExist:
-            return Response(
-                {"detail": f"Subscription with id {pk} does not exist."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = SubscriptionSerializer(obj)
-        if serializer.data.get("status") != "CANCELLED" and serializer.data.get("status") != "REJECTED" :
-            pdf = generate_invoice(serializer.data)
+            obj = self.model.objects.get(pk=pk)
+        except self.model.DoesNotExist:
+            return Response({"detail":"This invoice does not exists"},status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"detail":"Invoice does not exists"},status=status.HTTP_404_NOT_FOUND)
 
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
-        return response
+            actions  = ["pay","finalize"]
+            if action not in actions:
+                return Response({"detail":"Invalid Request"},status=status.HTTP_400_BAD_REQUEST)
 
+            if action == "pay":
+                print(obj)
+                obj.paid(commit=True)
+                return Response({"detail":"Invoice is mark as paid"})
+            elif action == "finalize":
+                obj.finalize(commit=True,update_finalize_date=True)
+                return Response({"detail":"Invoice is finalized"})
+            else:
+                serializer = self.serializer_class(obj,data=request.data,partial=True)
+                
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response({"detail":"Invoice updated"})
+                return Response(serializer.errors)
+                
+
+    def post(self,request):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"detail":"Invoice created"})
+        return Response(serializer.errors)
+
+
+class InvoiceListView(InvoiceBase, ListAPIView):
+    pagination_class = Pagination
+    def get_queryset(self):
+
+        filterby = self.request.GET.get("filterby")
+        data = self.request.GET.get("data")
+        if filterby:
+            return self.model.objects.filter(**{filterby: data})
+        return self.model.objects.all()
+    
+
+    def paginate_queryset(self, *args, **kwargs):
+        request = self.request
+        page_size = request.GET.get("page_size")
+        self.pagination_class.set_page_size(page_size)
+        return super().paginate_queryset(*args,**kwargs)
+    # def paginate_queryset(self, *args, **kwargs):
+    #     request = self.request
+    #     page_size = request.GET.get("page_size")
+    #     self.pagination_class.set_page_size(page_size)
+        # return super().paginate_queryset(*args,**kwargs)
 
 
 
@@ -257,13 +345,10 @@ class ClientView(ClientBase, ProductsList):
 
 
 
-class test(APIView,SubscriptionBase):
+class test(APIView,InvoiceBase):
     def get(self,request):
-
-        obj = Subscription.objects.first()
-        
         scheduled_task()
-        return Response({})
+        return Response({"test":""})
     
     def get_queryset(self):
         return self.model.objects.all()
