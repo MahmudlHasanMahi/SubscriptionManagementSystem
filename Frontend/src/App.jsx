@@ -2,14 +2,11 @@ import "./style.css";
 import { useEffect } from "react";
 import SignIn from "./Pages/SignIn";
 import Home from "./Pages/Home/Home";
-import Invoice from "./Pages/Invoice";
-import Body from "./Components/Body/Body";
 import Staff from "./Components/Staff/Staff";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Client from "./Components/Client/Client";
-import { Routes, Route, Router } from "react-router-dom";
-import Loading from "./Components/Loading/Loading";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./Utils/ProtectedRoute";
 import ChangePassword from "./Pages/ChangePassword";
 import Plans from "./Components/Subscription/Plans";
@@ -25,7 +22,10 @@ import AddClientForm from "./Components/Forms/AddClientForm/AddClientForm";
 import CreateProductForm from "./Components/Forms/Product/CreateProductForm";
 import SubscriptionForm from "./Components/Forms/SubscriptionForm/SubscriptionForm";
 import EditSubscription from "./Components/Forms/EditSubscription/EditSubscription";
+import Invoice from "./Components/Invoice/Invoice";
 import { useTranslation } from "react-i18next";
+import CreateInvoice from "./Components/Invoice/CreateInvoice";
+import EditInvoice from "./Components/Invoice/EditInvoice";
 
 const App = () => {
   const location = useLocation();
@@ -72,6 +72,11 @@ const App = () => {
             <Route path="client">
               <Route path="" element={<Client />} />
               <Route path="add-client" element={<AddClientForm />} />
+            </Route>
+            <Route path="invoice">
+              <Route path="" element={<Invoice />} />
+              <Route path="create-invoice" element={<CreateInvoice />} />
+              <Route path="edit-invoice/:invoiceId" element={<EditInvoice />} />
             </Route>
           </Route>
         </Route>

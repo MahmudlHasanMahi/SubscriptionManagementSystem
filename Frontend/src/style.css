@@ -20,16 +20,16 @@ body {
 .rs-btn-close {
   color: rgb(255, 255, 255);
 }
-
-.rs-input-group.rs-input-group-inside,
-.rs-input {
-  background-color: rgba(0, 0, 0, 0) !important;
+.rs-picker {
+  width: 100%;
 }
+
 .rs-input-group.rs-input-group-inside {
   border: none;
 }
 .rs-picker-input-group {
   height: 100%;
+  width: 100%;
 }
 .rs-picker-toggle-wrapper {
   display: flex;

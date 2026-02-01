@@ -9,6 +9,8 @@ import { priceListApi } from "../Features/Services/priceListApi";
 import { subscriptionApi } from "../Features/Services/subscriptionApi";
 import { clientApi } from "../Features/Services/clientApi";
 import { staffApi } from "../Features/Services/staffApi";
+import { currenciesApi } from "../Features/Services/currencyApi";
+import { InvoiceApi } from "../Features/Services/InvoiceApi";
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -20,6 +22,8 @@ export const store = configureStore({
     [subscriptionApi.reducerPath]: subscriptionApi.reducer,
     [clientApi.reducerPath]: clientApi.reducer,
     [staffApi.reducerPath]: staffApi.reducer,
+    [currenciesApi.reducerPath]: currenciesApi.reducer,
+    [InvoiceApi.reducerPath]: InvoiceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -28,7 +32,9 @@ export const store = configureStore({
       .concat(priceListApi.middleware)
       .concat(subscriptionApi.middleware)
       .concat(clientApi.middleware)
-      .concat(staffApi.middleware),
+      .concat(staffApi.middleware)
+      .concat(currenciesApi.middleware)
+      .concat(InvoiceApi.middleware),
 });
 
 export default store;
