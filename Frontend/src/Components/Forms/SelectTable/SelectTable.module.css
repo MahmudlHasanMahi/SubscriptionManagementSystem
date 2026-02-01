@@ -4,7 +4,6 @@
 
   margin-top: 2.25em;
   padding: 1.5em 1em;
-  
 }
 .SelectTable > span {
   font-size: 1.5em;
@@ -23,6 +22,7 @@
 
 .SelectTable > table > tbody > tr > td {
   padding: 1em 0.5em;
+  width: 33.33%;
 }
 .plans {
   border-radius: 3px;
@@ -59,7 +59,7 @@
   justify-content: center;
 }
 .text > input {
-  width: 20%;
+  width: 4em;
   color: white;
   padding: 0.63em 0.3em 0.63em 0.63em;
   border: none;

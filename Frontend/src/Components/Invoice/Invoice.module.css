@@ -1,0 +1,53 @@
+.tableContainer {
+  max-height: 30em;
+  margin-top: 1.56em;
+  height: 20em;
+}
+
+.status-options {
+  display: flex;
+  flex-direction: row;
+  margin-block: 1.5em;
+  margin-inline-end: 1em;
+  gap: 1em;
+}
+
+.status-options > span {
+  cursor: pointer;
+  background: rgb(32, 47, 63);
+  color: #b8b8b8;
+  padding-block: 1em;
+  font-weight: 600;
+  font: 1em;
+  text-align: center;
+  width: 15%;
+  border-radius: 1em;
+  transition: outline 100ms;
+  user-select: none;
+}
+.highlight-option {
+  outline: 1px solid rgb(231, 219, 219);
+  color: white !important;
+}
+.status-options > span:hover {
+  outline: 1px solid rgb(231, 219, 219);
+}
+
+.date {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  border-radius: 10px;
+  user-select: none;
+  height: 3.2em;
+  overflow: hidden;
+  border: solid rgb(172, 172, 172);
+  margin-top: 0.45em;
+}
+
+.clientSelect {
+  height: 5em;
+  width: 50%;
+  border: solid red;
+}

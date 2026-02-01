@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Yasier</title>
+  </head>
+
+  <body>
+    <div
+      class="invoice-box"
+      style="
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        font-size: 16px;
+        line-height: 24px;
+        font-family:
+          &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial,
+          sans-serif;
+        color: #555;
+        height: 100vh;
+      "
+    >
+      <h2
+        class="title"
+        style="
+          font-size: 1.4em;
+          color: white;
+          background-color: #902c2c;
+          padding: 0.5em;
+          position: relative;
+          left: -2.5em;
+          top: -1em;
+        "
+      >
+        {{title}}
+      </h2>
+      <div
+        class="top"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+        "
+      >
+        <img src="./Yasier.png" style="width: 3em; height: 3em" />
+        <h4 style="font-weight: 500">
+          Subscription Id : {{subscription.id}}<br />
+          Created: {{subscription.begin}}<br />
+        </h4>
+      </div>
+
+      <div
+        class="information"
+        style="
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+        "
+      >
+        <h4 style="font-weight: 500">
+          Sunnyville,<br />
+          CA 12345 Nafi Tower<br />
+          53 Gulshan Ave, Dhaka 1212
+        </h4>
+
+        <h4 style="font-weight: 500">
+          Acme Corp.<br />
+          {{client.name}}<br />
+          {{client.email}}
+        </h4>
+      </div>
+      <table
+        cellpadding="0"
+        cellspacing="0"
+        style="width: 100%; line-height: inherit; text-align: left"
+        width="100%"
+        align="left"
+      >
+        <tr class="heading">
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              background: #eee;
+              border-bottom: 1px solid #ddd;
+              font-weight: bold;
+              text-align: left;
+            "
+            valign="top"
+            align="left"
+          >
+            Plans
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              background: #eee;
+              border-bottom: 1px solid #ddd;
+              font-weight: bold;
+              text-align: left;
+            "
+            valign="top"
+            align="left"
+          >
+            Unit price
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              background: #eee;
+              border-bottom: 1px solid #ddd;
+              font-weight: bold;
+              text-align: left;
+            "
+            valign="top"
+            align="left"
+          >
+            Quantity
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              background: #eee;
+              border-bottom: 1px solid #ddd;
+              font-weight: bold;
+              text-align: left;
+            "
+            valign="top"
+            align="left"
+          >
+            Price
+          </td>
+        </tr>
+        {% for item in plans %}
+        <tr class="item">
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              text-align: left;
+              border-bottom: 1px solid #eee;
+            "
+            valign="top"
+            align="left"
+          >
+            {{ item.product_name }}
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              text-align: left;
+              border-bottom: 1px solid #eee;
+            "
+            valign="top"
+            align="left"
+          >
+            {{ item.unit_price }}
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              text-align: left;
+              border-bottom: 1px solid #eee;
+            "
+            valign="top"
+            align="left"
+          >
+            {{ item.quantity }}
+          </td>
+          <td
+            style="
+              padding: 5px;
+              vertical-align: top;
+              text-align: left;
+              border-bottom: 1px solid #eee;
+            "
+            valign="top"
+            align="left"
+          >
+            {{ item.price }}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td style="padding: 5px; vertical-align: top" valign="top"></td>
+          <td
+            style="padding: 5px; vertical-align: top; text-align: right"
+            valign="top"
+            align="right"
+          ></td>
+          <td
+            class="end"
+            style="padding: 5px; vertical-align: top"
+            valign="top"
+          >
+            Total:
+          </td>
+          <td style="padding: 5px; vertical-align: top" valign="top">
+            ৳{{total}}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
