@@ -1,7 +1,9 @@
-from celery import shared_task
-from .models import Subscription,Invoice
-from .Mixins.Time import Time
 from .serlializer import SubscriptionSerializer
+from .models import Subscription,Invoice
+from django.core.mail import send_mail as mail
+from celery import shared_task
+from .Mixins.Time import Time
+
 @shared_task
 def scheduled_task():
     arr = []
@@ -27,10 +29,14 @@ def scheduled_task():
 
     for sub in subs:
         sub.expire(commit=True)
+    
+
+    invoice_post_finalize = Invoice.objects.post_finalize()
+
+    for invoice in invoice_post_finalize:
+        invoice.finalize(commit=True)
+
 
     return arr
     
 
-@shared_task
-def send_mail():
-    return
