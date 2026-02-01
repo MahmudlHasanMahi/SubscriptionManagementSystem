@@ -45,6 +45,9 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields=["created_at"]
 
 
+
+
+
 admin.site.register(Product,ProductAdmin)
 admin.site.register(SubscriptionPlan)
 admin.site.register(Period,PeriodAdmin)
@@ -53,6 +56,7 @@ admin.site.register(Invoice,InvoiceAdmin)
 admin.site.register(PriceList,PriceListAdmin)
 admin.site.register(Subscription,SubscriptionAdmin)
 admin.site.register(Representative,RepresentativeAdmin)
+admin.site.register(Currency)
 # admin.site.register(SubscriptionPlan,SubscriptionPlanAdmin)
 
 
