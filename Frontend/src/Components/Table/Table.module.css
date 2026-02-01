@@ -1,7 +1,7 @@
 .tableContainer {
   font-family: "Nunito", serif;
   font-optical-sizing: auto;
-  padding: 1em 1em 0 1.2em;
+  padding: 1.5em 2em 0 1.2em;
   border-radius: 1.25em;
   display: flex;
   flex-direction: column;
