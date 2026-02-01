@@ -6,21 +6,23 @@ import Label from "../TextFields/Label";
 import InputOutline from "../../InputOutline/InputOutline";
 import Button from "../Buttons/Button";
 import { motion } from "framer-motion";
+import PriceCurrency from "../PriceCurrencyField/PriceCurrency";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGetPeriodsQuery } from "../../../Features/Services/periodApi";
 import { useCreatePriceListMutation } from "../../../Features/Services/priceListApi";
 import { useDebouncedCallback } from "use-debounce";
 import { notifyError } from "../../../Utils/nofify";
-import NumericInputField from "../TextFields/NumericInputField";
 import { isValidNumber, Number } from "../../../Utils/NumericUtils";
 import { useTranslation } from "react-i18next";
+import { useGetCurrenciesQuery } from "../../../Features/Services/currencyApi";
 const AddPriceForm = ({ state }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const object = useGetPeriodsQuery();
+  const currencyObject = useGetCurrenciesQuery();
   const [createPeriod, result] = useCreatePriceListMutation();
   const [selected, setSelected] = useState([]);
-  const navigate = useNavigate();
+  const [currencySelected, setCurrencySelected] = useState([]);
   const isSelected = (option) => {
     return option.id === selected.id;
   };
@@ -33,22 +35,27 @@ const AddPriceForm = ({ state }) => {
 
     return <span>{obj ? obj : "Select Period"}</span>;
   };
+
+  const getTitle = (object) => {
+    return object.name;
+  };
+
   const filter = useDebouncedCallback((e, setSearch) => {
     setSearch(e.target.value);
   }, 500);
+
   const create = (e) => {
     e.preventDefault();
     if (!selected.id) return notifyError(t("Please Select a Period"));
+    if (!currencySelected.id) return notifyError(t("Please Select a currency"));
     const data = {
       period: selected.id,
       price: Number(e.target.price.value),
+      currency: currencySelected.id,
     };
     createPeriod(data).then((data) => {
       state(false);
     });
-  };
-  const getTitle = (object) => {
-    return object.name;
   };
 
   const handleInvalid = (e) => {
@@ -99,13 +106,12 @@ const AddPriceForm = ({ state }) => {
       >
         <form onSubmit={create} style={{ height: "100%" }}>
           <FormContainer title={"Add price"}>
-            <NumericInputField
-              type={"text"}
-              required={true}
-              name={"price"}
-              label={"Price"}
-              handleInput={handleInput}
-              handleInvalid={handleInvalid}
+            <PriceCurrency
+              currencies={currencyObject?.data}
+              onInvalid={handleInvalid}
+              onInput={handleInput}
+              selected={currencySelected}
+              setSelected={setCurrencySelected}
             />
 
             <div
