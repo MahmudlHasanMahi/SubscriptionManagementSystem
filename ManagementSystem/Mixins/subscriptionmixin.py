@@ -115,7 +115,7 @@ class SubscriptionMixIn(models.Model,Time):
 
         if self.is_current_day():
             field = self.set_status("DEACTIVE")
-            self.activate(commit,renew=True,activate_plans=True)
+            fields.extend(self.activate(renew=True,activate_plans=True))
         else:
             field = self.set_status("SCHEDULED")
 
@@ -139,7 +139,7 @@ class SubscriptionMixIn(models.Model,Time):
 
         fields = self.set_status("ACTIVE")
         if activate_plans:
-            self.active_subscription_plans(commit)    
+            self.active_subscription_plans(True)    
         # Invoice could be generated from here and asynchrously
 
         if renew:
@@ -239,7 +239,9 @@ class SubscriptionMixIn(models.Model,Time):
         if is_successfull:
             self.active_subscription_plans(commit=commit)
             if generate_invoice:
-                self.generate_invoice()
+                self.invoice(True,True)
+
+                
 
 
     def set_status(self,status):

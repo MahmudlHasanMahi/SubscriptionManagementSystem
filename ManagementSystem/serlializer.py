@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
@@ -133,6 +134,8 @@ class SubscriptionSerializer(TranslatedFieldMixin,serializers.ModelSerializer):
         model = Subscription
         fields = ["id","begin","end","status","creator","created_by","client_detail","client","subscription_plans","cycle"]
     
+
+
     def get_creator(self,instance):
         return UserSerializer(instance.created_by).data
     def get_client_detail(self,instance):
@@ -244,13 +247,16 @@ class InvoiceSerializer(serializers.ModelSerializer,TranslatedFieldMixin):
         return obj
 
     def create(self, validated_data):
-        invoice = Invoice.create_invoice(**validated_data)
-
+        from .tasks import generate_invoice
+        notify = validated_data.pop("notify",False) 
+        validated_data.update({"notify":notify})
+        generate_invoice(**validated_data)
+        # invoice = Invoice.create_invoice(notify,**validated_data)
         # invoice_details_serializer = InvoiceDetailSerializer(data=invoice_details,many=True)
         # if invoice_details_serializer.is_valid(raise_exception=True):
         #     invoice_details_serializer.save()
 
-        return invoice
+        return {"message": "Invoice is being generated"}
 
     def update(self, instance, validated_data):
         invoice_details = validated_data.pop("invoice_detail",[])

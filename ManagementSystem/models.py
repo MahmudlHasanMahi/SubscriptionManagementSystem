@@ -120,14 +120,25 @@ class Invoice(InvoiceMixIn):
     finalize_date = models.DateTimeField(editable=True,null=False,blank=False,default=default_finalize_date,verbose_name=("Finalize date"))
     paid_date = models.DateTimeField(editable=True,null=True,blank=True,verbose_name=_("Payment Date"))
 
-
+    # requires seperate worker to offload this task 
     @classmethod
-    def create_invoice(cls,**kwargs):   
-        notify = kwargs.pop("notify",False) 
+    def create_invoice(cls,notify=False,**kwargs):   
 
         invoice_details = kwargs.pop("invoice_detail",[])
+        subscription = kwargs.pop("subscription",False)
 
-        if not invoice_details:
+        if subscription:
+            subscription = Subscription.objects.get(pk=subscription)
+
+            invoice_details = (subscription.subscription_plans
+                    .filter(status="ACTIVE")
+                    .select_related("product")
+                    .values("product","quantity","price")
+                    )
+
+    
+
+        if not (invoice_details or subscription):
             raise ValidationError(_("At least one invoice details must be provided."))
         try:
             with transaction.atomic():   
@@ -136,6 +147,7 @@ class Invoice(InvoiceMixIn):
 
                 invoice_details_object = []
                 for invoice_detail in invoice_details:
+                    print(invoice_detail)
                     obj = InvoiceDetail(**invoice_detail,invoice=invoice)
                     invoice_details_object.append(obj)           
                 InvoiceDetail.objects.bulk_create(invoice_details_object)
@@ -149,33 +161,32 @@ class Invoice(InvoiceMixIn):
         except IntegrityError:
             raise ValidationError(_("Failed to create invoice due to invalid or duplicate data."))
 
-        return invoice
+        return 
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self._run_after_save_queue()
-        
-
-
-    
-
-
-
 
 class Subscription(SubscriptionMixIn):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._invoice = {
+            "generate":False,
+            "notify":False,
+        }
         self._after_save_queue = []
+
+    def invoice(self,generate:bool,notify=False):
+        self._invoice.update({"generate":generate,"notify":notify})
+
 
     class Meta:
         permissions = [
             ("can_approve_subscription", "Can approve subscription"),
             ]
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self._run_after_save_queue()
+
 
 
     @classmethod
@@ -210,25 +221,24 @@ class Subscription(SubscriptionMixIn):
         except IntegrityError:
             raise ValidationError(_("Failed to create subscription due to invalid or duplicate data."))
 
-    def generate_invoice(self,commit: bool = False):
-        with transaction.atomic():
-            if self.is_active:
-                invoice = Invoice(subscription=self)
-                invoice.due_date = self.time_now + timedelta(hours=2,minutes=30)
-                invoice.save()
-                invoice_details = []
-                subscription_plans  = self.subscription_plans.filter(status="ACTIVE") 
-                for plan in subscription_plans:
-                    invoice_detail = InvoiceDetail(product = plan.product,quantity=plan.quantity,price=plan.price,invoice=invoice)
-                    invoice_details.append(invoice_detail)
-      
-                # is_successfull = self.extend_renewal_date(commit=commit)
-                # if is_successfull:
-                InvoiceDetail.objects.bulk_create(invoice_details)
-                # else:
-                    # invoice.delete()
+    def generate_invoice(self,commit: bool = False,notify: bool=False):
+        obj = {
+            "subscription":self.pk,
+            "client":self.client,
+            "notify":notify,
+        }
+        from .tasks import generate_invoice
+        generate_invoice(**obj)
+
     
+
     # def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._run_after_save_queue()
+
+        if self._invoice.get("generate"):
+            self.generate_invoice()
         
                 
 
