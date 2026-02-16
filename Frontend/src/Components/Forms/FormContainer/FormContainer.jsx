@@ -1,5 +1,6 @@
 import styles from "./FormContainer.module.css";
 import LinearProgress from "@mui/material/LinearProgress";
+import { useTranslation } from "react-i18next";
 const FormContainer = ({
   children,
   title,
@@ -7,6 +8,7 @@ const FormContainer = ({
   disable = false,
   style = null,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles["staffFromContainer"]}>
       {isLoading && (
@@ -16,7 +18,7 @@ const FormContainer = ({
       )}
       <div className={styles["form"]}>
         {isLoading || (disable && <div className={styles["loading"]}></div>)}
-        <span>{title}</span>
+        <span>{t(title)}</span>
         <div style={style}>{children}</div>
       </div>
     </div>

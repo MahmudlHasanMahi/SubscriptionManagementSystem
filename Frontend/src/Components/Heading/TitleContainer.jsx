@@ -26,7 +26,7 @@ const TitleContainer = () => {
             exit="exit"
             transition={{ duration: 0.15 }}
           >
-            {state.title1}
+            {t(state.title1)}
           </motion.span>
         </span>
 
@@ -37,7 +37,7 @@ const TitleContainer = () => {
           exit="exit"
           transition={{ duration: 0.15 }}
         >
-          {state.title2}
+          {t(state.title2)}
         </motion.span>
       </motion.div>
     </AnimatePresence>

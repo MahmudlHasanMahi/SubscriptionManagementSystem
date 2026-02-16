@@ -2,7 +2,9 @@ import React, { useMemo } from "react";
 import styles from "./Select.module.css";
 import Arrow from "../../../svg/Arrow";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 const SelectBtn = ({ current, placeholder, property, setShow, show }) => {
+  const { t } = useTranslation();
   return (
     <motion.div
       className={styles["selectBtn"]}
@@ -13,7 +15,7 @@ const SelectBtn = ({ current, placeholder, property, setShow, show }) => {
       {current != null ? (
         current
       ) : (
-        <div className={styles["placeholder"]}>{placeholder}</div>
+        <div className={styles["placeholder"]}>{t(placeholder)}</div>
       )}
       <motion.span
         initial={{ rotateZ: 0 }}

@@ -18,7 +18,7 @@ const TextFields = ({
   disabled = false,
   ref,
 }) => {
-  
+  const { t, i18n } = useTranslation();
   const [clipboard, setClipBoard] = useState(null);
   const [edit, setEdit] = useState(false);
   const onchange = useDebouncedCallback((value) => {
@@ -49,7 +49,7 @@ const TextFields = ({
             type={type}
             name={name}
             required={required}
-            placeholder={placeholder}
+            placeholder={t(placeholder)}
             defaultValue={value}
             readOnly={value && !edit ? true : false}
           />

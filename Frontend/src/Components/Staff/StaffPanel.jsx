@@ -27,7 +27,7 @@ const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
     <Panel style={{ backgroundColor: "rgba(77, 109, 172, 0.4)" }}>
       <NumericTextBox
         title1={Number(staff.staffState?.count, false, true)}
-        title2={t("Total number of staff")}
+        title2={"Total number of staff"}
       />
       <TextFields
         type={"text"}
@@ -44,8 +44,8 @@ const StaffPanel = ({ filter, setfilter, setinput, fields }) => {
       />
       <div style={{ width: "15em" }}>
         <Select
-          placeholder={t("Filter Field")}
-          title={t("Filter By")}
+          placeholder={"Filter Field"}
+          title={"Filter By"}
           property={filter}
           setProperty={setfilter}
           background_color="rgba(67, 82, 106, 1)"

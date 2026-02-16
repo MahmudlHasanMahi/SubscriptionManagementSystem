@@ -27,8 +27,8 @@ const Subscription = () => {
     <Body>
       <div className={styles["cardRow"]}>
         <Card
-          title1={t("Products")}
-          title2={t("Create Product")}
+          title1={"Products"}
+          title2={"Create Product"}
           logo={<Services />}
           style={{
             background: "rgba(22, 161, 112, 0.4)",

@@ -25,6 +25,7 @@ import SelectOption from "../../Staff/Filter/SelectOption";
 import { AnimatePresence } from "framer-motion";
 import AddPriceForm from "../AddPriceForm/AddPriceForm";
 import formatCurrency from "../../../Utils/CurrencyFormater";
+
 const CreateProductForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -111,7 +112,6 @@ const CreateProductForm = () => {
   );
 
   const getMultiSelectTitle = (obj) => {
-    const price = obj.price;
     return obj.formatted;
   };
 

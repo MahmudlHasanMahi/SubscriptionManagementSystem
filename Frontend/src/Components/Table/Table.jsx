@@ -37,19 +37,19 @@ const Table = ({
   };
 
   const getStatusHtml = (field) => {
-    
     return (
       <div
         style={{
           textAlign: "center",
           borderRadius: "0.2em",
-          padding: "0.2em",
-          width: "70%",
+          padding: "0.3em 1.2em",
+          width: "fit-content",
+
           backgroundColor: Status[field],
           fontWeight: "800",
         }}
       >
-        {field}
+        {t(field)}
       </div>
     );
   };
@@ -108,7 +108,7 @@ const Table = ({
         )}
       </div>
       <div>
-        <span className={styles["title"]}>{title}</span>
+        <span className={styles["title"]}>{t(title)}</span>
         <table className={styles["table"]}>
           <thead>
             <tr>
@@ -119,6 +119,7 @@ const Table = ({
                   : data.pages?.[0][0];
                 return <th key={idx}>{get(val, fields[key][0])}</th>;
               })}
+              <th></th>
             </tr>
           </thead>
           <tbody>

@@ -10,5 +10,4 @@ const Status = {
   PAID: "rgb(53, 94, 33)",
   OPEN: "rgb(155, 142, 69)",
 };
-
 export default Status;

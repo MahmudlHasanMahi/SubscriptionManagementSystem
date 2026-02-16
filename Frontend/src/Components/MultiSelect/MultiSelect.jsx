@@ -9,7 +9,7 @@ import ObjectTag from "./ObjectTag";
 import Arrow from "../../svg/Arrow";
 import Cross from "../../svg/Cross";
 import ItemMenu from "./ItemMenu";
-
+import { useTranslation } from "react-i18next";
 const MultiSelect = ({
   children,
   label,
@@ -25,6 +25,7 @@ const MultiSelect = ({
   type = "multi",
   getTitle,
 }) => {
+  const { t } = useTranslation();
   const containerRef = useRef(null);
   const [show, setShow] = useState(false);
   const { ref: viewRef, inView } = useInView({ triggerOnce: true });
@@ -41,7 +42,7 @@ const MultiSelect = ({
       object,
       setDefaultValue,
       name,
-      onChange
+      onChange,
     );
   };
 

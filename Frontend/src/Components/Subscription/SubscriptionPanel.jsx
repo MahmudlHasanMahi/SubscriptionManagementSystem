@@ -31,7 +31,6 @@ const SubscriptionPanel = ({ numeric = 0 }) => {
           property={filter}
           setProperty={setfilter}
         >
-          
           <SelectOption title={"ASDF"} />
           <SelectOption title={"ASDF"} />
           <SelectOption title={"ASDF"} />
@@ -40,7 +39,7 @@ const SubscriptionPanel = ({ numeric = 0 }) => {
       <Button
         link={"/subscription/create-subscription"}
         style={{ width: "20%" }}
-        title={t("Create Subscription")}
+        title={"Create Subscription"}
       />
     </Panel>
   );

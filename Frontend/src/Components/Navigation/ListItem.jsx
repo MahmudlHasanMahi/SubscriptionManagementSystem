@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 const ListItem = ({ title, Logo, link, active, isResizing }) => {
-  const { i18n } = useTranslation();
-
+  const { t, i18n } = useTranslation();
   return (
     <Link className={styles["listItem"]} to={link}>
       {Logo}
-      <span>{title}</span>
+      <span>{t(title)}</span>
       {active && i18n.isInitialized && <Active isResizing={isResizing} />}
     </Link>
   );

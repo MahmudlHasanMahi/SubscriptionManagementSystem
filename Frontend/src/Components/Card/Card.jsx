@@ -11,7 +11,6 @@ const Card = ({
   highlight = false,
   link = null,
 }) => {
-  const navigate = useNavigate();
   return (
     <Link
       to={link}

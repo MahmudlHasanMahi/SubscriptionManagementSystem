@@ -66,7 +66,7 @@ const Products = () => {
         actionButtons={[
           <ActionButton
             url={"/subscription/edit-product"}
-            title={"View more"}
+            title={t("View more")}
           />,
         ]}
         queryObject={products}

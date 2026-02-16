@@ -3,6 +3,7 @@ import SelectBtn from "./SelectBtn";
 import OptionWrapper from "./OptionWrapper";
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 const Select = ({
   children,
   placeholder,
@@ -12,9 +13,10 @@ const Select = ({
   background_color,
 }) => {
   const [show, setShow] = useState(false);
+  const { t } = useTranslation();
   return (
     <div className={styles["selectContainer"]}>
-      <span className={styles["title"]}>{title}</span>
+      <span className={styles["title"]}>{t(title)}</span>
       <div
         style={{
           background: background_color,

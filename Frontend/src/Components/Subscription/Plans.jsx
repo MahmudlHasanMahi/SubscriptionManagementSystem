@@ -23,7 +23,7 @@ const Plans = () => {
         title1: t(`Subscription`),
         title2: t("View, search for and add new subscription"),
         logo: <Sub1 />,
-      })
+      }),
     );
   }, [i18n.language]);
   const SubsctiptionObject = useGetSubscriptionsInfiniteQuery({
@@ -35,7 +35,7 @@ const Plans = () => {
     email: ["fields.end", (data) => new Date(data.end).toLocaleDateString()],
     groups: ["fields.created_by", "creator.name"],
     client: ["fields.client", "client_detail.name"],
-    status: ["status", "status"],
+    status: ["fields.status", "status"],
   };
 
   return (

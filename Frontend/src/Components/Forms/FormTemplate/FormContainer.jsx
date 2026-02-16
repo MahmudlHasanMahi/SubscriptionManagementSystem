@@ -1,7 +1,9 @@
 import React from "react";
 import styles from "./FormContainer.module.css";
 import Logo from "../../../Yasier.png";
+import { useTranslation } from "react-i18next";
 const FormContainer = ({ children, postTitle, title }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles["signInContainer"]}>
       <div>
@@ -10,8 +12,8 @@ const FormContainer = ({ children, postTitle, title }) => {
           <span>Yasier Systems</span>
         </div>
         <div className={styles["title"]}>
-          <span>{postTitle}</span>
-          <span>{title}</span>
+          <span>{t(postTitle)}</span>
+          <span>{t(title)}</span>
         </div>
         {children}
       </div>
